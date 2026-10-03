@@ -34,7 +34,7 @@ export async function buildOrder({ items, couponCode, customer, paymentMethod, p
   const subtotal = lineItems.reduce((s, i) => s + i.price, 0);
   let coupon = null;
   if (couponCode) {
-    const result = validateCoupon(couponCode, subtotal);
+    const result = await validateCoupon(couponCode, subtotal);
     if (result.valid) coupon = result.coupon;
   }
 

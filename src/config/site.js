@@ -51,7 +51,7 @@ export const siteConfig = {
   /** Replace with real, verified numbers before launch. */
   stats: [
     { label: "Learners enrolled", value: 52000, suffix: "+" },
-    { label: "Average course rating", value: 4.8, suffix: "/5", decimals: 1 },
+    { label: "Average course rating", value: 4.9, suffix: "/5", decimals: 1 },
     { label: "Expert instructors", value: 40, suffix: "+" },
     { label: "Learner satisfaction", value: 96, suffix: "%" },
   ],

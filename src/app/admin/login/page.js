@@ -38,9 +38,7 @@ export default function AdminLoginPage() {
         throw new Error(data.message || "Invalid credentials.");
       }
 
-      toast.success("Welcome, Administrator!", {
-        description: "Authenticated successfully via .env credentials.",
-      });
+
 
       router.replace("/admin");
     } catch (err) {

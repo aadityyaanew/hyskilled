@@ -6,6 +6,6 @@ export async function POST(request) {
   if (!code || typeof subtotal !== "number") {
     return NextResponse.json({ valid: false, message: "Enter a coupon code." }, { status: 400 });
   }
-  const result = validateCoupon(code, subtotal);
+  const result = await validateCoupon(code, subtotal);
   return NextResponse.json(result);
 }

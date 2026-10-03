@@ -91,7 +91,7 @@ export function HeroVisual() {
             <Star className="size-5" fill="currentColor" />
           </span>
           <div>
-            <p className="font-heading text-lg leading-none font-bold text-ink">4.8 / 5</p>
+            <p className="font-heading text-lg leading-none font-bold text-ink">4.9 / 5</p>
             <p className="mt-1 text-[11px] text-muted-foreground">from 20,000+ reviews</p>
           </div>
         </div>

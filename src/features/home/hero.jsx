@@ -64,7 +64,7 @@ export function Hero() {
               <div className="text-sm leading-tight">
                 <p className="flex items-center gap-1 font-bold text-ink">
                   <Star className="size-4 text-amber-400" fill="currentColor" />
-                  4.8/5 <span className="font-medium text-muted-foreground">average rating</span>
+                  4.9/5 <span className="font-medium text-muted-foreground">average rating</span>
                 </p>
                 <p className="text-muted-foreground">Loved by 52,000+ learners</p>
               </div>

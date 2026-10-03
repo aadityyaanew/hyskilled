@@ -12,7 +12,6 @@ export function AppProviders({ children }) {
       <AuthProvider>
         <CartProvider>
           {children}
-          <Toaster position="top-center" richColors closeButton />
         </CartProvider>
       </AuthProvider>
     </TooltipProvider>

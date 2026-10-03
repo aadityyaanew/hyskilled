@@ -1,10 +1,11 @@
-import { bundles } from "@/data/bundles";
-import { courses } from "@/data/courses";
-import { categories } from "@/data/categories";
+import { bundles as mockBundles } from "@/data/bundles";
+import { courses as mockCourses } from "@/data/courses";
+import { categories as mockCategories } from "@/data/categories";
+import { query, isDbConfigured } from "@/lib/db";
 
-function enrich(bundle) {
-  const included = bundle.courseSlugs
-    .map((slug) => courses.find((c) => c.slug === slug))
+function enrichMock(bundle) {
+  const included = (bundle.courseSlugs || [])
+    .map((slug) => mockCourses.find((c) => c.slug === slug))
     .filter(Boolean);
   const originalPrice = included.reduce((sum, c) => sum + c.price, 0);
   return {
@@ -20,20 +21,118 @@ function enrich(bundle) {
     categorySlugs: [...new Set(included.map((c) => c.categorySlug))],
     categoryNames: [
       ...new Set(
-        included.map((c) => categories.find((x) => x.slug === c.categorySlug)?.short)
+        included.map((c) => mockCategories.find((x) => x.slug === c.categorySlug)?.short)
       ),
     ],
     originalPrice,
-    totalHours: included.reduce((sum, c) => sum + c.durationHours, 0),
-    savings: originalPrice - bundle.price,
+    totalHours: included.reduce((sum, c) => sum + (c.durationHours || 0), 0),
+    savings: Math.max(0, originalPrice - bundle.price),
   };
 }
 
 export async function getBundles() {
-  return bundles.map(enrich);
+  if (isDbConfigured()) {
+    try {
+      const rows = await query(
+        "SELECT * FROM bundles WHERE status = 'published' ORDER BY sort_order ASC, created_at DESC"
+      );
+      if (rows && rows.length > 0) {
+        const bundleCourses = await query(
+          `SELECT bc.bundle_id, c.id, c.slug, c.title, c.price, c.duration_hours, c.level, cat.slug as category_slug, cat.short_name as category_name
+           FROM bundle_courses bc
+           JOIN courses c ON c.id = bc.course_id
+           LEFT JOIN categories cat ON cat.id = c.category_id
+           ORDER BY bc.sort_order ASC`
+        );
+
+        return rows.map((b) => {
+          const courses = bundleCourses
+            .filter((bc) => bc.bundle_id === b.id)
+            .map((c) => ({
+              slug: c.slug,
+              title: c.title,
+              price: Number(c.price),
+              durationHours: c.duration_hours,
+              level: c.level,
+              categorySlug: c.category_slug,
+            }));
+
+          const originalPrice = courses.reduce((sum, c) => sum + c.price, 0);
+          const bundlePrice = Number(b.price);
+          return {
+            id: b.id,
+            slug: b.slug,
+            name: b.name,
+            tagline: b.tagline,
+            description: b.description,
+            price: bundlePrice,
+            highlight: Boolean(b.highlight),
+            courses,
+            categorySlugs: [...new Set(courses.map((c) => c.categorySlug).filter(Boolean))],
+            categoryNames: [...new Set(courses.map((c) => c.category_name).filter(Boolean))],
+            originalPrice,
+            totalHours: courses.reduce((sum, c) => sum + (c.durationHours || 0), 0),
+            savings: Math.max(0, originalPrice - bundlePrice),
+          };
+        });
+      }
+    } catch (err) {
+      console.warn("Could not fetch bundles from MySQL, using mock fallback:", err.message);
+    }
+  }
+
+  return mockBundles.map(enrichMock);
 }
 
 export async function getBundleBySlug(slug) {
-  const bundle = bundles.find((b) => b.slug === slug);
-  return bundle ? enrich(bundle) : null;
+  if (isDbConfigured()) {
+    try {
+      const rows = await query("SELECT * FROM bundles WHERE slug = ? LIMIT 1", [slug]);
+      if (rows.length > 0) {
+        const b = rows[0];
+        const courses = await query(
+          `SELECT c.slug, c.title, c.price, c.duration_hours, c.level, cat.slug as category_slug, cat.short_name as category_name
+           FROM bundle_courses bc
+           JOIN courses c ON c.id = bc.course_id
+           LEFT JOIN categories cat ON cat.id = c.category_id
+           WHERE bc.bundle_id = ?
+           ORDER BY bc.sort_order ASC`,
+          [b.id]
+        );
+
+        const mappedCourses = courses.map((c) => ({
+          slug: c.slug,
+          title: c.title,
+          price: Number(c.price),
+          durationHours: c.duration_hours,
+          level: c.level,
+          categorySlug: c.category_slug,
+        }));
+
+        const originalPrice = mappedCourses.reduce((sum, c) => sum + c.price, 0);
+        const bundlePrice = Number(b.price);
+
+        return {
+          id: b.id,
+          slug: b.slug,
+          name: b.name,
+          tagline: b.tagline,
+          description: b.description,
+          price: bundlePrice,
+          highlight: Boolean(b.highlight),
+          courses: mappedCourses,
+          categorySlugs: [...new Set(mappedCourses.map((c) => c.categorySlug).filter(Boolean))],
+          categoryNames: [...new Set(mappedCourses.map((c) => c.category_name).filter(Boolean))],
+          originalPrice,
+          totalHours: mappedCourses.reduce((sum, c) => sum + (c.durationHours || 0), 0),
+          savings: Math.max(0, originalPrice - bundlePrice),
+        };
+      }
+    } catch (err) {
+      console.warn("Could not fetch bundle by slug from MySQL:", err.message);
+    }
+  }
+
+  const bundle = mockBundles.find((b) => b.slug === slug);
+  return bundle ? enrichMock(bundle) : null;
 }

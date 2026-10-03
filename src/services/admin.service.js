@@ -99,7 +99,23 @@ export async function getAdminCourses() {
          LEFT JOIN categories cat ON cat.id = c.category_id
          ORDER BY c.created_at DESC`
       );
-      if (rows && rows.length > 0) return rows;
+      if (rows && rows.length > 0) {
+        return rows.map((r) => {
+          let tags = [];
+          try {
+            tags = typeof r.tags === "string" ? JSON.parse(r.tags) : r.tags || [];
+          } catch {
+            tags = [];
+          }
+          return {
+            ...r,
+            price: Number(r.price),
+            originalPrice: r.original_price ? Number(r.original_price) : null,
+            durationHours: r.duration_hours,
+            tags,
+          };
+        });
+      }
     } catch (err) {
       console.warn("Could not fetch courses from MySQL, using fallback:", err.message);
     }
@@ -120,9 +136,22 @@ export async function getAdminCategories() {
          FROM categories cat
          LEFT JOIN courses c ON c.category_id = cat.id
          GROUP BY cat.id
-         ORDER BY cat.sort_order ASC`
+         ORDER BY cat.sort_order ASC, cat.id ASC`
       );
-      if (rows && rows.length > 0) return rows;
+      if (rows && rows.length > 0) {
+        return rows.map((cat) => {
+          let keywords = [];
+          try {
+            keywords = typeof cat.keywords === "string" ? JSON.parse(cat.keywords) : cat.keywords || [];
+          } catch {
+            keywords = [];
+          }
+          return {
+            ...cat,
+            keywords,
+          };
+        });
+      }
     } catch (err) {
       console.warn("Could not fetch categories from MySQL, using fallback:", err.message);
     }
@@ -133,6 +162,94 @@ export async function getAdminCategories() {
     id: i + 1,
     course_count: mockCourses.filter((x) => x.categorySlug === c.slug).length,
   }));
+}
+
+export async function getAdminBundles() {
+  if (isDbConfigured()) {
+    try {
+      const bundles = await query(
+        `SELECT * FROM bundles ORDER BY sort_order ASC, created_at DESC`
+      );
+
+      if (bundles && bundles.length > 0) {
+        const bundleCourses = await query(
+          `SELECT bc.bundle_id, bc.sort_order, c.id, c.slug, c.title, c.price, c.duration_hours, c.level
+           FROM bundle_courses bc
+           JOIN courses c ON c.id = bc.course_id
+           ORDER BY bc.sort_order ASC`
+        );
+
+        const map = new Map();
+        for (const b of bundles) {
+          map.set(b.id, {
+            ...b,
+            price: Number(b.price),
+            highlight: Boolean(b.highlight),
+            courses: [],
+            courseIds: [],
+            courseSlugs: [],
+            originalPrice: 0,
+            savings: 0,
+          });
+        }
+
+        for (const bc of bundleCourses) {
+          if (map.has(bc.bundle_id)) {
+            const b = map.get(bc.bundle_id);
+            const cPrice = Number(bc.price || 0);
+            b.courses.push({
+              id: bc.id,
+              slug: bc.slug,
+              title: bc.title,
+              price: cPrice,
+              durationHours: bc.duration_hours,
+              level: bc.level,
+            });
+            b.courseIds.push(bc.id);
+            b.courseSlugs.push(bc.slug);
+            b.originalPrice += cPrice;
+          }
+        }
+
+        for (const b of map.values()) {
+          b.savings = Math.max(0, b.originalPrice - b.price);
+        }
+
+        return Array.from(map.values());
+      }
+    } catch (err) {
+      console.warn("Could not fetch bundles from MySQL, using fallback:", err.message);
+    }
+  }
+
+  // Fallback to mock bundles
+  const { bundles: mockBundles } = await import("@/data/bundles");
+  return mockBundles.map((b, i) => {
+    const included = (b.courseSlugs || [])
+      .map((slug) => mockCourses.find((c) => c.slug === slug))
+      .filter(Boolean);
+    const originalPrice = included.reduce((sum, c) => sum + c.price, 0);
+    return {
+      id: i + 1,
+      slug: b.slug,
+      name: b.name,
+      tagline: b.tagline,
+      description: b.description,
+      price: b.price,
+      highlight: b.highlight,
+      status: "published",
+      courses: included.map((c) => ({
+        id: c.slug,
+        slug: c.slug,
+        title: c.title,
+        price: c.price,
+      })),
+      courseIds: included.map((c) => c.slug),
+      courseSlugs: included.map((c) => c.slug),
+      originalPrice,
+      savings: Math.max(0, originalPrice - b.price),
+    };
+  });
 }
 
 export async function getAdminOrders() {
@@ -196,7 +313,15 @@ export async function getAdminCoupons() {
   if (isDbConfigured()) {
     try {
       const coupons = await query("SELECT * FROM coupons ORDER BY created_at DESC");
-      if (coupons && coupons.length > 0) return coupons;
+      if (coupons && coupons.length > 0) {
+        return coupons.map((c) => ({
+          ...c,
+          value: Number(c.value),
+          max_discount: c.max_discount ? Number(c.max_discount) : null,
+          min_order: c.min_order ? Number(c.min_order) : null,
+          is_active: Boolean(c.is_active),
+        }));
+      }
     } catch (err) {
       console.warn("Could not fetch coupons from MySQL, using fallback:", err.message);
     }
@@ -210,7 +335,8 @@ export async function getAdminCoupons() {
     value: c.value,
     max_discount: c.maxDiscount || null,
     min_order: c.minOrder || null,
-    is_active: 1,
+    is_active: true,
     used_count: 0,
   }));
 }
+
