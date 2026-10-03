@@ -69,10 +69,7 @@ export function Hero() {
                 <p className="text-muted-foreground">Loved by 52,000+ learners</p>
               </div>
             </div>
-            <p className="flex items-center gap-2 text-sm font-medium text-ink-soft">
-              <ShieldCheck className="size-5 text-emerald-600" />
-              {siteConfig.guarantee.label}
-            </p>
+
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3 lg:hidden">

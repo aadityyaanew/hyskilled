@@ -55,7 +55,7 @@ export function CouponForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <div className="flex flex-col">
       <label htmlFor="coupon-code" className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-ink">
         <Tag className="size-4 text-primary" />
         Have a coupon?
@@ -68,13 +68,25 @@ export function CouponForm() {
             setCode(e.target.value.toUpperCase());
             if (status.type !== "idle") setStatus({ type: "idle", message: "" });
           }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onSubmit(e);
+            }
+          }}
           placeholder="Enter code"
           autoComplete="off"
           aria-invalid={status.type === "error"}
           aria-describedby="coupon-status"
           className="uppercase placeholder:normal-case"
         />
-        <Button type="submit" variant="dark" disabled={!code.trim() || loading || items.length === 0} className="h-11">
+        <Button 
+          type="button" 
+          onClick={onSubmit} 
+          variant="dark" 
+          disabled={!code.trim() || loading || items.length === 0} 
+          className="h-11"
+        >
           {loading ? <Loader2 className="animate-spin" /> : "Apply"}
         </Button>
       </div>
@@ -83,8 +95,8 @@ export function CouponForm() {
         role="status"
         className={`mt-1.5 min-h-4 text-xs ${status.type === "error" ? "font-medium text-destructive" : "text-muted-foreground"}`}
       >
-        {status.type === "error" ? status.message : `Try ${coupons[0].code} or ${coupons[1].code}`}
+        {status.type === "error" ? status.message : `Try ${coupons[0]?.code} or ${coupons[1]?.code}`}
       </p>
-    </form>
+    </div>
   );
 }

@@ -258,9 +258,7 @@ export function CheckoutView() {
             </Button>
 
             <ul className="mt-5 space-y-2 text-xs text-muted-foreground">
-              <li className="flex items-center gap-2">
-                <ShieldCheck className="size-3.5 text-emerald-600" /> {siteConfig.guarantee.label}
-              </li>
+              
               <li className="flex items-center gap-2">
                 <Lock className="size-3.5 text-emerald-600" /> 256-bit encrypted payment
               </li>

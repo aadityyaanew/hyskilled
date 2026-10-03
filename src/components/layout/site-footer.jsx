@@ -126,9 +126,7 @@ export function SiteFooter({ categories = [] }) {
             <span className="inline-flex items-center gap-1.5">
               <Lock className="size-3.5 text-emerald-400" /> 256-bit secure payments
             </span>
-            <span className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="size-3.5 text-emerald-400" /> {siteConfig.guarantee.label}
-            </span>
+
           </div>
         </div>
       </div>

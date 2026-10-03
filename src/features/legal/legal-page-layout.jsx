@@ -52,15 +52,7 @@ export function LegalPageLayout({
                   </nav>
                 </div>
 
-                <div className="rounded-2xl border bg-card p-4 text-xs text-muted-foreground space-y-2">
-                  <div className="flex items-center gap-1.5 font-semibold text-ink">
-                    <ShieldCheck className="size-4 text-emerald-600" />
-                    <span>7-Day Guarantee</span>
-                  </div>
-                  <p>
-                    All course purchases are backed by our {siteConfig.guarantee.label}.
-                  </p>
-                </div>
+
               </div>
             </aside>
 

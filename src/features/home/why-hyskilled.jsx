@@ -27,11 +27,7 @@ const features = [
     title: "Portfolio projects",
     text: "Build real, shareable projects that prove your skills to employers.",
   },
-  {
-    icon: RefreshCcw,
-    title: siteConfig.guarantee.label,
-    text: "Not the right fit? Get a full refund within 7 days, no hassle.",
-  },
+
   {
     icon: Headphones,
     title: "Friendly human support",

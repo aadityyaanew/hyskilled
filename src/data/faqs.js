@@ -1,7 +1,7 @@
 export const faqGroups = [
   { id: "buying", label: "Buying & payments" },
   { id: "app", label: "Learning in the app" },
-  { id: "refunds", label: "Refunds & support" },
+  { id: "support", label: "Support & help" },
 ];
 
 export const faqs = [
@@ -19,13 +19,7 @@ export const faqs = [
     answer:
       "We accept UPI, all major credit and debit cards, net banking and popular wallets. Payments are processed over a secure, encrypted connection and we never store your card details.",
   },
-  {
-    id: "f3",
-    group: "buying",
-    question: "Are the prices inclusive of GST?",
-    answer:
-      "Yes. All prices shown are inclusive of 18% GST. A full tax breakdown is shown during enrollment and on your invoice.",
-  },
+
   {
     id: "f4",
     group: "buying",
@@ -54,23 +48,17 @@ export const faqs = [
     answer:
       "Yes, the Hyskilled app is available for both iOS and Android. Download links are provided on your order confirmation page and in your receipt email.",
   },
-  {
-    id: "f8",
-    group: "refunds",
-    question: "What is your refund policy?",
-    answer:
-      "We offer a 7-day money-back guarantee on eligible purchases. If the course isn't right for you, contact support within 7 days of purchase and we'll process your refund. See our Refund Policy for full details.",
-  },
+  
   {
     id: "f9",
-    group: "refunds",
+    group: "support",
     question: "My payment failed but money was deducted. What now?",
     answer:
       "Don't worry — failed transactions are automatically reversed by your bank, usually within 5–7 working days. If it isn't, email us with your order ID and we'll help trace the payment.",
   },
   {
     id: "f10",
-    group: "refunds",
+    group: "support",
     question: "How do I contact support?",
     answer:
       "Email us at support@hyskilled.com or use the contact form. We typically respond within one business day.",

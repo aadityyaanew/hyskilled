@@ -67,63 +67,56 @@ export default async function CourseDetailPage({ params }) {
   ];
 
   return (
-    <div className="overflow-x-clip pb-24 lg:pb-0">
+    <div className="pb-24 lg:pb-0">
       <JsonLd data={courseJsonLd(course, course.instructor)} />
 
-      <div className="container-page grid gap-x-12 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        {/* full-bleed dark hero band */}
-        <div
-          aria-hidden
-          className="relative col-span-full row-start-1 bg-ink [clip-path:inset(0_-100vmax)] shadow-[0_0_0_100vmax_var(--color-ink)]"
-        >
-          <div className="bg-grid-dark absolute inset-0 opacity-60" />
-          <div className="absolute -top-20 right-1/4 size-80 rounded-full bg-brand-600/30 blur-3xl" />
+      {/* Full-width dark hero section */}
+      <div className="relative w-full bg-ink pt-8 pb-16 lg:pt-14 lg:pb-32 text-white overflow-hidden">
+        <div aria-hidden className="bg-grid-dark absolute inset-0 opacity-60 pointer-events-none" />
+        <div aria-hidden className="absolute -top-20 right-1/4 size-80 rounded-full bg-brand-600/30 blur-3xl pointer-events-none" />
+        
+        <div className="container-page relative z-10 grid gap-x-12 lg:grid-cols-[minmax(0,1fr)_24rem]">
+          <header className="lg:col-start-1">
+            <Breadcrumbs items={crumbs} tone="dark" />
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              <Badge variant="glass">{course.category.short}</Badge>
+              <Badge variant="glass">
+                <BarChart2 className="mr-1 size-3.5" /> {course.level}
+              </Badge>
+              {course.badge && (
+                <Badge className="border-transparent bg-amber-400 text-amber-950">{course.badge}</Badge>
+              )}
+            </div>
+            <h1 className="mt-5 text-3xl leading-[1.1] font-extrabold sm:text-4xl lg:text-[2.8rem]">
+              {course.title}
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg text-white/75">{course.subtitle}</p>
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80">
+              <RatingSummary rating={course.rating} count={course.reviewCount} className="[&_span:first-child]:text-amber-300 [&_span:last-child]:text-white/60" />
+              <span className="inline-flex items-center gap-1.5">
+                <Users className="size-4" /> {formatCompact(course.learners)} learners
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Globe className="size-4" /> English
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <CalendarClock className="size-4" /> Updated {formatDate(course.updatedAt, { month: "long", year: "numeric" })}
+              </span>
+            </div>
+            <p className="mt-4 text-sm text-white/70">
+              Taught by <span className="font-semibold text-white">{course.instructor.name}</span>,{" "}
+              {course.instructor.title}
+            </p>
+          </header>
         </div>
+      </div>
 
-        {/* hero copy */}
-        <header className="relative z-10 row-start-1 py-10 text-white lg:py-14">
-          <Breadcrumbs items={crumbs} tone="dark" />
-          <div className="mt-6 flex flex-wrap items-center gap-2">
-            <Badge variant="glass">{course.category.short}</Badge>
-            <Badge variant="glass">
-              <BarChart2 /> {course.level}
-            </Badge>
-            {course.badge && (
-              <Badge className="border-transparent bg-amber-400 text-amber-950">{course.badge}</Badge>
-            )}
-          </div>
-          <h1 className="mt-5 text-3xl leading-[1.1] font-extrabold sm:text-4xl lg:text-[2.8rem]">
-            {course.title}
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-white/75">{course.subtitle}</p>
-
-          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80">
-            <RatingSummary rating={course.rating} count={course.reviewCount} className="[&_span:first-child]:text-amber-300 [&_span:last-child]:text-white/60" />
-            <span className="inline-flex items-center gap-1.5">
-              <Users className="size-4" /> {formatCompact(course.learners)} learners
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Globe className="size-4" /> English
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <CalendarClock className="size-4" /> Updated {formatDate(course.updatedAt, { month: "long", year: "numeric" })}
-            </span>
-          </div>
-          <p className="mt-4 text-sm text-white/70">
-            Taught by <span className="font-semibold text-white">{course.instructor.name}</span>,{" "}
-            {course.instructor.title}
-          </p>
-        </header>
-
-        {/* purchase card */}
-        <aside className="relative z-10 row-start-2 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:py-10">
-          <div className="top-24 -mt-0 lg:sticky">
-            <CoursePurchaseCard course={course} />
-          </div>
-        </aside>
-
-        {/* body */}
-        <div className="row-start-3 min-w-0 space-y-14 py-12 lg:row-start-2">
+      {/* Main Content & Sidebar Container */}
+      <div className="container-page relative z-20 grid gap-x-12 lg:grid-cols-[minmax(0,1fr)_24rem]">
+        
+        {/* Main Body */}
+        <div className="lg:col-start-1 min-w-0 space-y-14 py-12 lg:py-10">
           <Section id="outcomes" title="What you'll learn">
             <ul className="grid gap-x-8 gap-y-3.5 rounded-3xl border bg-brand-50/40 p-6 sm:grid-cols-2 sm:p-8">
               {course.outcomes.map((o) => (
@@ -216,10 +209,17 @@ export default async function CourseDetailPage({ params }) {
             <FaqAccordion faqs={faqs} />
           </Section>
         </div>
+
+        {/* Sidebar */}
+        <aside className="lg:col-start-2 lg:row-start-1 relative">
+          <div className="lg:sticky lg:top-24 mt-8 lg:-mt-24 lg:mb-12">
+            <CoursePurchaseCard course={course} />
+          </div>
+        </aside>
       </div>
 
       {/* related */}
-      <section className="border-t bg-muted/40 py-16">
+      <section className="border-t bg-muted/40 py-16 mt-8">
         <div className="container-page">
           <SectionHeading align="left" eyebrow="Keep exploring" title="You might also like" />
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

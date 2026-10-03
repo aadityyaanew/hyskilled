@@ -114,7 +114,7 @@ export default async function AboutPage() {
                     <div>
                       <h3 className="font-bold text-ink text-lg">Confidence & Trust</h3>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Backed by our 7-day money-back guarantee, transparent pricing with all GST included,
+                        With transparent pricing,
                         and dedicated learner support.
                       </p>
                     </div>

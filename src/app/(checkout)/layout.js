@@ -22,13 +22,11 @@ export default function CheckoutLayout({ children }) {
       </main>
       <footer className="border-t bg-white py-6 text-center text-xs text-muted-foreground">
         <div className="container-page flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p className="flex items-center gap-1.5">
-            <ShieldCheck className="size-4 text-emerald-600" /> {siteConfig.guarantee.label}
-          </p>
+
           <nav aria-label="Legal" className="flex gap-5">
             <Link href={ROUTES.terms} className="hover:text-primary">Terms</Link>
             <Link href={ROUTES.privacy} className="hover:text-primary">Privacy</Link>
-            <Link href={ROUTES.refundPolicy} className="hover:text-primary">Refunds</Link>
+            
             <Link href={ROUTES.contact} className="hover:text-primary">Help</Link>
           </nav>
           <p>© {new Date().getFullYear()} {siteConfig.name}</p>

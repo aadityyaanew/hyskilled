@@ -21,7 +21,7 @@ export const metadata = buildMetadata({
 const included = [
   { icon: Smartphone, title: "Instant app access", text: "Courses unlock in the Hyskilled app the moment payment is confirmed." },
   { icon: InfinityIcon, title: "Lifetime access", text: "Pay once. Keep it forever, including every future update." },
-  { icon: RefreshCcw, title: siteConfig.guarantee.label, text: "Full refund within 7 days if the course isn't right for you." },
+  
   { icon: ReceiptText, title: "GST invoice", text: "A tax-compliant invoice is emailed with every successful order." },
   { icon: BadgeCheck, title: "No subscriptions", text: "No recurring charges, no hidden fees, no surprises." },
   { icon: Headphones, title: "Human support", text: "Real people ready to help before and after you buy." },

@@ -70,10 +70,7 @@ export function CartDrawer() {
               <Button asChild variant="outline" onClick={() => setDrawerOpen(false)}>
                 <Link href={ROUTES.cart}>View Selected Courses</Link>
               </Button>
-              <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-emerald-600" />
-                {siteConfig.guarantee.label}
-              </p>
+
             </SheetFooter>
           </>
         )}

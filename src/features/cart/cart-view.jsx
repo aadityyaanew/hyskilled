@@ -80,9 +80,7 @@ export function CartView() {
             <li className="flex items-center gap-2">
               <Lock className="size-3.5 text-emerald-600" /> Secure, encrypted enrollment
             </li>
-            <li className="flex items-center gap-2">
-              <ShieldCheck className="size-3.5 text-emerald-600" /> {siteConfig.guarantee.label}
-            </li>
+            
           </ul>
         </div>
       </aside>

@@ -28,8 +28,8 @@ export const siteConfig = {
   },
   contact: {
     email: "support@hyskilled.com",
-    phone: "+91 00000 00000",
-    address: "Add your registered business address here",
+    phone: "+91 8076480188",
+    address: "Near Gardenia Gateway, Plot C and D, Metro Station Road Sector 50, Noida, Uttar Pradesh - 201316",
     hours: "Mon – Sat, 10:00 AM – 7:00 PM IST",
   },
   socials: {
@@ -55,5 +55,5 @@ export const siteConfig = {
     { label: "Expert instructors", value: 40, suffix: "+" },
     { label: "Learner satisfaction", value: 96, suffix: "%" },
   ],
-  guarantee: { days: 7, label: "7-day money-back guarantee" },
+  
 };

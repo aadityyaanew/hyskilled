@@ -27,7 +27,7 @@ export const ROUTES = {
   faq: "/faq",
   terms: "/terms",
   privacy: "/privacy",
-  refundPolicy: "/refund-policy",
+  
 
   // Single Admin Panel
   admin: {

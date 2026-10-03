@@ -31,10 +31,7 @@ export function CoursePurchaseCard({ course }) {
           <AddToCartButton item={item} variant="outline" size="lg" className="w-full" />
         </div>
 
-        <p className="mt-4 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground">
-          <ShieldCheck className="size-4 text-emerald-600" />
-          {siteConfig.guarantee.label}
-        </p>
+        
 
         <div className="mt-6 border-t pt-5">
           <h2 className="font-heading text-sm font-bold text-ink">This course includes</h2>
