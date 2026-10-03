@@ -1,0 +1,41 @@
+import { ROUTES } from "./routes";
+
+export const mainNav = [
+  { label: "Courses", href: ROUTES.courses, mega: true },
+  { label: "Bundles & Pricing", href: ROUTES.pricing },
+  { label: "About", href: ROUTES.about },
+  { label: "FAQ", href: ROUTES.faq },
+];
+
+export const footerNav = [
+  {
+    title: "Explore",
+    links: [
+      { label: "All courses", href: ROUTES.courses },
+      { label: "Categories", href: ROUTES.categories },
+      { label: "Bundles & pricing", href: ROUTES.pricing },
+      { label: "Cart", href: ROUTES.cart },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About Hyskilled", href: ROUTES.about },
+      { label: "Contact us", href: ROUTES.contact },
+      { label: "FAQs", href: ROUTES.faq },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Terms & Conditions", href: ROUTES.terms },
+      { label: "Privacy Policy", href: ROUTES.privacy },
+      { label: "Refund Policy", href: ROUTES.refundPolicy },
+    ],
+  },
+];
+
+export const accountNav = [
+  { label: "My orders", href: ROUTES.account },
+  { label: "Cart", href: ROUTES.cart },
+];
