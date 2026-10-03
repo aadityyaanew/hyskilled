@@ -31,8 +31,8 @@ export async function GET(request) {
 
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-    const redirectUri = `${siteUrl.replace(/\/$/, "")}/api/auth/google/callback`;
+    const origin = new URL(request.url).origin;
+    const redirectUri = `${origin}/api/auth/google/callback`;
 
     try {
       // 1. Exchange code for token
