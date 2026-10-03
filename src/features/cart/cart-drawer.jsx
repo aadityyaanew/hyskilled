@@ -28,14 +28,14 @@ export function CartDrawer() {
         <SheetHeader className="border-b p-5 pr-14">
           <SheetTitle className="flex items-center gap-2 text-xl font-bold">
             <ShoppingBag className="size-5 text-primary" />
-            Your cart
+            My Learning
             {count > 0 && (
               <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-800">
                 {count}
               </span>
             )}
           </SheetTitle>
-          <SheetDescription>Review your selection before checkout.</SheetDescription>
+          <SheetDescription>Review your selection before completing enrollment.</SheetDescription>
         </SheetHeader>
 
         {items.length === 0 ? (
@@ -44,7 +44,7 @@ export function CartDrawer() {
               <ShoppingBag className="size-9" />
             </div>
             <div>
-              <p className="text-lg font-bold text-ink">Your cart is empty</p>
+              <p className="text-lg font-bold text-ink">Your learning list is empty</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 Explore our courses and start building in-demand skills.
               </p>
@@ -65,10 +65,10 @@ export function CartDrawer() {
             <SheetFooter className="gap-4 border-t bg-muted/40 p-5">
               <TotalsBreakdown totals={totals} couponCode={coupon?.code} emphasize={false} />
               <Button asChild size="lg" variant="brand" onClick={() => setDrawerOpen(false)}>
-                <Link href={ROUTES.checkout}>Checkout securely</Link>
+                <Link href={ROUTES.checkout}>Complete Enrollment securely</Link>
               </Button>
               <Button asChild variant="outline" onClick={() => setDrawerOpen(false)}>
-                <Link href={ROUTES.cart}>View full cart</Link>
+                <Link href={ROUTES.cart}>View Selected Courses</Link>
               </Button>
               <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
                 <ShieldCheck className="size-3.5 text-emerald-600" />

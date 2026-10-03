@@ -29,9 +29,17 @@ export const ROUTES = {
   privacy: "/privacy",
   refundPolicy: "/refund-policy",
 
-  // Reserved for the future admin panel
+  // Single Admin Panel
   admin: {
     root: "/admin",
+    login: "/admin/login",
+    courses: "/admin/courses",
+    categories: "/admin/categories",
+    bundles: "/admin/bundles",
+    orders: "/admin/orders",
+    students: "/admin/students",
+    enrollments: "/admin/enrollments",
+    coupons: "/admin/coupons",
   },
 };
 

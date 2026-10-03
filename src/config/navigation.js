@@ -14,7 +14,7 @@ export const footerNav = [
       { label: "All courses", href: ROUTES.courses },
       { label: "Categories", href: ROUTES.categories },
       { label: "Bundles & pricing", href: ROUTES.pricing },
-      { label: "Cart", href: ROUTES.cart },
+      { label: "My Learning", href: ROUTES.cart },
     ],
   },
   {
@@ -37,5 +37,5 @@ export const footerNav = [
 
 export const accountNav = [
   { label: "My orders", href: ROUTES.account },
-  { label: "Cart", href: ROUTES.cart },
+  { label: "My Learning", href: ROUTES.cart },
 ];

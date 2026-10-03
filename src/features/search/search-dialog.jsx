@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Search, SearchX, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, Search, SearchX, Zap, TrendingUp } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -141,7 +141,7 @@ export function SearchDialog({ open, onOpenChange }) {
                     className="focus-ring group flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-brand-50"
                   >
                     <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-brand-100 text-brand-700">
-                      <Sparkles className="size-4.5" />
+                      <Zap className="size-4.5" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-semibold text-ink group-hover:text-brand-800">

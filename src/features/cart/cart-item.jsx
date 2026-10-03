@@ -39,7 +39,7 @@ export function CartItem({ item, onRemove, compact = false, removable = true, cl
               size="icon-xs"
               className="shrink-0 text-muted-foreground hover:text-destructive"
               onClick={() => onRemove(item.id)}
-              aria-label={`Remove ${item.title} from cart`}
+              aria-label={`Remove ${item.title} course`}
             >
               <Trash2 />
             </Button>

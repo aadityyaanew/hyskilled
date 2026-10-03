@@ -35,8 +35,7 @@ export function AddToCartButton({
           router.push(ROUTES.checkout);
         }}
       >
-        <Zap />
-        {children ?? "Buy now"}
+        {children ?? "Start Learning"}
       </Button>
     );
   }
@@ -48,10 +47,10 @@ export function AddToCartButton({
         size={size}
         className={className}
         onClick={() => router.push(ROUTES.cart)}
-        aria-label={iconOnly ? "In cart – view cart" : undefined}
+        aria-label={iconOnly ? "Selected – view selected courses" : undefined}
       >
         <Check className="text-emerald-600" />
-        {!iconOnly && "In cart"}
+        {!iconOnly && "Selected"}
       </Button>
     );
   }
@@ -62,10 +61,10 @@ export function AddToCartButton({
       size={size}
       className={className}
       onClick={() => addItem(item)}
-      aria-label={iconOnly ? `Add ${item.title} to cart` : undefined}
+      aria-label={iconOnly ? `Enroll in ${item.title}` : undefined}
     >
       <ShoppingCart />
-      {!iconOnly && (children ?? "Add to cart")}
+      {!iconOnly && (children ?? "Enroll Now")}
     </Button>
   );
 }

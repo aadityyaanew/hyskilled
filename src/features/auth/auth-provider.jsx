@@ -1,31 +1,72 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo } from "react";
-import { STORAGE_KEYS } from "@/lib/storage";
-import { useStoredValue } from "@/hooks/use-stored-value";
-import { authService } from "@/services/client/auth.client";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { STORAGE_KEYS, storage } from "@/lib/storage";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [session, hydrated] = useStoredValue(STORAGE_KEYS.session, null);
+  const [user, setUser] = useState(null);
+  const [hydrated, setHydrated] = useState(false);
 
-  const login = useCallback((credentials) => authService.login(credentials), []);
-  const register = useCallback((data) => authService.register(data), []);
-  const logout = useCallback(() => authService.logout(), []);
-  const updateProfile = useCallback((patch) => authService.updateProfile(patch), []);
+  const refreshSession = useCallback(async () => {
+    try {
+      const res = await fetch("/api/auth/session", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.user) {
+          setUser(data.user);
+          storage.set(STORAGE_KEYS.session, { user: data.user });
+          return data.user;
+        }
+      }
+    } catch {
+      // ignore network errors
+    }
+
+    // fallback to storage if offline
+    const cached = storage.get(STORAGE_KEYS.session, null);
+    if (cached?.user) {
+      setUser(cached.user);
+      return cached.user;
+    }
+
+    setUser(null);
+    return null;
+  }, []);
+
+  useEffect(() => {
+    refreshSession().finally(() => setHydrated(true));
+  }, [refreshSession]);
+
+  const logout = useCallback(async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // ignore
+    }
+    storage.remove(STORAGE_KEYS.session);
+    setUser(null);
+  }, []);
+
+  const updateProfile = useCallback(async (patch) => {
+    setUser((prev) => {
+      const next = prev ? { ...prev, ...patch } : patch;
+      storage.set(STORAGE_KEYS.session, { user: next });
+      return next;
+    });
+  }, []);
 
   const value = useMemo(
     () => ({
-      user: session?.user ?? null,
-      isAuthenticated: Boolean(session?.user),
+      user,
+      isAuthenticated: Boolean(user),
       hydrated,
-      login,
-      register,
       logout,
       updateProfile,
+      refreshSession,
     }),
-    [session, hydrated, login, register, logout, updateProfile]
+    [user, hydrated, logout, updateProfile, refreshSession]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

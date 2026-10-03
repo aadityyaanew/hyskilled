@@ -10,7 +10,7 @@ export const faqs = [
     group: "buying",
     question: "How does buying a course on Hyskilled work?",
     answer:
-      "Choose a course, add it to your cart and complete checkout with UPI, card, net banking or wallet. As soon as the payment is confirmed you'll receive an email receipt and the course is unlocked in the Hyskilled app for the account linked to your email.",
+      "Choose a course, add it to your learning list and complete enrollment with UPI, card, net banking or wallet. As soon as the payment is confirmed you'll receive an email receipt and the course is unlocked in the Hyskilled app for the account linked to your email.",
   },
   {
     id: "f2",
@@ -24,14 +24,14 @@ export const faqs = [
     group: "buying",
     question: "Are the prices inclusive of GST?",
     answer:
-      "Yes. All prices shown are inclusive of 18% GST. A full tax breakdown is shown at checkout and on your invoice.",
+      "Yes. All prices shown are inclusive of 18% GST. A full tax breakdown is shown during enrollment and on your invoice.",
   },
   {
     id: "f4",
     group: "buying",
     question: "Can I use a coupon code?",
     answer:
-      "Yes. Enter your coupon on the cart or checkout page and the discount is applied instantly before you pay. Only one coupon can be used per order.",
+      "Yes. Enter your coupon on the learning list or enrollment page and the discount is applied instantly before you pay. Only one coupon can be used per order.",
   },
   {
     id: "f5",

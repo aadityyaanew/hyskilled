@@ -27,7 +27,7 @@ export function HowItWorks() {
         <Reveal>
           <SectionHeading
             eyebrow="How it works"
-            title="From checkout to learning in minutes"
+            title="From enrollment to learning in minutes"
             description="No complicated setup. Purchase on the web, and your courses unlock instantly in the app."
           />
         </Reveal>

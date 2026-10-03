@@ -27,7 +27,7 @@ export function MobilePurchaseBar({ course }) {
       <div className="mx-auto flex max-w-xl items-center justify-between gap-4">
         <PriceDisplay price={course.price} originalPrice={course.originalPrice} size="sm" showDiscount={false} />
         <AddToCartButton item={courseToLineItem(course)} buyNow size="lg" className="flex-1 sm:flex-none sm:px-10">
-          Buy now
+          Start Learning
         </AddToCartButton>
       </div>
     </div>

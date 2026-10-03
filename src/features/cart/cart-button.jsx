@@ -13,7 +13,7 @@ export function CartButton() {
       size="icon"
       className="relative"
       onClick={openDrawer}
-      aria-label={shown ? `Open cart, ${count} item${count === 1 ? "" : "s"}` : "Open cart"}
+      aria-label={shown ? `Open learning list, ${count} course${count === 1 ? "" : "s"} selected` : "Open learning list"}
     >
       <ShoppingBag className="size-5" />
       {shown && (

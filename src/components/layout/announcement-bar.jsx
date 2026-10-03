@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
 import { ROUTES } from "@/config/routes";
 
 export function AnnouncementBar() {
@@ -10,7 +10,7 @@ export function AnnouncementBar() {
         className="absolute inset-0 bg-gradient-to-r from-brand-800/80 via-brand-600/60 to-brand-800/80"
       />
       <div className="container-page relative flex min-h-10 items-center justify-center gap-2 py-2 text-center text-[13px] font-medium">
-        <Sparkles className="hidden size-4 shrink-0 text-amber-300 sm:block" />
+        <Zap className="hidden size-4 shrink-0 text-amber-300 sm:block" />
         <p>
           <span className="font-bold">Launch offer:</span> take 20% off your first course with code{" "}
           <code className="rounded bg-white/15 px-1.5 py-0.5 font-bold tracking-wide">WELCOME20</code>

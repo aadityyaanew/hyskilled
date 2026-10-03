@@ -1,4 +1,4 @@
-import { Check, Clock, Layers, Sparkles } from "lucide-react";
+import { Check, Clock, Layers, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { AddToCartButton } from "@/features/cart/add-to-cart-button";
 import { PriceDisplay } from "@/components/shared/price-display";
@@ -24,7 +24,7 @@ export function BundleCard({ bundle }) {
         <>
           <div aria-hidden className="bg-grid-dark pointer-events-none absolute inset-0 rounded-[2rem] opacity-50" />
           <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 gap-1 bg-amber-400 px-3 text-amber-950">
-            <Sparkles className="size-3" /> Most popular
+            <Flame className="size-3" /> Most popular
           </Badge>
         </>
       )}

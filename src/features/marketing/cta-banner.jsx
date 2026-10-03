@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/shared/reveal";
 import { ROUTES } from "@/config/routes";
@@ -17,7 +17,7 @@ export function CtaBanner({
             <div aria-hidden className="pointer-events-none absolute -top-20 left-1/4 size-72 rounded-full bg-white/15 blur-3xl" />
             <div className="relative mx-auto max-w-2xl">
               <span className="mx-auto mb-5 grid size-12 place-items-center rounded-2xl bg-white/15 backdrop-blur">
-                <Sparkles className="size-6" />
+                <Rocket className="size-6" />
               </span>
               <h2 className="text-3xl font-extrabold sm:text-5xl">{title}</h2>
               <p className="mt-4 text-lg text-white/80">{description}</p>

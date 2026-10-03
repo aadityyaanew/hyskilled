@@ -1,36 +1,37 @@
 "use client";
 
-import { toast } from "sonner";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { GoogleIcon } from "@/components/shared/brand-icons";
+import { Loader2 } from "lucide-react";
 
-/**
- * Social login placeholder. Wire `onClick` to your OAuth provider
- * (e.g. next-auth `signIn("google")`) when the backend is ready.
- */
-export function SocialLogin({ label = "Continue with Google" }) {
+export function SocialLogin({ label = "Continue with Google", className = "" }) {
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/account";
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleGoogleSignIn = () => {
+    setIsLoading(true);
+    window.location.href = `/api/auth/google?next=${encodeURIComponent(next)}`;
+  };
+
   return (
-    <>
-      <Button
-        id="auth-google"
-        type="button"
-        variant="outline"
-        size="lg"
-        className="w-full"
-        onClick={() =>
-          toast.info("Google sign-in isn't connected yet", {
-            description: "This is a placeholder — connect your OAuth provider in features/auth/social-login.jsx.",
-          })
-        }
-      >
-        <GoogleIcon /> {label}
-      </Button>
-      <div className="relative my-6 text-center" role="separator" aria-label="or">
-        <div className="absolute inset-x-0 top-1/2 border-t" />
-        <span className="relative bg-background px-3 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          or with email
-        </span>
-      </div>
-    </>
+    <Button
+      id="auth-google"
+      type="button"
+      variant="outline"
+      size="xl"
+      disabled={isLoading}
+      className={`w-full gap-3 border-2 border-border bg-white text-base font-semibold shadow-sm hover:border-brand-300 hover:bg-brand-50/50 ${className}`}
+      onClick={handleGoogleSignIn}
+    >
+      {isLoading ? (
+        <Loader2 className="size-5 shrink-0 animate-spin text-muted-foreground" />
+      ) : (
+        <GoogleIcon className="size-5 shrink-0" />
+      )}
+      <span>{isLoading ? "Redirecting..." : label}</span>
+    </Button>
   );
 }

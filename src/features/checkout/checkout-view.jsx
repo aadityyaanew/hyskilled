@@ -139,8 +139,8 @@ export function CheckoutView() {
     return (
       <EmptyState
         icon={ShoppingBag}
-        title="Nothing to check out yet"
-        description="Add a course to your cart to continue."
+        title="No courses selected yet"
+        description="Add a course to your learning list to continue."
         action={
           <Button asChild size="lg" variant="brand">
             <Link href={ROUTES.courses}>Browse courses</Link>
@@ -232,7 +232,7 @@ export function CheckoutView() {
             <div className="mb-5 flex items-center justify-between">
               <h2 className="font-heading text-lg font-bold text-ink">Order summary</h2>
               <Link href={ROUTES.cart} className="focus-ring rounded text-sm font-semibold text-primary hover:underline">
-                Edit cart
+                Edit selected courses
               </Link>
             </div>
             <ul className="space-y-4">
@@ -268,7 +268,7 @@ export function CheckoutView() {
           </div>
 
           <Link href={ROUTES.courses} className="focus-ring inline-flex items-center gap-1.5 rounded text-sm font-medium text-muted-foreground hover:text-primary">
-            <ArrowLeft className="size-4" /> Continue shopping
+            <ArrowLeft className="size-4" /> Browse more courses
           </Link>
         </aside>
       </form>
@@ -280,7 +280,7 @@ export function CheckoutView() {
         onCancel={() => {
           setDialogOpen(false);
           if (order) ordersRepository.update(order.id, { status: "cancelled" });
-          toast.info("Payment cancelled", { description: "Your cart is safe — you can try again anytime." });
+          toast.info("Payment cancelled", { description: "Your selected courses are safe — you can try again anytime." });
         }}
       />
     </>

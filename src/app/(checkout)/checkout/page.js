@@ -4,7 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 import { ROUTES } from "@/config/routes";
 
 export const metadata = buildMetadata({
-  title: "Checkout",
+  title: "Complete Enrollment",
   description: "Complete your purchase securely.",
   path: ROUTES.checkout,
   noIndex: true,
@@ -16,11 +16,11 @@ export default function CheckoutPage() {
       <Breadcrumbs
         className="mb-6"
         items={[
-          { label: "Cart", href: ROUTES.cart },
-          { label: "Checkout", href: ROUTES.checkout },
+          { label: "My Learning", href: ROUTES.cart },
+          { label: "Complete Enrollment", href: ROUTES.checkout },
         ]}
       />
-      <h1 className="mb-8 text-3xl font-bold text-ink sm:text-4xl">Checkout</h1>
+      <h1 className="mb-8 text-3xl font-bold text-ink sm:text-4xl">Complete Enrollment</h1>
       <CheckoutView />
     </div>
   );

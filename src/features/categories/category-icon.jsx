@@ -1,5 +1,5 @@
 import {
-  Sparkles,
+  Zap,
   BarChart3,
   BrainCircuit,
   PenTool,
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 const icons = {
-  Sparkles,
+  Zap,
   BarChart3,
   BrainCircuit,
   PenTool,

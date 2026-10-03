@@ -43,7 +43,7 @@ export function TotalsBreakdown({ totals, couponCode, className, emphasize = tru
           emphasize && "text-lg"
         )}
       >
-        <dt className="font-bold text-ink">Total</dt>
+        <dt className="font-bold text-ink">Enrollment Total</dt>
         <dd className="font-heading text-2xl font-bold text-ink">
           {formatPrice(total, { precise: !Number.isInteger(total) })}
         </dd>

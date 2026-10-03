@@ -1,4 +1,4 @@
-import { Outfit, Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/providers/app-providers";
 import { JsonLd } from "@/components/shared/json-ld";
@@ -11,7 +11,7 @@ const display = Outfit({
   display: "swap",
 });
 
-const body = Inter({
+const body = Outfit({
   variable: "--font-body",
   subsets: ["latin"],
   display: "swap",

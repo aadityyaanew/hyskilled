@@ -33,7 +33,7 @@ export function CartView() {
     return (
       <EmptyState
         icon={ShoppingBag}
-        title="Your cart is empty"
+        title="Your learning list is empty"
         description="Looks like you haven't added any courses yet. Explore the catalogue and find your next skill."
         action={
           <Button asChild size="lg" variant="brand">
@@ -48,10 +48,10 @@ export function CartView() {
 
   return (
     <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
-      <section aria-label="Cart items" className="rounded-3xl border bg-card">
+      <section aria-label="Selected Courses" className="rounded-3xl border bg-card">
         <header className="flex items-center justify-between border-b px-6 py-4">
           <h2 className="font-bold text-ink">
-            {items.length} {items.length === 1 ? "item" : "items"} in your cart
+            {items.length} {items.length === 1 ? "course" : "courses"} selected
           </h2>
         </header>
         <ul className="divide-y">
@@ -61,7 +61,7 @@ export function CartView() {
         </ul>
         <div className="flex items-start gap-3 rounded-b-3xl border-t bg-brand-50/50 px-6 py-4 text-sm text-ink-soft">
           <Smartphone className="mt-0.5 size-4 shrink-0 text-primary" />
-          After purchase, log in to the {siteConfig.app.name} with the email you use at checkout.
+          After purchase, log in to the {siteConfig.app.name} with the email you use to enroll.
         </div>
       </section>
 
@@ -73,12 +73,12 @@ export function CartView() {
           <TotalsBreakdown totals={totals} couponCode={coupon?.code} />
           <Button asChild size="xl" variant="brand" className="mt-6 w-full">
             <Link href={ROUTES.checkout}>
-              Proceed to checkout <ArrowRight />
+              Continue to Enrollment <ArrowRight />
             </Link>
           </Button>
           <ul className="mt-5 space-y-2 text-xs text-muted-foreground">
             <li className="flex items-center gap-2">
-              <Lock className="size-3.5 text-emerald-600" /> Secure, encrypted checkout
+              <Lock className="size-3.5 text-emerald-600" /> Secure, encrypted enrollment
             </li>
             <li className="flex items-center gap-2">
               <ShieldCheck className="size-3.5 text-emerald-600" /> {siteConfig.guarantee.label}

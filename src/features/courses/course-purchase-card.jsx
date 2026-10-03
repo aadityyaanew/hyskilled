@@ -26,7 +26,7 @@ export function CoursePurchaseCard({ course }) {
 
         <div className="mt-5 space-y-2.5">
           <AddToCartButton item={item} buyNow size="xl" className="w-full">
-            Buy now
+            Start Learning
           </AddToCartButton>
           <AddToCartButton item={item} variant="outline" size="lg" className="w-full" />
         </div>

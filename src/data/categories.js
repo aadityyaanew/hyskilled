@@ -8,7 +8,7 @@ export const categories = [
     slug: "generative-ai",
     name: "Generative AI & LLMs",
     short: "Generative AI",
-    icon: "Sparkles",
+    icon: "Zap",
     description:
       "Build with large language models, RAG pipelines, agents and AI-powered products.",
     hue: 24,
