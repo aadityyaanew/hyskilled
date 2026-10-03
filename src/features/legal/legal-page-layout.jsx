@@ -43,12 +43,7 @@ export function LegalPageLayout({
                     >
                       Privacy Policy
                     </Link>
-                    <Link
-                      href={ROUTES.refundPolicy}
-                      className="rounded-lg px-3 py-1.5 font-medium transition-colors hover:bg-muted text-ink"
-                    >
-                      Refund Policy
-                    </Link>
+
                   </nav>
                 </div>
 

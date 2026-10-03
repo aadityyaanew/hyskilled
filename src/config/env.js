@@ -1,7 +1,4 @@
-/**
- * Typed-ish access to environment variables with safe defaults.
- * Only NEXT_PUBLIC_* values may be read from client components.
- */
+
 export const env = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   /** Base URL of the future backend API. Empty => use mock data layer. */
