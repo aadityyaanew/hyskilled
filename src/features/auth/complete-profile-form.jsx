@@ -65,18 +65,20 @@ export function CompleteProfileForm() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-primary">
+    <div className="flex flex-col items-center space-y-8 w-full">
+      <div className="flex flex-col items-center text-center">
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-600 ring-1 ring-inset ring-brand-500/20">
           <ShieldCheck className="size-3.5" /> One last step
         </div>
-        <h1 className="mt-3 text-3xl font-bold text-ink sm:text-4xl">Enter your phone number</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Since this is your first time logging in with Google, please enter your mobile number. This is used for order confirmation and course access sync with the mobile app.
+        <h1 className="mt-5 font-heading text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+          Enter your phone number
+        </h1>
+        <p className="mt-3 text-sm text-muted-foreground sm:max-w-xs">
+          Please enter your mobile number to finalize your account setup.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full space-y-5">
         <FormField
           id="phone"
           label="Mobile Phone Number"
@@ -118,14 +120,7 @@ export function CompleteProfileForm() {
         </Button>
       </form>
 
-      <div className="rounded-2xl border bg-muted/40 p-4 text-xs text-muted-foreground">
-        <p className="flex items-center gap-2 font-medium text-ink">
-          <Phone className="size-4 text-primary" /> Why do we need this?
-        </p>
-        <p className="mt-1">
-          Your phone number allows instant SMS receipts and verifies your identity when opening purchased courses inside the Hyskilled mobile app.
-        </p>
-      </div>
+
     </div>
   );
 }

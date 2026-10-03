@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Lock, Mail, Loader2, ArrowLeft, ShieldAlert } from "lucide-react";
+import { Lock, Mail, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Logo } from "@/components/shared/logo";
+import AuthLayout from "@/app/(auth)/layout";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -15,6 +14,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -52,122 +52,103 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col justify-center bg-ink px-4 py-12 sm:px-6 lg:px-8">
-      {/* Background ambient glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 overflow-hidden"
-      >
-        <div className="absolute top-1/4 left-1/2 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 blur-[140px]" />
-      </div>
+    <AuthLayout>
+      <div className="flex flex-col items-center text-center space-y-8 w-full">
+        <div className="flex flex-col items-center">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-brand-600 ring-1 ring-inset ring-brand-500/20">
+            <Lock className="size-3.5" /> Admin Portal
+          </div>
+          <h1 className="mt-5 font-heading text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+            Admin Login
+          </h1>
+          <p className="mt-3 text-sm text-muted-foreground sm:max-w-xs">
+            Sign in using the administrator credentials.
+          </p>
+        </div>
 
-      <div className="relative mx-auto w-full max-w-md">
-        <div className="mb-6 flex items-center justify-between">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/70 hover:text-white transition-colors"
+        {error && (
+          <div
+            role="alert"
+            className="w-full rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
           >
-            <ArrowLeft className="size-3.5" /> Back to Storefront
-          </Link>
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-brand-300">
-            <Lock className="size-3" /> Admin Portal
-          </span>
-        </div>
+            {error}
+          </div>
+        )}
 
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
-          <div className="text-center">
-            <div className="flex justify-center">
-              <Logo tone="white" height={36} priority />
+        <form onSubmit={handleSubmit} className="w-full space-y-4 text-left">
+          <div className="space-y-1.5">
+            <label
+              htmlFor="admin-email"
+              className="block text-xs font-semibold text-ink"
+            >
+              Admin Email
+            </label>
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted-foreground">
+                <Mail className="size-4" />
+              </span>
+              <Input
+                id="admin-email"
+                type="email"
+                required
+                autoComplete="username"
+                placeholder="admin@hyskilled.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10"
+              />
             </div>
-            <h1 className="mt-5 font-heading text-2xl font-bold text-white">
-              Admin Login
-            </h1>
-            <p className="mt-2 text-xs text-white/60">
-              Sign in using the admin credentials configured in your environment variables.
-            </p>
           </div>
 
-          {error && (
-            <div
-              role="alert"
-              className="mt-6 flex items-start gap-2.5 rounded-2xl border border-destructive/40 bg-destructive/15 p-3.5 text-xs text-destructive-foreground"
+          <div className="space-y-1.5 pt-1">
+            <label
+              htmlFor="admin-password"
+              className="block text-xs font-semibold text-ink"
             >
-              <ShieldAlert className="size-4 shrink-0 text-red-400 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <div>
-              <label
-                htmlFor="admin-email"
-                className="block text-xs font-medium text-white/80"
+              Password
+            </label>
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted-foreground">
+                <Lock className="size-4" />
+              </span>
+              <Input
+                id="admin-password"
+                type={showPassword ? "text" : "password"}
+                required
+                autoComplete="current-password"
+                placeholder="••••••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="px-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                Admin Email
-              </label>
-              <div className="relative mt-1.5">
-                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-white/40">
-                  <Mail className="size-4" />
-                </span>
-                <Input
-                  id="admin-email"
-                  type="email"
-                  required
-                  autoComplete="username"
-                  placeholder="admin@hyskilled.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="border-white/15 bg-white/10 pl-10 text-white placeholder:text-white/30 focus-visible:border-primary focus-visible:ring-primary/40"
-                />
-              </div>
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
             </div>
-
-            <div>
-              <label
-                htmlFor="admin-password"
-                className="block text-xs font-medium text-white/80"
-              >
-                Password
-              </label>
-              <div className="relative mt-1.5">
-                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-white/40">
-                  <Lock className="size-4" />
-                </span>
-                <Input
-                  id="admin-password"
-                  type="password"
-                  required
-                  autoComplete="current-password"
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="border-white/15 bg-white/10 pl-10 text-white placeholder:text-white/30 focus-visible:border-primary focus-visible:ring-primary/40"
-                />
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              size="lg"
-              variant="brand"
-              disabled={loading}
-              className="mt-2 w-full text-sm font-semibold"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="animate-spin" /> Verifying…
-                </>
-              ) : (
-                "Sign In to Admin Panel"
-              )}
-            </Button>
-          </form>
-
-          <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-[11px] text-white/50 text-center">
-            Credentials are authenticated directly from <code className="text-brand-300 font-mono">ADMIN_EMAIL</code> and <code className="text-brand-300 font-mono">ADMIN_PASSWORD</code> in <code className="text-brand-300 font-mono">.env.local</code>.
           </div>
-        </div>
+
+          <Button
+            type="submit"
+            size="xl"
+            variant="brand"
+            disabled={loading}
+            className="mt-4 w-full"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 animate-spin size-5" /> Verifying…
+              </>
+            ) : (
+              "Sign In to Admin Panel"
+            )}
+          </Button>
+        </form>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

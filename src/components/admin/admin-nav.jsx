@@ -41,7 +41,6 @@ export function AdminSidebar({ adminEmail, className = "" }) {
     setLoggingOut(true);
     try {
       await fetch("/api/admin/auth/logout", { method: "POST" });
-      toast.success("Logged out from Admin Panel.");
       router.replace("/admin/login");
     } catch {
       toast.error("Failed to log out.");
@@ -79,11 +78,10 @@ export function AdminSidebar({ adminEmail, className = "" }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-all ${
-                  active
+                className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-all ${active
                     ? "bg-primary text-primary-foreground shadow-sm shadow-brand-500/20"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
+                  }`}
               >
                 <Icon className="size-4 shrink-0" />
                 <span>{item.label}</span>
@@ -100,7 +98,7 @@ export function AdminSidebar({ adminEmail, className = "" }) {
             <ShieldCheck className="size-4 text-emerald-400" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-bold text-foreground">Single Admin</p>
+            <p className="truncate text-xs font-bold text-foreground">Admin Panel</p>
             <p className="truncate text-[11px] text-muted-foreground">{adminEmail}</p>
           </div>
         </div>
