@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { query, execute, isDbConfigured } from "@/lib/db";
+import { getCashfree } from "@/lib/cashfree";
 
 export async function POST(request) {
   const { orderId, provider = "sandbox", paymentId } = await request.json().catch(() => ({}));
@@ -7,7 +8,20 @@ export async function POST(request) {
     return NextResponse.json({ message: "Missing order id." }, { status: 400 });
   }
 
-  const generatedPaymentId = paymentId ?? `sbx_${Date.now()}`;
+  let generatedPaymentId = paymentId ?? `sbx_${Date.now()}`;
+
+  if (provider === "cashfree") {
+    try {
+      const response = await getCashfree().PGOrderFetchPayments(orderId);
+      const paidPayment = response.data?.find((p) => p.payment_status === "SUCCESS");
+      if (!paidPayment) {
+        return NextResponse.json({ message: "Payment not successful" }, { status: 400 });
+      }
+      generatedPaymentId = String(paidPayment.cf_payment_id);
+    } catch (error) {
+      return NextResponse.json({ message: "Failed to verify payment with Cashfree" }, { status: 400 });
+    }
+  }
 
   if (isDbConfigured()) {
     try {

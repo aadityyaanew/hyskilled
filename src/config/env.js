@@ -7,6 +7,8 @@ export const env = {
   paymentProvider: process.env.NEXT_PUBLIC_PAYMENT_PROVIDER ?? "sandbox",
   razorpayKeyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? "",
   stripePublishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "",
+  cashfreeAppId: process.env.NEXT_PUBLIC_CASHFREE_APP_ID ?? "",
+  cashfreeEnv: process.env.CASHFREE_ENV ?? "sandbox",
   gaId: process.env.NEXT_PUBLIC_GA_ID ?? "",
 };
 

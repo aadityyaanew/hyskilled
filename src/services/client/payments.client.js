@@ -1,5 +1,6 @@
 import { internalApi } from "@/services/api-client";
 import { env } from "@/config/env";
+import { load } from "@cashfreepayments/cashfree-js";
 
 /**
  * Payment orchestration (browser side).
@@ -32,6 +33,21 @@ export function verifyPayment(payload) {
 export const paymentAdapters = {
   /** Handled by <PaymentSandboxDialog /> – no network gateway involved. */
   sandbox: { id: "sandbox", ui: "dialog" },
+
+  cashfree: {
+    id: "cashfree",
+    ui: "gateway",
+    async launch(order) {
+      const cashfree = await load({ mode: env.cashfreeEnv === "production" ? "production" : "sandbox" });
+      const result = await cashfree.checkout({
+        paymentSessionId: order.paymentSessionId,
+      });
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+      return { status: "paid", paymentId: order.gatewayOrderId };
+    },
+  },
 
   razorpay: {
     id: "razorpay",

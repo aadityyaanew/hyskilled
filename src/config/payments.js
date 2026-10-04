@@ -35,6 +35,7 @@ export const paymentMethods = [
 
 export const paymentProviders = {
   sandbox: { id: "sandbox", label: "Sandbox (demo)", live: false },
+  cashfree: { id: "cashfree", label: "Cashfree", live: true },
   razorpay: { id: "razorpay", label: "Razorpay", live: true },
   stripe: { id: "stripe", label: "Stripe", live: true },
 };

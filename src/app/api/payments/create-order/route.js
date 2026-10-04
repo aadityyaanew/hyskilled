@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { buildOrder } from "@/services/orders.service";
 import { checkoutSchema } from "@/schemas/forms.schema";
 import { query, execute, isDbConfigured } from "@/lib/db";
+import { getCashfree } from "@/lib/cashfree";
 
 export async function POST(request) {
   const body = await request.json().catch(() => null);
@@ -25,15 +26,35 @@ export async function POST(request) {
       provider: body.provider ?? "sandbox",
     });
 
+    let userId = null;
+    if (isDbConfigured()) {
+      const userRows = await query("SELECT id FROM users WHERE email = ? LIMIT 1", [order.customer.email]);
+      userId = userRows[0]?.id || null;
+    }
+
+    if (order.provider === "cashfree") {
+      const request = {
+        order_id: order.id,
+        order_amount: order.totals.total,
+        order_currency: "INR",
+        customer_details: {
+          customer_id: userId ? String(userId) : `cust_${Date.now()}`,
+          customer_name: order.customer.name,
+          customer_email: order.customer.email,
+          customer_phone: order.customer.phone || "9999999999",
+        },
+        order_meta: {
+          return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/status?order_id=${order.id}`,
+        }
+      };
+      const response = await getCashfree().PGCreateOrder(request);
+      order.gatewayOrderId = response.data.order_id;
+      order.paymentSessionId = response.data.payment_session_id;
+    }
+
     // If MySQL database is configured, persist the order record
     if (isDbConfigured()) {
       try {
-        // Find existing user or link by email
-        const userRows = await query(
-          "SELECT id FROM users WHERE email = ? LIMIT 1",
-          [order.customer.email]
-        );
-        const userId = userRows[0]?.id || null;
 
         await execute(
           `INSERT INTO orders (
@@ -86,6 +107,8 @@ export async function POST(request) {
 
     return NextResponse.json({ order });
   } catch (error) {
-    return NextResponse.json({ message: error.message }, { status: 400 });
+    const cfMessage = error?.response?.data?.message;
+    console.error("create-order failed:", error?.response?.data ?? error);
+    return NextResponse.json({ message: cfMessage || error.message }, { status: 400 });
   }
 }

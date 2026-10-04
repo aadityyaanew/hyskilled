@@ -10,7 +10,9 @@
     "db:setup": "node scripts/db-setup.mjs"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.7",
     "@hookform/resolvers": "^5.9.1",
+    "cashfree-pg": "^6.0.6",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.11.0",
     "clsx": "^2.1.1",
