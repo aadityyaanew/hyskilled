@@ -192,12 +192,44 @@ export function SettingsManager() {
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-foreground mb-1.5">Photo URL</label>
-                    <Input
-                      value={expert.imageUrl || ""}
-                      onChange={(e) => updateExpert(expert.id, "imageUrl", e.target.value)}
-                      placeholder="https://example.com/photo.jpg"
-                    />
+                    <label className="block text-xs font-semibold text-foreground mb-1.5">Photo</label>
+                    <div className="flex items-center gap-4">
+                      {expert.imageUrl && (
+                        <div className="relative size-12 shrink-0 overflow-hidden rounded-full border bg-muted">
+                          <img src={expert.imageUrl} alt="" className="size-full object-cover" />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            
+                            const formData = new FormData();
+                            formData.append("file", file);
+                            
+                            try {
+                              const res = await fetch("/api/admin/upload", {
+                                method: "POST",
+                                body: formData,
+                              });
+                              const data = await res.json();
+                              if (res.ok && data.url) {
+                                updateExpert(expert.id, "imageUrl", data.url);
+                              } else {
+                                alert(data.error || "Failed to upload image");
+                              }
+                            } catch (err) {
+                              alert("An error occurred during upload.");
+                              console.error(err);
+                            }
+                          }}
+                          className="file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer"
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className="sm:col-span-2">
                     <label className="block text-xs font-semibold text-foreground mb-1.5">Bio / Description</label>
