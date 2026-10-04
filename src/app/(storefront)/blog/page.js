@@ -1,6 +1,5 @@
 import { PageHeader } from "@/components/shared/page-header";
 import { BlogCard } from "@/features/blog/blog-card";
-import { CtaBanner } from "@/features/marketing/cta-banner";
 import { getPublishedPosts } from "@/services/blogs.service";
 import { buildMetadata } from "@/lib/seo";
 import { ROUTES } from "@/config/routes";
@@ -16,7 +15,6 @@ export const metadata = buildMetadata({
 
 export default async function BlogPage() {
   const posts = await getPublishedPosts();
-  const [first, ...rest] = posts;
 
   return (
     <>
@@ -35,21 +33,14 @@ export default async function BlogPage() {
               <p className="mt-2 text-sm text-muted-foreground">New posts are coming soon. Check back shortly!</p>
             </div>
           ) : (
-            <div className="space-y-8">
-              <BlogCard post={first} featured />
-              {rest.length > 0 && (
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {rest.map((post) => (
-                    <BlogCard key={post.id} post={post} />
-                  ))}
-                </div>
-              )}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {posts.map((post) => (
+                <BlogCard key={post.id} post={post} />
+              ))}
             </div>
           )}
         </div>
       </section>
-
-      <CtaBanner />
     </>
   );
 }

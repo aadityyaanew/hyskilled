@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarDays, User } from "lucide-react";
 import { BlogCard, formatBlogDate } from "@/features/blog/blog-card";
 import { BlogContent } from "@/features/blog/blog-content";
-import { CtaBanner } from "@/features/marketing/cta-banner";
 import { getPublishedPostBySlug, getPublishedPosts } from "@/services/blogs.service";
 import { buildMetadata } from "@/lib/seo";
 import { ROUTES } from "@/config/routes";
@@ -92,8 +91,6 @@ export default async function BlogPostPage({ params }) {
           </div>
         </section>
       )}
-
-      <CtaBanner />
     </>
   );
 }

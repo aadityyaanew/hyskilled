@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSetting, setSetting } from "@/services/settings.service";
 import { getCurrentAdmin } from "@/lib/auth-server";
 
@@ -38,6 +39,9 @@ export async function PUT(req) {
     if (data.experts) {
       await setSetting("experts", data.experts);
     }
+
+    // Bust the cache for the storefront layout so settings apply immediately
+    revalidatePath("/", "layout");
 
     return NextResponse.json({ success: true });
   } catch (err) {
