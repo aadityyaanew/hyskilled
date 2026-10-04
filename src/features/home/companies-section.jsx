@@ -34,11 +34,32 @@ export function CompaniesSection() {
           />
         </Reveal>
 
-        <div className="mt-14 relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]">
-          <ul className="flex w-max animate-marquee gap-6 pause-on-hover py-4 items-center">
+        <div className="mt-14 relative overflow-hidden flex flex-col gap-6 [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]">
+          <ul className="flex w-max animate-marquee gap-6 pause-on-hover items-center">
             {row.map((c, i) => (
               <li
-                key={`${c.name}-${i}`}
+                key={`row1-${c.name}-${i}`}
+                aria-hidden={i >= companies.length}
+                className="flex items-center gap-4 rounded-full border bg-white px-6 py-3 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md duration-300"
+              >
+                <div className="relative size-8 shrink-0 overflow-hidden rounded-full">
+                  <Image
+                    src={`/logos/${c.file}`}
+                    alt={`${c.name} logo`}
+                    fill
+                    sizes="32px"
+                    className="object-contain bg-white"
+                  />
+                </div>
+                <span className="font-bold text-ink whitespace-nowrap tracking-tight">{c.name}</span>
+              </li>
+            ))}
+          </ul>
+          
+          <ul className="flex w-max animate-marquee gap-6 pause-on-hover items-center [animation-direction:reverse]">
+            {[...companies].reverse().concat([...companies].reverse()).map((c, i) => (
+              <li
+                key={`row2-${c.name}-${i}`}
                 aria-hidden={i >= companies.length}
                 className="flex items-center gap-4 rounded-full border bg-white px-6 py-3 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md duration-300"
               >

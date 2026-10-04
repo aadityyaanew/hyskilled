@@ -95,11 +95,7 @@ export function OrderSuccessView() {
           ))}
         </ol>
         <div className="mt-6 flex flex-wrap gap-3">
-          <Button asChild variant="dark">
-            <a href={siteConfig.app.iosUrl}>
-              <Download /> App Store
-            </a>
-          </Button>
+
           <Button asChild variant="dark">
             <a href={siteConfig.app.androidUrl}>
               <Download /> Google Play

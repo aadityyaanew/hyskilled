@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Star } from "lucide-react";
+import { ArrowRight, ShieldCheck, Star, CirclePlay, Briefcase, Award, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { HeroSearch } from "@/features/home/hero-search";
@@ -45,6 +45,24 @@ export function Hero() {
           </p>
 
           <div className="mt-8 max-w-xl">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 sm:gap-2">
+              {[
+                { icon: CirclePlay, title: "Expert-Led", desc: "Live & Recorded" },
+                { icon: Briefcase, title: "Hands-on", desc: "Real Projects" },
+                { icon: Award, title: "Get Certified", desc: "Career Ready" },
+                { icon: Users, title: "Job Support", desc: "Placement Guidance" },
+              ].map((feature, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-brand-50 text-brand-600">
+                    <feature.icon className="h-5 w-5" strokeWidth={2.5} />
+                  </div>
+                  <div className="leading-tight">
+                    <p className="text-sm font-bold text-ink">{feature.title}</p>
+                    <p className="text-[11px] text-muted-foreground">{feature.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
             <HeroSearch suggestions={["Generative AI", "Python", "UI/UX", "Next.js"]} />
           </div>
 

@@ -58,7 +58,6 @@ export function AppShowcase() {
                   ))}
                 </ul>
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <StoreButton href={siteConfig.app.iosUrl} label="Download on the" store="App Store" />
                   <StoreButton href={siteConfig.app.androidUrl} label="Get it on" store="Google Play" />
                 </div>
               </div>

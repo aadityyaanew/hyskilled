@@ -41,8 +41,7 @@ export const siteConfig = {
   /** The separate learning app where purchased courses are consumed. */
   app: {
     name: "Hyskilled App",
-    iosUrl: "#",
-    androidUrl: "#",
+    androidUrl: "https://play.google.com/store/apps/details?id=co.penny.lavem",
     deepLinkBase: "hyskilled://",
   },
   currency: { code: "INR", symbol: "₹", locale: "en-IN" },

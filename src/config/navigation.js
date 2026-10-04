@@ -3,9 +3,8 @@ import { ROUTES } from "./routes";
 export const mainNav = [
   { label: "Courses", href: ROUTES.courses, mega: true },
   { label: "Program Plans", href: ROUTES.pricing },
-  { label: "Blog", href: ROUTES.blog },
   { label: "About", href: ROUTES.about },
-  { label: "FAQ", href: ROUTES.faq },
+  { label: "Contact us", href: ROUTES.contact },
 ];
 
 export const footerNav = [
