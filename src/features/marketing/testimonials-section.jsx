@@ -27,8 +27,17 @@ function TestimonialCard({ t }) {
 }
 
 export function TestimonialsSection({ testimonials }) {
+  // Split into two rows
+  const half = Math.ceil(testimonials.length / 2);
+  const row1 = testimonials.slice(0, half);
+  const row2 = testimonials.slice(half);
+
+  // Duplicate 4 times to ensure it covers large screens and loops seamlessly (since 50% translation is used)
+  const row1Duplicated = [...row1, ...row1, ...row1, ...row1];
+  const row2Duplicated = [...row2, ...row2, ...row2, ...row2];
+
   return (
-    <section className="section-y">
+    <section className="section-y overflow-hidden">
       <div className="container-page">
         <Reveal>
           <SectionHeading
@@ -37,11 +46,24 @@ export function TestimonialsSection({ testimonials }) {
             description="Real outcomes from people who invested in themselves with Hyskilled."
           />
         </Reveal>
-        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <Reveal key={t.id} delay={(i % 3) * 90}>
-              <TestimonialCard t={t} />
-            </Reveal>
+      </div>
+
+      <div className="mt-14 flex flex-col gap-6 relative [mask-image:linear-gradient(to_right,transparent,#000_5%,#000_95%,transparent)]">
+        {/* Row 1 - Reverse Marquee (Left to Right) */}
+        <div className="flex w-max animate-marquee-reverse gap-6 pause-on-hover">
+          {row1Duplicated.map((t, i) => (
+            <div key={`r1-${t.id}-${i}`} className="w-[300px] sm:w-[350px] lg:w-[400px] shrink-0">
+               <TestimonialCard t={t} />
+            </div>
+          ))}
+        </div>
+
+        {/* Row 2 - Normal Marquee (Right to Left) */}
+        <div className="flex w-max animate-marquee gap-6 pause-on-hover">
+          {row2Duplicated.map((t, i) => (
+            <div key={`r2-${t.id}-${i}`} className="w-[300px] sm:w-[350px] lg:w-[400px] shrink-0">
+               <TestimonialCard t={t} />
+            </div>
           ))}
         </div>
       </div>

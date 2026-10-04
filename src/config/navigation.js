@@ -2,7 +2,7 @@ import { ROUTES } from "./routes";
 
 export const mainNav = [
   { label: "Courses", href: ROUTES.courses, mega: true },
-  { label: "Bundles & Pricing", href: ROUTES.pricing },
+  { label: "Program Plans", href: ROUTES.pricing },
   { label: "About", href: ROUTES.about },
   { label: "FAQ", href: ROUTES.faq },
 ];
@@ -13,7 +13,7 @@ export const footerNav = [
     links: [
       { label: "All courses", href: ROUTES.courses },
       { label: "Categories", href: ROUTES.categories },
-      { label: "Bundles & pricing", href: ROUTES.pricing },
+      { label: "Program plans", href: ROUTES.pricing },
       { label: "My Learning", href: ROUTES.cart },
     ],
   },

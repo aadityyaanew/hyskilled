@@ -1,7 +1,0 @@
-MySQL database name
-u725346955_hyskilled
-MySQL username
-u725346955_hyskilled
-
-Password
-Hyskilled100

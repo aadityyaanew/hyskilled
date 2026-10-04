@@ -12,7 +12,7 @@ import { siteConfig } from "@/config/site";
 import { ROUTES } from "@/config/routes";
 
 export const metadata = buildMetadata({
-  title: "Bundles & Pricing",
+  title: "Program Plans",
   description:
     "Transparent pricing with no subscriptions. Buy a single course or save up to 45% with a Hyskilled career-track bundle. Lifetime access in the app.",
   path: ROUTES.pricing,
@@ -36,7 +36,7 @@ export default async function PricingPage() {
         eyebrow="Pricing"
         title="Simple pricing. Pay once, learn for life."
         description="No subscriptions. Buy a single course or save big with a curated career-track bundle."
-        breadcrumbs={[{ label: "Bundles & Pricing", href: ROUTES.pricing }]}
+        breadcrumbs={[{ label: "Program Plans", href: ROUTES.pricing }]}
       />
       <PricingSection
         bundles={bundles}

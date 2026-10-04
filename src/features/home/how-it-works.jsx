@@ -11,7 +11,7 @@ const steps = [
   {
     icon: CreditCard,
     title: "Buy securely online",
-    text: "Pay with UPI, card, net banking or wallet. Instant confirmation and a GST invoice in your inbox.",
+    text: "Pay with UPI, card, or net banking. Instant confirmation and an invoice in your inbox.",
   },
   {
     icon: Smartphone,

@@ -10,7 +10,6 @@ const features = [
     title: "Career-focused curriculum",
     text: "Every syllabus is mapped to real job roles and built with working practitioners — not just theory.",
     span: "lg:col-span-2",
-    accent: true,
   },
   {
     icon: Smartphone,
@@ -26,6 +25,7 @@ const features = [
     icon: Rocket,
     title: "Portfolio projects",
     text: "Build real, shareable projects that prove your skills to employers.",
+    span: "lg:col-span-2",
   },
 
   {
