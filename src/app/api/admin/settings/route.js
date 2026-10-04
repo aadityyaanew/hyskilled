@@ -9,14 +9,15 @@ export async function GET() {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
     
-    // We can fetch all settings we need, for now just announcement
     const announcement = await getSetting("announcement", {
       text: "Launch offer: take 20% off your first course with code",
       code: "WELCOME20",
       enabled: true
     });
 
-    return NextResponse.json({ announcement });
+    const experts = await getSetting("experts", []);
+
+    return NextResponse.json({ announcement, experts });
   } catch (err) {
     return NextResponse.json({ message: err.message }, { status: 500 });
   }
@@ -33,6 +34,9 @@ export async function PUT(req) {
 
     if (data.announcement) {
       await setSetting("announcement", data.announcement);
+    }
+    if (data.experts) {
+      await setSetting("experts", data.experts);
     }
 
     return NextResponse.json({ success: true });

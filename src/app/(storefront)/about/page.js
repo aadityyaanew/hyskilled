@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { Reveal } from "@/components/shared/reveal";
 import { CtaBanner } from "@/features/marketing/cta-banner";
+import { getSetting } from "@/services/settings.service";
 import { getInstructors } from "@/services/courses.service";
 import { siteConfig } from "@/config/site";
 import { buildMetadata } from "@/lib/seo";
@@ -43,7 +44,8 @@ const values = [
 ];
 
 export default async function AboutPage() {
-  const instructors = await getInstructors();
+  const defaultExperts = await getInstructors();
+  const experts = await getSetting("experts", defaultExperts);
 
   return (
     <>
@@ -183,13 +185,17 @@ export default async function AboutPage() {
           </Reveal>
 
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {instructors.map((inst, i) => (
+            {experts.map((inst, i) => (
               <Reveal key={inst.id} delay={i * 70}>
                 <div className="flex h-full flex-col rounded-3xl border bg-card p-6 shadow-soft">
                   <div className="flex items-center gap-4">
-                    <div className="grid size-14 place-items-center rounded-2xl bg-brand-100 text-lg font-bold text-primary">
-                      {inst.name.split(" ").map((n) => n[0]).join("")}
-                    </div>
+                    {inst.imageUrl ? (
+                      <img src={inst.imageUrl} alt={inst.name} className="size-14 rounded-2xl object-cover" />
+                    ) : (
+                      <div className="grid size-14 place-items-center rounded-2xl bg-brand-100 text-lg font-bold text-primary">
+                        {inst.name.split(" ").map((n) => n[0]).join("")}
+                      </div>
+                    )}
                     <div>
                       <h3 className="font-heading font-bold text-ink text-lg">{inst.name}</h3>
                       <p className="text-xs font-semibold text-primary">{inst.title}</p>
@@ -199,13 +205,14 @@ export default async function AboutPage() {
                   <p className="mt-4 flex-1 text-sm text-muted-foreground leading-relaxed">
                     {inst.bio}
                   </p>
-
-                  <div className="mt-6 flex items-center justify-between border-t pt-4 text-xs">
-
-                    <span className="font-medium text-ink">
-                      {inst.learners.toLocaleString()} learners
-                    </span>
-                  </div>
+                  
+                  {inst.learners > 0 && (
+                    <div className="mt-6 flex items-center justify-between border-t pt-4 text-xs">
+                      <span className="font-medium text-ink">
+                        {inst.learners.toLocaleString()} learners
+                      </span>
+                    </div>
+                  )}
                 </div>
               </Reveal>
             ))}

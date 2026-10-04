@@ -1,4 +1,4 @@
-import { BadgeCheck, Infinity as InfinityIcon, RefreshCcw, Smartphone, ReceiptText, Headphones } from "lucide-react";
+import { Infinity as InfinityIcon, RefreshCcw, Smartphone, Headphones } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { Reveal } from "@/components/shared/reveal";
@@ -22,8 +22,6 @@ const included = [
   { icon: Smartphone, title: "Instant app access", text: "Courses unlock in the Hyskilled app the moment payment is confirmed." },
   { icon: InfinityIcon, title: "Lifetime access", text: "Pay once. Keep it forever, including every future update." },
   
-  { icon: ReceiptText, title: "GST invoice", text: "A tax-compliant invoice is emailed with every successful order." },
-  { icon: BadgeCheck, title: "No subscriptions", text: "No recurring charges, no hidden fees, no surprises." },
   { icon: Headphones, title: "Human support", text: "Real people ready to help before and after you buy." },
 ];
 
@@ -34,7 +32,12 @@ export default async function PricingPage() {
     <>
       <PageHeader
         eyebrow="Pricing"
-        title="Simple pricing. Pay once, learn for life."
+        title={
+          <>
+            Simple pricing. <br className="hidden sm:block" />
+            Pay once, learn for life.
+          </>
+        }
         description="No subscriptions. Buy a single course or save big with a curated career-track bundle."
         breadcrumbs={[{ label: "Program Plans", href: ROUTES.pricing }]}
       />
