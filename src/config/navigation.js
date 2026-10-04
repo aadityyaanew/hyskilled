@@ -3,6 +3,7 @@ import { ROUTES } from "./routes";
 export const mainNav = [
   { label: "Courses", href: ROUTES.courses, mega: true },
   { label: "Program Plans", href: ROUTES.pricing },
+  { label: "Blog", href: ROUTES.blog },
   { label: "About", href: ROUTES.about },
   { label: "FAQ", href: ROUTES.faq },
 ];
@@ -21,6 +22,7 @@ export const footerNav = [
     title: "Company",
     links: [
       { label: "About Hyskilled", href: ROUTES.about },
+      { label: "Blog", href: ROUTES.blog },
       { label: "Contact us", href: ROUTES.contact },
       { label: "FAQs", href: ROUTES.faq },
     ],

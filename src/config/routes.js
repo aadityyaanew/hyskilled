@@ -27,6 +27,8 @@ export const ROUTES = {
   terms: "/terms",
   privacy: "/privacy",
   refundPolicy: "/refund-policy",
+  blog: "/blog",
+  blogPost: (slug) => `/blog/${slug}`,
   
 
   // Single Admin Panel
@@ -40,6 +42,7 @@ export const ROUTES = {
     students: "/admin/students",
     enrollments: "/admin/enrollments",
     coupons: "/admin/coupons",
+    blogs: "/admin/blogs",
   },
 };
 

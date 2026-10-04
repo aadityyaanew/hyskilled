@@ -1,6 +1,7 @@
 import { siteConfig } from "@/config/site";
 import { courses } from "@/data/courses";
 import { categories } from "@/data/categories";
+import { getPublishedPosts } from "@/services/blogs.service";
 
 export default async function sitemap() {
   const baseUrl = siteConfig.url;
@@ -12,6 +13,7 @@ export default async function sitemap() {
     { path: "/courses", priority: 0.9, changeFrequency: "daily" },
     { path: "/categories", priority: 0.8, changeFrequency: "weekly" },
     { path: "/pricing", priority: 0.8, changeFrequency: "weekly" },
+    { path: "/blog", priority: 0.7, changeFrequency: "daily" },
     { path: "/about", priority: 0.7, changeFrequency: "monthly" },
     { path: "/contact", priority: 0.6, changeFrequency: "monthly" },
     { path: "/faq", priority: 0.6, changeFrequency: "monthly" },
@@ -41,5 +43,13 @@ export default async function sitemap() {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...courseRoutes, ...categoryRoutes];
+  const posts = await getPublishedPosts();
+  const blogRoutes = posts.map((p) => ({
+    url: `${baseUrl}/blog/${p.slug}`,
+    lastModified: p.updated_at ? new Date(p.updated_at) : now,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...courseRoutes, ...categoryRoutes, ...blogRoutes];
 }

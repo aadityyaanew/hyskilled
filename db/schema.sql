@@ -199,3 +199,22 @@ CREATE TABLE IF NOT EXISTS settings (
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Blog posts (managed from Admin Panel)
+CREATE TABLE IF NOT EXISTS blog_posts (
+  id                INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  slug              VARCHAR(191) NOT NULL,
+  title             VARCHAR(255) NOT NULL,
+  featured_image    VARCHAR(500) NULL,
+  short_description VARCHAR(500) NULL,
+  content           MEDIUMTEXT NULL,
+  author            VARCHAR(120) NOT NULL DEFAULT 'Hyskilled Team',
+  tags              TEXT NULL,
+  status            ENUM('draft','published') NOT NULL DEFAULT 'draft',
+  publish_date      DATETIME NULL,
+  created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_blog_slug (slug),
+  KEY idx_blog_status_date (status, publish_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
