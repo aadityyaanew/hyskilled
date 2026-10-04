@@ -4,7 +4,7 @@ import { BarChart2, CalendarClock, Check, Globe, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "@/components/shared/page-header";
 import { JsonLd } from "@/components/shared/json-ld";
-import { RatingSummary } from "@/components/shared/rating-stars";
+
 import { SectionHeading } from "@/components/shared/section-heading";
 import { CoursePurchaseCard } from "@/features/courses/course-purchase-card";
 import { CourseSyllabus } from "@/features/courses/course-syllabus";
@@ -93,7 +93,7 @@ export default async function CourseDetailPage({ params }) {
             <p className="mt-4 max-w-2xl text-lg text-white/75">{course.subtitle}</p>
 
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80">
-              <RatingSummary rating={course.rating} count={course.reviewCount} className="[&_span:first-child]:text-amber-300 [&_span:last-child]:text-white/60" />
+
               <span className="inline-flex items-center gap-1.5">
                 <Users className="size-4" /> {formatCompact(course.learners)} learners
               </span>
@@ -176,34 +176,7 @@ export default async function CourseDetailPage({ params }) {
             <InstructorCard instructor={course.instructor} />
           </Section>
 
-          <Section id="reviews" title="Learner reviews">
-            <div className="flex flex-col gap-6 rounded-3xl border bg-card p-6 sm:flex-row sm:items-center sm:p-8">
-              <div className="text-center sm:pr-8 sm:text-left">
-                <p className="font-heading text-6xl font-extrabold text-ink">{course.rating.toFixed(1)}</p>
-                <RatingSummary rating={course.rating} size={18} className="justify-center [&>span:first-child]:hidden [&>span:last-child]:hidden" />
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {course.reviewCount.toLocaleString("en-IN")} ratings
-                </p>
-              </div>
-              {reviews.length > 0 ? (
-                <div className="grid flex-1 gap-4">
-                  {reviews.map((r) => (
-                    <figure key={r.id} className="rounded-2xl bg-muted/50 p-5">
-                      <blockquote className="text-[15px] text-ink-soft">“{r.quote}”</blockquote>
-                      <figcaption className="mt-3 text-sm font-semibold text-ink">
-                        {r.name} <span className="font-normal text-muted-foreground">· {r.role}</span>
-                      </figcaption>
-                    </figure>
-                  ))}
-                </div>
-              ) : (
-                <p className="flex-1 text-muted-foreground">
-                  Learners consistently rate this course {course.rating.toFixed(1)}/5 for clarity and
-                  practical projects.
-                </p>
-              )}
-            </div>
-          </Section>
+
 
           <Section id="faq" title="Frequently asked questions">
             <FaqAccordion faqs={faqs} />

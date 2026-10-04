@@ -2,7 +2,6 @@ import { Smartphone, Target, Code2, Users, ShieldCheck, Zap } from "lucide-react
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { Reveal } from "@/components/shared/reveal";
-import { RatingStars } from "@/components/shared/rating-stars";
 import { CtaBanner } from "@/features/marketing/cta-banner";
 import { getInstructors } from "@/services/courses.service";
 import { siteConfig } from "@/config/site";
@@ -202,10 +201,7 @@ export default async function AboutPage() {
                   </p>
 
                   <div className="mt-6 flex items-center justify-between border-t pt-4 text-xs">
-                    <div className="flex items-center gap-1.5 font-bold text-amber-600">
-                      <span>★ {inst.rating}</span>
-                      <span className="font-normal text-muted-foreground">instructor rating</span>
-                    </div>
+
                     <span className="font-medium text-ink">
                       {inst.learners.toLocaleString()} learners
                     </span>

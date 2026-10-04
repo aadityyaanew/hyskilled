@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { CourseCover } from "@/features/courses/course-cover";
 import { AddToCartButton } from "@/features/cart/add-to-cart-button";
 import { PriceDisplay } from "@/components/shared/price-display";
-import { RatingSummary } from "@/components/shared/rating-stars";
+
 import { courseToLineItem } from "@/lib/line-items";
 import { formatCompact, formatHours } from "@/lib/format";
 import { ROUTES } from "@/config/routes";
@@ -55,9 +55,7 @@ export function CourseCard({ course, className, priority = false }) {
 
         <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{course.shortDescription}</p>
 
-        <div className="mt-3">
-          <RatingSummary rating={course.rating} count={course.reviewCount} />
-        </div>
+
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">

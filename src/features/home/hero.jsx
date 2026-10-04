@@ -49,27 +49,6 @@ export function Hero() {
           </div>
 
           <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-5">
-            <div className="flex items-center gap-3">
-              <div className="flex -space-x-2.5" aria-hidden>
-                {avatars.map((a, i) => (
-                  <span
-                    key={a}
-                    className="grid size-9 place-items-center rounded-full border-2 border-white bg-gradient-to-br from-brand-400 to-brand-800 text-[11px] font-bold text-white"
-                    style={{ filter: `hue-rotate(${i * 12}deg)` }}
-                  >
-                    {a}
-                  </span>
-                ))}
-              </div>
-              <div className="text-sm leading-tight">
-                <p className="flex items-center gap-1 font-bold text-ink">
-                  <Star className="size-4 text-amber-400" fill="currentColor" />
-                  4.9/5 <span className="font-medium text-muted-foreground">average rating</span>
-                </p>
-                <p className="text-muted-foreground">Loved by 52,000+ learners</p>
-              </div>
-            </div>
-
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3 lg:hidden">

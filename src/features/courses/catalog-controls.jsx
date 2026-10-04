@@ -15,7 +15,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { RatingStars } from "@/components/shared/rating-stars";
+
 import { useCatalogParams } from "@/features/courses/use-catalog-params";
 import { useDebounce } from "@/hooks/use-debounce";
 import { LEVELS, PRICE_RANGES, SORT_OPTIONS } from "@/lib/catalog-options";
@@ -49,7 +49,6 @@ export function FilterPanel({ categories, hideCategories = false, idPrefix = "f"
   const selectedCats = params.getAll("category");
   const selectedLevels = params.getAll("level");
   const price = params.get("price");
-  const rating = params.get("rating");
 
   return (
     <div>
@@ -99,22 +98,7 @@ export function FilterPanel({ categories, hideCategories = false, idPrefix = "f"
         </RadioGroup>
       </FilterGroup>
 
-      <FilterGroup title="Rating">
-        <RadioGroup value={rating} onValueChange={(v) => params.set("rating", v === rating ? "" : v)}>
-          {["4.8", "4.5", "4"].map((r) => (
-            <div key={r} className="flex items-center gap-2.5">
-              <RadioGroupItem
-                value={r}
-                id={`${idPrefix}-rating-${r}`}
-                onClick={() => rating === r && params.set("rating", "")}
-              />
-              <Label htmlFor={`${idPrefix}-rating-${r}`} className="flex cursor-pointer items-center gap-2 text-sm font-medium text-ink-soft">
-                <RatingStars value={Number(r)} size={13} /> {r} &amp; up
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
-      </FilterGroup>
+
     </div>
   );
 }
@@ -206,7 +190,7 @@ export function CatalogToolbar({ total, categories, hideCategories }) {
             <FilterPanel categories={categories} hideCategories={hideCategories} idPrefix="m" />
           </div>
           <SheetFooter className="flex-row gap-3 border-t p-4">
-            <Button variant="outline" className="flex-1" onClick={() => params.clear(["category", "level", "price", "rating"])}>
+            <Button variant="outline" className="flex-1" onClick={() => params.clear(["category", "level", "price"])}>
               Clear all
             </Button>
             <Button className="flex-1" onClick={() => setSheetOpen(false)}>
@@ -237,9 +221,7 @@ export function ActiveFilters({ categories }) {
           remove: () => params.set("price", ""),
         }]
       : []),
-    ...(params.get("rating")
-      ? [{ key: "rating", label: `${params.get("rating")}★ & up`, remove: () => params.set("rating", "") }]
-      : []),
+
     ...(params.get("q")
       ? [{ key: "q", label: `“${params.get("q")}”`, remove: () => params.set("q", "") }]
       : []),

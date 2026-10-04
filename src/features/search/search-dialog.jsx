@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { searchCoursesClient } from "@/services/client/catalog.client";
-import { RatingStars } from "@/components/shared/rating-stars";
+
 import { formatPrice } from "@/lib/format";
 import { ROUTES } from "@/config/routes";
 
@@ -148,8 +148,7 @@ export function SearchDialog({ open, onOpenChange }) {
                         {r.title}
                       </span>
                       <span className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>{r.categoryName}</span>·<span>{r.level}</span>·
-                        <RatingStars value={r.rating} size={11} />
+                        <span>{r.categoryName}</span>·<span>{r.level}</span>
                       </span>
                     </span>
                     <span className="shrink-0 text-sm font-bold text-ink">{formatPrice(r.price)}</span>

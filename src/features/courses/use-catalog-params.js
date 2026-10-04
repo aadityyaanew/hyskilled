@@ -47,9 +47,9 @@ export function useCatalogParams({ basePath } = {}) {
         if (next.length) p.set(key, next.join(","));
         else p.delete(key);
       }),
-    clear: (keys = ["q", "category", "level", "price", "rating"]) =>
+    clear: (keys = ["q", "category", "level", "price"]) =>
       push((p) => keys.forEach((k) => p.delete(k))),
-    activeCount: ["category", "level", "price", "rating"].reduce(
+    activeCount: ["category", "level", "price"].reduce(
       (n, k) => n + (k === "category" || k === "level" ? getAll(k).length : get(k) ? 1 : 0),
       0
     ),

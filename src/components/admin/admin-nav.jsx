@@ -15,6 +15,7 @@ import {
   LogOut,
   Menu,
   ShieldCheck,
+  Settings,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { href: "/admin/orders", label: "Orders & Sales", icon: CreditCard },
   { href: "/admin/students", label: "Students", icon: Users },
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export function AdminSidebar({ adminEmail, className = "" }) {

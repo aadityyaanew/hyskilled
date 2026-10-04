@@ -12,10 +12,7 @@ export function InstructorCard({ instructor }) {
         <h3 className="text-xl font-bold text-ink">{instructor.name}</h3>
         <p className="text-sm font-semibold text-primary">{instructor.title}</p>
         <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground">
-          <li className="inline-flex items-center gap-1.5">
-            <Star className="size-4 text-amber-400" fill="currentColor" strokeWidth={0} />
-            {instructor.rating} instructor rating
-          </li>
+
           <li className="inline-flex items-center gap-1.5">
             <Users className="size-4" />
             {formatNumber(instructor.learners)} learners
