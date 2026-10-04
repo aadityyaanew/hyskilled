@@ -3,10 +3,14 @@ import db from "@/lib/db";
 export async function getSetting(key, defaultValue = null) {
   if (!db.isDbConfigured()) return defaultValue;
 
-  const rows = await db.query("SELECT value FROM settings WHERE `key` = ?", [key]);
-  if (rows.length === 0) return defaultValue;
-
-  return rows[0].value;
+  try {
+    const rows = await db.query("SELECT value FROM settings WHERE `key` = ?", [key]);
+    if (rows.length === 0) return defaultValue;
+    return rows[0].value;
+  } catch (err) {
+    console.warn(`Could not fetch setting '${key}' from MySQL, using fallback:`, err.message);
+    return defaultValue;
+  }
 }
 
 export async function setSetting(key, value) {
