@@ -8,6 +8,7 @@ import { AppShowcase } from "@/features/home/app-showcase";
 import { CategoryCard } from "@/features/categories/category-card";
 import { PricingSection } from "@/features/marketing/pricing-section";
 import { TestimonialsSection } from "@/features/marketing/testimonials-section";
+import { CompaniesSection } from "@/features/home/companies-section";
 import { FaqSection } from "@/features/marketing/faq-section";
 import { CtaBanner } from "@/features/marketing/cta-banner";
 import { SectionHeading } from "@/components/shared/section-heading";
@@ -78,6 +79,7 @@ export default async function HomePage() {
       <PricingSection bundles={bundles} />
       <AppShowcase />
       <TestimonialsSection testimonials={testimonials} />
+      <CompaniesSection />
       <FaqSection faqs={faqs} />
       <CtaBanner />
     </>

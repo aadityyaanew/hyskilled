@@ -129,14 +129,14 @@ export function SiteHeader({ categories }) {
                                 Career tracks
                               </p>
                               <p className="mt-2 font-heading text-lg leading-snug font-bold">
-                                Bundle courses and save up to 45%
+                                Choose your Planned Program and get upto 45%
                               </p>
                             </div>
                             <Link
                               href={ROUTES.pricing}
                               className="focus-ring relative mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-brand-200"
                             >
-                              View bundles <ArrowRight className="size-4" />
+                              Program Plans <ArrowRight className="size-4" />
                             </Link>
                           </div>
                         </div>
