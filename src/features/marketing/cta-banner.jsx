@@ -3,6 +3,7 @@ import { ArrowRight, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/shared/reveal";
 import { ROUTES } from "@/config/routes";
+import { ScheduleSessionDialog } from "@/features/marketing/schedule-session-dialog";
 
 export function CtaBanner({
   title = "Your next career move starts with one course.",
@@ -27,9 +28,11 @@ export function CtaBanner({
                     Explore courses <ArrowRight />
                   </Link>
                 </Button>
-                <Button asChild size="xl" variant="outline-light">
-                  <Link href={ROUTES.pricing}>See bundles</Link>
-                </Button>
+                <ScheduleSessionDialog>
+                  <Button size="xl" variant="outline-light">
+                    Schedule Your Session
+                  </Button>
+                </ScheduleSessionDialog>
               </div>
             </div>
           </div>

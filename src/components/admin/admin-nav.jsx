@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Settings,
   Newspaper,
+  Inbox,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -32,6 +33,7 @@ const NAV_ITEMS = [
   { href: "/admin/orders", label: "Orders & Sales", icon: CreditCard },
   { href: "/admin/students", label: "Students", icon: Users },
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
+  { href: "/admin/leads", label: "Leads", icon: Inbox },
   { href: "/admin/blogs", label: "Blog", icon: Newspaper },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];

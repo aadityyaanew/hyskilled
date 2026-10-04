@@ -218,3 +218,21 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   UNIQUE KEY uq_blog_slug (slug),
   KEY idx_blog_status_date (status, publish_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Leads captured from the "Schedule Your Session" form
+CREATE TABLE IF NOT EXISTS leads (
+  id           INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name         VARCHAR(150) NOT NULL,
+  phone        VARCHAR(30)  NOT NULL,
+  email        VARCHAR(190) NOT NULL,
+  course       VARCHAR(255) NULL,
+  notes        TEXT NULL,
+  status       ENUM('new','contacted','scheduled','converted','closed') NOT NULL DEFAULT 'new',
+  admin_notes  TEXT NULL,
+  source       VARCHAR(60) NOT NULL DEFAULT 'schedule_session',
+  created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_leads_status (status),
+  KEY idx_leads_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
