@@ -30,7 +30,7 @@ export const footerNav = [
     links: [
       { label: "Terms & Conditions", href: ROUTES.terms },
       { label: "Privacy Policy", href: ROUTES.privacy },
-      
+      { label: "Refund Policy", href: ROUTES.refundPolicy },
     ],
   },
 ];

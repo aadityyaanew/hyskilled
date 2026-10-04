@@ -5,10 +5,10 @@
  */
 export const siteConfig = {
   name: "Hyskilled",
-  legalName: "Hyskilled Learning Pvt. Ltd.",
+  legalName: "Growhys Innovations Private Limited",
   tagline: "Master in-demand tech skills",
   description:
-    "Hyskilled offers premium, career-focused technology courses in AI, Data Science, Machine Learning, UI/UX, Web Development and more. Buy once on the web, learn anywhere in the Hyskilled app.",
+    "Master in-demand skills with expert-led courses in AI, Data Science, UI/UX, and Web Development. Pay once, own it forever, and learn on the go with the Hyskilled app.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   locale: "en_IN",
   keywords: [

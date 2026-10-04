@@ -85,7 +85,7 @@ export function SiteHeader({ categories }) {
             <Menu className="size-5" />
           </Button>
 
-          <Logo priority height={34} className="lg:h-[38px]" />
+          <Logo priority height={42} className="lg:h-[46px]" />
 
           {/* desktop nav */}
           <nav aria-label="Primary" className="ml-4 hidden items-center gap-1 lg:flex">
@@ -198,7 +198,7 @@ export function SiteHeader({ categories }) {
           <SheetTitle className="sr-only">Menu</SheetTitle>
           <SheetDescription className="sr-only">Site navigation</SheetDescription>
           <div className="border-b p-5">
-            <Logo height={32} />
+            <Logo height={40} />
           </div>
           <nav aria-label="Mobile" className="flex-1 space-y-6 p-5">
             <ul className="space-y-1">

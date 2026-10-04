@@ -44,7 +44,7 @@ export function SiteFooter({ categories = [] }) {
           <div className="max-w-sm">
             <Logo tone="white" height={40} />
             <p className="mt-5 text-sm leading-relaxed text-white/60">
-              Premium, career-focused tech courses. Buy on the web — learn anywhere in the Hyskilled app.
+              Master in-demand skills with expert-led courses in AI, Data Science, UI/UX, and Web Development. Pay once, own it forever, and learn on the go with the {siteConfig.app.name}.
             </p>
             <ul className="mt-6 flex gap-2.5">
               {socials.map(({ label, href, Icon }) => (

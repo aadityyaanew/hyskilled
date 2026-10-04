@@ -40,8 +40,8 @@ export function Hero() {
           </h1>
 
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Premium courses in AI, Data Science, Machine Learning, UI/UX and Web Development — taught by
-            practitioners. Buy once here, then learn anywhere in the {siteConfig.app.name}.
+            Master in-demand skills with expert-led courses in AI, Data Science, UI/UX, and Web Development. 
+            Pay once, own it forever, and learn on the go with the {siteConfig.app.name}.
           </p>
 
           <div className="mt-8 max-w-xl">

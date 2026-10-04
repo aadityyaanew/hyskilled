@@ -18,8 +18,7 @@ export const ROUTES = {
       reason ? `&reason=${encodeURIComponent(reason)}` : ""
     }`,
   login: (next) => (next ? `/login?next=${encodeURIComponent(next)}` : "/login"),
-  register: (next) =>
-    next ? `/register?next=${encodeURIComponent(next)}` : "/register",
+  register: (next) => "/courses",
   forgotPassword: "/forgot-password",
   account: "/account",
   about: "/about",
@@ -27,6 +26,7 @@ export const ROUTES = {
   faq: "/faq",
   terms: "/terms",
   privacy: "/privacy",
+  refundPolicy: "/refund-policy",
   
 
   // Single Admin Panel
