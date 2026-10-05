@@ -32,6 +32,7 @@ export async function POST(request) {
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Please enter a valid email.";
   if (!course && source === "schedule_session") errors.course = "Please select a course.";
+  if (!notes) errors.experience = "Please select your experience.";
 
   if (Object.keys(errors).length) {
     return NextResponse.json(

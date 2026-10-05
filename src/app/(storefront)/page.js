@@ -89,7 +89,7 @@ export default async function HomePage() {
 
       <ScheduleSessionDialog
         autoOpen={true}
-        title="Register here for free Counselling"
+        title="Register here for Free Counselling"
         description="Fill out the form below to book a free session with our career experts and find the right path for you."
         source="homepage_popup"
       >

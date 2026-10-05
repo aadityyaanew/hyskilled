@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone, ShieldCheck, Lock } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
-import { XIcon, LinkedinIcon, InstagramIcon, YoutubeIcon } from "@/components/shared/brand-icons";
-import { NewsletterForm } from "@/features/marketing/newsletter-form";
+import { XIcon, LinkedinIcon, InstagramIcon, YoutubeIcon, WhatsappIcon } from "@/components/shared/brand-icons";
 import { footerNav } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { ROUTES } from "@/config/routes";
@@ -24,26 +23,14 @@ export function SiteFooter({ categories = [] }) {
       />
 
       <div className="container-page relative pt-16 pb-24 sm:pb-8">
-        {/* top: newsletter */}
-        <div className="grid gap-8 border-b border-white/10 pb-12 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-          <div>
-            <h2 className="font-heading text-2xl font-bold text-white sm:text-3xl">
-              Level up your skills, every week.
-            </h2>
-            <p className="mt-2 max-w-lg text-white/60">
-              Get new course launches, learning guides and subscriber-only offers. No spam, unsubscribe anytime.
-            </p>
-          </div>
-          <div className="max-w-md lg:ml-auto lg:w-full">
-            <NewsletterForm />
-          </div>
-        </div>
-
         {/* main grid */}
-        <div className="grid gap-12 py-14 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.1fr]">
-          <div className="max-w-sm">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 py-10 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.1fr] lg:gap-12 lg:py-14">
+          <div className="col-span-2 max-w-sm md:col-span-3 lg:col-span-1">
             <Logo tone="white" height={40} />
-            <p className="mt-5 text-sm leading-relaxed text-white/60">
+            <p className="mt-3 text-lg font-bold tracking-wide text-white">
+              Build What's Next.
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-white/60">
               Master in-demand skills with expert-led courses in AI, Data Science, UI/UX, and Web Development. Pay once, own it forever, and learn on the go with the {siteConfig.app.name}.
             </p>
             <ul className="mt-6 flex gap-2.5">
@@ -64,7 +51,7 @@ export function SiteFooter({ categories = [] }) {
           </div>
 
           {footerNav.map((group) => (
-            <nav key={group.title} aria-label={group.title}>
+            <nav key={group.title} aria-label={group.title} className="col-span-1">
               <h3 className="font-heading text-sm font-bold tracking-wide text-white">{group.title}</h3>
               <ul className="mt-4 space-y-2.5">
                 {group.links.map((link) => (
@@ -81,7 +68,7 @@ export function SiteFooter({ categories = [] }) {
             </nav>
           ))}
 
-          <div>
+          <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <h3 className="font-heading text-sm font-bold tracking-wide text-white">Get in touch</h3>
             <ul className="mt-4 space-y-3 text-sm text-white/60">
               <li className="flex gap-2.5">
@@ -119,14 +106,13 @@ export function SiteFooter({ categories = [] }) {
 
         {/* bottom */}
         <div className="flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/50 md:flex-row md:items-center md:justify-between">
-          <p>
+          <p className="text-center md:text-left">
             © {new Date().getFullYear()} {siteConfig.legalName}. All rights reserved.
           </p>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div className="flex flex-wrap justify-center md:justify-start items-center gap-x-5 gap-y-2">
             <span className="inline-flex items-center gap-1.5">
               <Lock className="size-3.5 text-emerald-400" /> 256-bit secure payments
             </span>
-
           </div>
         </div>
       </div>

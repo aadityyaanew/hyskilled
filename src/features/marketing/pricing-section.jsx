@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +11,29 @@ import { ROUTES } from "@/config/routes";
 
 /** Pricing / bundles block – reused on the homepage and /pricing. */
 export function PricingSection({ bundles, showCta = true, heading }) {
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (!scrollRef.current || window.innerWidth >= 1024) return;
+    
+    // Find the highlighted bundle or default to the middle one
+    const targetIdx = Math.max(0, bundles.findIndex(b => b.highlight) >= 0 
+      ? bundles.findIndex(b => b.highlight) 
+      : Math.floor(bundles.length / 2));
+      
+    const timer = setTimeout(() => {
+      const container = scrollRef.current;
+      if (!container) return;
+      const targetCard = container.children[targetIdx];
+      if (targetCard) {
+        const scrollPos = targetCard.offsetLeft - (container.clientWidth / 2) + (targetCard.clientWidth / 2);
+        container.scrollTo({ left: scrollPos, behavior: "smooth" });
+      }
+    }, 500); // small delay to ensure rendering and layout are complete
+
+    return () => clearTimeout(timer);
+  }, [bundles]);
+
   return (
     <section className="section-y relative overflow-hidden bg-muted/40">
       <div aria-hidden className="bg-grid pointer-events-none absolute inset-0 opacity-70" />
@@ -15,7 +41,7 @@ export function PricingSection({ bundles, showCta = true, heading }) {
         <Reveal>
           <SectionHeading
             eyebrow={heading?.eyebrow ?? "Career tracks"}
-            title={heading?.title ?? "Bundle up and save up to 45%"}
+            title={heading?.title ?? "Plan your program and save up to 45%"}
             description={
               heading?.description ??
               "Follow a curated path instead of picking course by course. One payment, every course unlocked in the app."
@@ -23,9 +49,13 @@ export function PricingSection({ bundles, showCta = true, heading }) {
           />
         </Reveal>
 
-        <div className="mx-auto mt-16 grid max-w-6xl items-stretch gap-6 lg:grid-cols-3 lg:gap-8">
+        <div ref={scrollRef} className="-mx-5 mt-12 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto px-5 pt-4 pb-8 [scrollbar-width:none] sm:-mx-8 sm:px-8 lg:mx-auto lg:grid lg:max-w-6xl lg:grid-cols-3 lg:overflow-visible lg:px-0 lg:pt-0 lg:pb-0 lg:gap-8 [&::-webkit-scrollbar]:hidden">
           {bundles.map((b, i) => (
-            <Reveal key={b.slug} delay={i * 100}>
+            <Reveal 
+              key={b.slug} 
+              delay={i * 100}
+              className="w-[85vw] shrink-0 snap-center sm:w-[380px] lg:w-auto"
+            >
               <BundleCard bundle={b} />
             </Reveal>
           ))}

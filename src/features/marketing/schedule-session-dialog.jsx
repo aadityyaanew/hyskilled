@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-const EMPTY = { name: "", phone: "", email: "", course: "", notes: "" };
+const EMPTY = { name: "", phone: "", email: "", course: "", experience: "" };
 const labelCls = "mb-1.5 block text-xs font-semibold text-foreground";
 const errCls = "mt-1 text-xs text-destructive";
 
@@ -75,7 +75,7 @@ export function ScheduleSessionDialog({
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, source }),
+        body: JSON.stringify({ ...form, notes: form.experience, source }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -94,7 +94,7 @@ export function ScheduleSessionDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[92dvh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[85svh] w-[95vw] overflow-y-auto sm:w-full sm:max-w-lg !top-[5%] !translate-y-0 sm:!top-1/2 sm:!-translate-y-1/2 sm:max-h-[92dvh] p-5 sm:p-6">
         {done ? (
           <div className="flex flex-col items-center gap-3 py-8 text-center">
             <span className="grid size-14 place-items-center rounded-full bg-emerald-50 text-emerald-600">
@@ -164,8 +164,22 @@ export function ScheduleSessionDialog({
                 {errors.course && <p className={errCls}>{errors.course}</p>}
               </div>
               <div>
-                <label className={labelCls} htmlFor="lead-notes">Other notes / additional information</label>
-                <Textarea id="lead-notes" rows={3} value={form.notes} onChange={set("notes")} placeholder="Preferred timing, goals, questions…" />
+                <label className={labelCls} htmlFor="lead-experience">Experience *</label>
+                <select
+                  id="lead-experience"
+                  value={form.experience}
+                  onChange={set("experience")}
+                  className="h-10 w-full rounded-lg border border-input bg-background px-2.5 text-base sm:text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  required
+                >
+                  <option value="">Select your experience</option>
+                  <option value="Working Professional - Technical Roles">Working Professional - Technical Roles</option>
+                  <option value="Working Professional - Non Technical">Working Professional - Non Technical</option>
+                  <option value="College Student - Final Year">College Student - Final Year</option>
+                  <option value="College Student - 1st to Pre-final Year">College Student - 1st to Pre-final Year</option>
+                  <option value="Others">Others</option>
+                </select>
+                {errors.experience && <p className={errCls}>{errors.experience}</p>}
               </div>
 
               {formError && !Object.keys(errors).length && (

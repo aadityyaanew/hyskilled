@@ -33,9 +33,9 @@ export function UserMenu({ className }) {
         <Button asChild variant="ghost" size="sm">
           <Link href={ROUTES.login()}>Log in</Link>
         </Button>
-        <ScheduleSessionDialog>
-          <Button variant="brand" size="sm">Get started</Button>
-        </ScheduleSessionDialog>
+        <Button asChild variant="brand" size="sm">
+          <Link href={ROUTES.courses}>Get started</Link>
+        </Button>
       </div>
     );
   }
