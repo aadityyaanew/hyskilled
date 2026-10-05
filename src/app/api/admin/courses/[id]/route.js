@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireAdmin, slugify, safeJsonParse } from "@/lib/admin-api";
 import { query, execute, isDbConfigured } from "@/lib/db";
+import { deleteFileFromR2 } from "@/lib/r2";
 
 export async function GET(request, { params }) {
   const { errorResponse } = await requireAdmin();
@@ -231,6 +232,13 @@ export async function PUT(request, { params }) {
       console.warn("revalidatePath error on update:", e);
     }
 
+    // Delete old syllabus from R2 if it was changed or removed
+    if (existingCourse.syllabus_drive_file_id && existingCourse.syllabus_drive_file_id !== resolvedSyllabusDriveFileId) {
+      deleteFileFromR2(existingCourse.syllabus_drive_file_id).catch(err => {
+        console.error("Failed to delete old syllabus from R2:", err);
+      });
+    }
+
     return NextResponse.json({
       success: true,
       message: "Course updated successfully!",
@@ -372,7 +380,7 @@ export async function DELETE(request, { params }) {
   try {
     const isNumeric = /^\d+$/.test(id);
     const existing = await query(
-      isNumeric ? "SELECT id, title, slug FROM courses WHERE id = ? LIMIT 1" : "SELECT id, title, slug FROM courses WHERE slug = ? LIMIT 1",
+      isNumeric ? "SELECT id, title, slug, syllabus_drive_file_id FROM courses WHERE id = ? LIMIT 1" : "SELECT id, title, slug, syllabus_drive_file_id FROM courses WHERE slug = ? LIMIT 1",
       [isNumeric ? Number(id) : id]
     );
 
@@ -398,6 +406,13 @@ export async function DELETE(request, { params }) {
       revalidatePath("/categories");
     } catch (e) {
       console.warn("revalidate error on delete:", e);
+    }
+
+    // Delete syllabus from R2 if it exists
+    if (existing[0].syllabus_drive_file_id) {
+      deleteFileFromR2(existing[0].syllabus_drive_file_id).catch(err => {
+        console.error("Failed to delete syllabus from R2:", err);
+      });
     }
 
     return NextResponse.json({

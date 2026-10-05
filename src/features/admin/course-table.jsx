@@ -278,7 +278,7 @@ export function CourseTable({ initialCourses = [], categories = [] }) {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-0.5 rounded-md bg-brand-50 px-1.5 py-0.5 text-[10px] font-bold text-primary hover:underline"
-                                  title="View uploaded Google Drive Syllabus"
+                                  title="View uploaded Cloudflare R2 Syllabus"
                                 >
                                   <FileText className="size-3" /> Syllabus
                                 </a>

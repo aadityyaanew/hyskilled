@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
 import { getCurrentAdmin } from "@/lib/auth-server";
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { uploadImageToR2 } from "@/lib/r2";
 
 export async function POST(req) {
   try {
@@ -50,16 +44,17 @@ export async function POST(req) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const base64String = `data:${file.type};base64,${buffer.toString("base64")}`;
 
     const folder = (formData.get("folder") || "hyskilled_courses").toString();
 
-    const result = await cloudinary.uploader.upload(base64String, {
-      folder,
-      resource_type: "auto",
+    const result = await uploadImageToR2({
+      buffer,
+      filename: file.name || "image.png",
+      mimetype: file.type,
+      folder
     });
 
-    return NextResponse.json({ success: true, url: result.secure_url });
+    return NextResponse.json({ success: true, url: result.fileUrl });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: error.message || "Failed to upload image" }, { status: 500 });

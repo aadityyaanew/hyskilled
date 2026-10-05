@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Course cover art.
- * If an uploaded image (e.g. from Cloudinary) exists on the course,
+ * If an uploaded image (e.g. from Cloudflare R2) exists on the course,
  * renders the image with an overlay. Otherwise, renders the polished
  * procedural brand cover.
  */

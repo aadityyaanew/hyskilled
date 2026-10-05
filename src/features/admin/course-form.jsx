@@ -113,7 +113,7 @@ export function CourseForm({ course = null, categories = [] }) {
     }));
   };
 
-  // 1. Cloudinary Image Upload Handler
+  // 1. Cloudflare R2 Image Upload Handler
   const handleImageFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -146,11 +146,11 @@ export function CourseForm({ course = null, categories = [] }) {
 
       const json = await res.json();
       if (!res.ok || !json.url) {
-        throw new Error(json.error || "Failed to upload course image to Cloudinary.");
+        throw new Error(json.error || "Failed to upload course image to Cloudflare R2.");
       }
 
       setFormData((prev) => ({ ...prev, imageUrl: json.url }));
-      setSuccessMsg("Course image uploaded to Cloudinary successfully!");
+      setSuccessMsg("Course image uploaded to Cloudflare R2 successfully!");
     } catch (err) {
       setErrorMsg(err.message || "Failed to upload image.");
     } finally {
@@ -159,7 +159,7 @@ export function CourseForm({ course = null, categories = [] }) {
     }
   };
 
-  // 2. Google Drive Syllabus PDF Upload Handler
+  // 2. Cloudflare R2 Syllabus PDF Upload Handler
   const handleSyllabusFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -193,7 +193,7 @@ export function CourseForm({ course = null, categories = [] }) {
 
       const json = await res.json();
       if (!res.ok || !json.success) {
-        throw new Error(json.message || "Failed to upload syllabus to Google Drive.");
+        throw new Error(json.message || "Failed to upload syllabus to Cloudflare R2.");
       }
 
       setFormData((prev) => ({
@@ -201,7 +201,7 @@ export function CourseForm({ course = null, categories = [] }) {
         syllabusDriveFileId: json.fileId,
         syllabusUrl: json.fileUrl,
       }));
-      setSuccessMsg("Course syllabus uploaded to Google Drive successfully!");
+      setSuccessMsg("Course syllabus uploaded to Cloudflare R2 successfully!");
     } catch (err) {
       setErrorMsg(err.message || "Failed to upload syllabus.");
     } finally {
@@ -514,23 +514,23 @@ export function CourseForm({ course = null, categories = [] }) {
         </div>
       </div>
 
-      {/* 2. Course Media & Cloudinary Image Upload Card */}
+      {/* 2. Course Media & Image Upload Card */}
       <div className="space-y-6 rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-heading text-lg font-bold text-foreground">
-              Course Thumbnail & Banner (Cloudinary)
+              Course Thumbnail & Banner
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Upload a course cover image. Uploaded securely to Cloudinary and used across all course cards, hero sections, and search results.
+              Upload a course cover image. Uploaded securely to Cloudflare R2 and used across all course cards, hero sections, and search results.
             </p>
           </div>
           <Badge variant="outline" className="text-[11px] font-semibold">
-            Cloudinary Upload
+            Cloudflare R2 Upload
           </Badge>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 items-start">
+        <div className="grid gap-6 items-start">
           {/* Upload Area */}
           <div className="space-y-3">
             <div className="relative rounded-2xl border-2 border-dashed border-border/80 hover:border-primary/50 transition-colors p-6 text-center bg-muted/20">
@@ -546,7 +546,7 @@ export function CourseForm({ course = null, categories = [] }) {
                 {imageUploading ? (
                   <>
                     <Loader2 className="size-8 text-primary animate-spin" />
-                    <p className="text-xs font-semibold text-foreground">Uploading to Cloudinary…</p>
+                    <p className="text-xs font-semibold text-foreground">Uploading to Cloudflare R2…</p>
                   </>
                 ) : (
                   <>
@@ -565,66 +565,11 @@ export function CourseForm({ course = null, categories = [] }) {
                 )}
               </div>
             </div>
-
-            <div>
-              <label className="block text-[11px] font-semibold text-foreground mb-1">
-                Or enter image URL directly:
-              </label>
-              <Input
-                name="imageUrl"
-                value={formData.imageUrl}
-                onChange={handleChange}
-                placeholder="https://res.cloudinary.com/..."
-                className="text-xs"
-              />
-            </div>
-          </div>
-
-          {/* Image Preview */}
-          <div>
-            <label className="block text-xs font-semibold text-foreground mb-1.5">
-              Image Preview
-            </label>
-            {formData.imageUrl ? (
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border bg-slate-900 shadow-sm group">
-                <Image
-                  src={formData.imageUrl}
-                  alt={formData.title || "Course thumbnail"}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <a
-                    href={formData.imageUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-black shadow-md hover:bg-slate-100"
-                  >
-                    <ExternalLink className="size-3.5" /> View Full
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, imageUrl: "" }))}
-                    className="inline-flex items-center gap-1 rounded-xl bg-destructive px-3 py-1.5 text-xs font-semibold text-white shadow-md hover:bg-destructive/90"
-                  >
-                    <Trash2 className="size-3.5" /> Remove
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="aspect-[16/10] w-full rounded-2xl border border-dashed flex flex-col items-center justify-center text-muted-foreground bg-muted/10 p-4 text-center">
-                <ImageIcon className="size-8 mb-2 opacity-40" />
-                <p className="text-xs font-medium">No custom image uploaded yet.</p>
-                <p className="text-[10px] text-muted-foreground/75 mt-0.5">
-                  The generated procedural brand cover art will be used as fallback.
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      {/* 3. Course Syllabus PDF Upload Card (Google Drive) */}
+      {/* 3. Course Syllabus PDF Upload Card (Cloudflare R2) */}
       <div className="space-y-6 rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
@@ -632,12 +577,12 @@ export function CourseForm({ course = null, categories = [] }) {
               Course Syllabus (PDF)
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Upload the complete syllabus document as a PDF. Securely uploaded and stored directly on Google Drive.
+              Upload the complete syllabus document as a PDF. Securely uploaded and stored directly on Cloudflare R2.
             </p>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="inline-flex size-2 rounded-full bg-emerald-500" />
-            Google Drive Storage
+            Cloudflare R2 Storage
           </div>
         </div>
 
@@ -657,7 +602,7 @@ export function CourseForm({ course = null, categories = [] }) {
                 <>
                   <Loader2 className="size-8 text-primary animate-spin" />
                   <p className="text-xs font-semibold text-foreground">
-                    Uploading syllabus PDF to Google Drive…
+                    Uploading syllabus PDF to Cloudflare R2…
                   </p>
                   <p className="text-[11px] text-muted-foreground">
                     Setting permissions and storing file reference
@@ -694,11 +639,11 @@ export function CourseForm({ course = null, categories = [] }) {
                       Course Syllabus (PDF)
                     </p>
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                      <CheckCircle2 className="size-3" /> Stored on Google Drive
+                      <CheckCircle2 className="size-3" /> Stored on Cloudflare R2
                     </span>
                   </div>
                   <p className="text-[11px] font-mono text-muted-foreground mt-0.5 truncate">
-                    {formData.syllabusDriveFileId ? `File ID: ${formData.syllabusDriveFileId}` : "Google Drive Document"}
+                    {formData.syllabusDriveFileId ? `File ID: ${formData.syllabusDriveFileId}` : "Cloudflare R2 Document"}
                   </p>
                 </div>
               </div>
@@ -710,7 +655,7 @@ export function CourseForm({ course = null, categories = [] }) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-xl border border-input bg-background px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted transition-colors shadow-xs"
                 >
-                  <ExternalLink className="size-3.5" /> View on Google Drive
+                  <ExternalLink className="size-3.5" /> View on Cloudflare R2
                 </a>
                 <button
                   type="button"

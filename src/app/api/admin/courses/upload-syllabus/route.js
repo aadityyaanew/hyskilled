@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/auth-server";
-import { uploadPdfToGoogleDrive } from "@/lib/google-drive";
+import { uploadPdfToR2 } from "@/lib/r2";
 
 const MAX_PDF_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
 
@@ -54,8 +54,8 @@ export async function POST(req) {
       );
     }
 
-    // 4. Secure upload to Google Drive
-    const result = await uploadPdfToGoogleDrive({
+    // 4. Secure upload to Cloudflare R2
+    const result = await uploadPdfToR2({
       buffer,
       filename,
       courseSlug: String(courseSlug),
@@ -64,8 +64,8 @@ export async function POST(req) {
     return NextResponse.json({
       success: true,
       fileId: result.fileId,
-      fileUrl: result.webViewLink,
-      downloadUrl: result.webContentLink,
+      fileUrl: result.fileUrl,
+      downloadUrl: result.downloadUrl,
       filename: result.filename,
     });
   } catch (error) {
@@ -73,7 +73,7 @@ export async function POST(req) {
     return NextResponse.json(
       {
         success: false,
-        message: error.message || "Failed to upload syllabus to Google Drive.",
+        message: error.message || "Failed to upload syllabus to Cloudflare R2.",
       },
       { status: 500 }
     );
