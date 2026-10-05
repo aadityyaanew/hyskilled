@@ -24,7 +24,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -40,7 +40,7 @@ const NAV_ITEMS = [
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
-export function AdminSidebar({ adminEmail, className = "" }) {
+export function AdminSidebar({ adminEmail, className = "", onNavigate }) {
   const pathname = usePathname();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
@@ -64,12 +64,12 @@ export function AdminSidebar({ adminEmail, className = "" }) {
 
   return (
     <aside
-      className={`flex h-full flex-col justify-between border-r border-border bg-card p-5 ${className}`}
+      className={`flex h-full flex-col justify-between border-r border-border bg-card p-5 pb-safe overflow-y-auto ${className}`}
     >
       <div className="space-y-6">
         {/* Brand */}
         <div className="flex items-center justify-between px-2">
-          <Link href="/admin" className="flex items-center gap-2">
+          <Link href="/admin" onClick={() => onNavigate?.()} className="flex items-center gap-2">
             <Logo height={32} priority asLink={false} />
             <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary uppercase tracking-wider">
               Admin
@@ -86,6 +86,7 @@ export function AdminSidebar({ adminEmail, className = "" }) {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => onNavigate?.()}
                 className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-all ${active
                     ? "bg-primary text-primary-foreground shadow-sm shadow-brand-500/20"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -117,6 +118,7 @@ export function AdminSidebar({ adminEmail, className = "" }) {
             variant="outline"
             size="sm"
             className="w-full text-xs font-medium"
+            onClick={() => onNavigate?.()}
           >
             <Link href="/" target="_blank">
               <ExternalLink className="size-3.5" /> Store
@@ -140,6 +142,7 @@ export function AdminSidebar({ adminEmail, className = "" }) {
 
 export function AdminTopBar({ adminEmail }) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
 
   const handleLogout = async () => {
     await fetch("/api/admin/auth/logout", { method: "POST" });
@@ -150,14 +153,16 @@ export function AdminTopBar({ adminEmail }) {
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/80 px-4 backdrop-blur-md sm:px-8">
       <div className="flex items-center gap-3">
         {/* Mobile menu sheet */}
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="lg:hidden">
+            <Button variant="ghost" size="icon-sm" className="lg:hidden" aria-label="Open admin navigation">
               <Menu className="size-5" />
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-72 p-0">
-            <AdminSidebar adminEmail={adminEmail} />
+            <SheetTitle className="sr-only">Admin Navigation</SheetTitle>
+            <SheetDescription className="sr-only">Hyskilled Control Center Menu</SheetDescription>
+            <AdminSidebar adminEmail={adminEmail} onNavigate={() => setOpen(false)} />
           </SheetContent>
         </Sheet>
 

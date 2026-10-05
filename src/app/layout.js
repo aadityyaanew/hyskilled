@@ -48,12 +48,14 @@ export const viewport = {
   themeColor: "#b5202b",
   width: "device-width",
   initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${display.variable} ${body.variable}`}>
-      <body className="min-h-dvh flex flex-col">
+      <body className="min-h-dvh flex flex-col" suppressHydrationWarning>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"

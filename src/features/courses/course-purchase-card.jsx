@@ -21,8 +21,8 @@ export function CoursePurchaseCard({ course }) {
 
   return (
     <div className="overflow-hidden rounded-3xl border bg-white shadow-lift">
-      <CourseCover course={course} className="hidden aspect-[16/9] w-full lg:block" />
-      <div className="p-6">
+      <CourseCover course={course} className="aspect-[16/9] w-full" />
+      <div className="p-5 sm:p-6">
         {(course.closingTimerEnabled || course.isClosed) && (
           <div className="mb-4">
             <CourseCountdown

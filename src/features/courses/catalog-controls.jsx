@@ -166,7 +166,7 @@ export function CatalogToolbar({ total, categories, hideCategories }) {
           </Button>
 
           <Select value={params.get("sort") || "default"} onValueChange={(v) => params.set("sort", v === "default" ? "" : v)}>
-            <SelectTrigger aria-label="Sort courses" className="h-12! w-full min-w-48 flex-1 rounded-xl sm:w-52 sm:flex-none">
+            <SelectTrigger aria-label="Sort courses" className="h-12! w-full min-w-0 flex-1 rounded-xl sm:w-52 sm:flex-none sm:min-w-48">
               <SelectValue />
             </SelectTrigger>
             <SelectContent position="popper" align="end">

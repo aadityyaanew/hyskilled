@@ -130,11 +130,17 @@ export default async function CourseDetailPage({ params }) {
 
       {/* Main Content & Sidebar Container */}
       <div className="container-page relative z-20 grid gap-x-12 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        
+        {/* Sidebar Purchase Card - rendered first on mobile for immediate pricing and image visibility, sticky on desktop */}
+        <aside className="order-first lg:order-none lg:col-start-2 lg:row-start-1 relative">
+          <div className="lg:sticky lg:top-24 -mt-8 sm:-mt-10 lg:-mt-24 mb-8 lg:mb-12">
+            <CoursePurchaseCard course={course} />
+          </div>
+        </aside>
+
         {/* Main Body */}
-        <div className="lg:col-start-1 min-w-0 space-y-14 py-12 lg:py-10">
+        <div className="lg:col-start-1 min-w-0 space-y-10 sm:space-y-14 py-6 sm:py-8 lg:py-10">
           <Section id="outcomes" title="What you'll learn">
-            <ul className="grid gap-x-8 gap-y-3.5 rounded-3xl border bg-brand-50/40 p-6 sm:grid-cols-2 sm:p-8">
+            <ul className="grid gap-x-8 gap-y-3.5 rounded-3xl border bg-brand-50/40 p-5 sm:grid-cols-2 sm:p-8">
               {course.outcomes.map((o) => (
                 <li key={o} className="flex items-start gap-3 text-[15px] text-ink-soft">
                   <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
@@ -150,7 +156,7 @@ export default async function CourseDetailPage({ params }) {
             <p className="text-[16px] leading-[1.75] text-muted-foreground">{course.description}</p>
             <ul className="mt-5 flex flex-wrap gap-2">
               {course.tags.map((t) => (
-                <li key={t} className="rounded-full border bg-white px-3.5 py-1.5 text-sm font-medium text-ink-soft">
+                <li key={t} className="rounded-full border bg-white px-3 py-1.5 text-xs sm:text-sm font-medium text-ink-soft">
                   {t}
                 </li>
               ))}
@@ -177,7 +183,7 @@ export default async function CourseDetailPage({ params }) {
             <CourseSyllabus modules={course.modules} />
           </Section>
 
-          <div className="grid gap-10 sm:grid-cols-2">
+          <div className="grid gap-8 sm:grid-cols-2 sm:gap-10">
             <Section id="requirements" title="Requirements">
               <ul className="space-y-2.5">
                 {course.requirements.map((r) => (
@@ -204,19 +210,10 @@ export default async function CourseDetailPage({ params }) {
             <InstructorCard instructor={course.instructor} />
           </Section>
 
-
-
           <Section id="faq" title="Frequently asked questions">
             <FaqAccordion faqs={faqs} />
           </Section>
         </div>
-
-        {/* Sidebar */}
-        <aside className="lg:col-start-2 lg:row-start-1 relative">
-          <div className="lg:sticky lg:top-24 mt-8 lg:-mt-24 lg:mb-12">
-            <CoursePurchaseCard course={course} />
-          </div>
-        </aside>
       </div>
 
       {/* related */}

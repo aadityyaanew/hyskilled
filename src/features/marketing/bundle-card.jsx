@@ -14,7 +14,7 @@ export function BundleCard({ bundle }) {
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col rounded-[2rem] border p-7 transition-all duration-300 hover:-translate-y-1.5 sm:p-8",
+        "relative flex h-full flex-col rounded-3xl sm:rounded-[2rem] border p-5 sm:p-8 transition-all duration-300 hover:-translate-y-1.5",
         featured
           ? "border-transparent bg-gradient-to-b from-brand-700 via-brand-800 to-brand-950 text-white shadow-glow lg:scale-[1.04]"
           : "bg-card hover:border-brand-200 hover:shadow-lift"

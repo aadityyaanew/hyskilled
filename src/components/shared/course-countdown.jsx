@@ -186,15 +186,18 @@ export function CourseCountdown({
   return (
     <div
       className={cn(
-        "inline-flex flex-wrap items-center gap-2.5 rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-xs sm:text-sm text-white backdrop-blur-md shadow-lg",
+        "inline-flex flex-wrap items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-3.5 py-2 text-xs sm:text-sm text-white backdrop-blur-md shadow-lg",
         className
       )}
     >
       <div className="flex items-center gap-1.5 font-bold text-amber-300">
-        <Clock className="size-4 animate-spin-slow text-amber-400" />
+        <Clock className="size-3.5 sm:size-4 animate-spin-slow text-amber-400" />
         <span>Closes in:</span>
       </div>
-      <span className="font-mono font-extrabold tracking-wider text-white">
+      <span className="font-mono font-extrabold tracking-wider text-white sm:hidden">
+        {pad(days)}d : {pad(hours)}h : {pad(minutes)}m : {pad(seconds)}s
+      </span>
+      <span className="hidden font-mono font-extrabold tracking-wider text-white sm:inline">
         {timerString}
       </span>
     </div>

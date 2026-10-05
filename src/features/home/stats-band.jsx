@@ -9,11 +9,11 @@ export function StatsBand() {
         aria-hidden
         className="pointer-events-none absolute top-1/2 left-1/2 h-64 w-[44rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-600/30 blur-3xl"
       />
-      <dl className="container-page relative grid grid-cols-2 gap-y-10 lg:grid-cols-4">
+      <dl className="container-page relative grid grid-cols-1 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
         {siteConfig.stats.map((s, i) => (
           <div
             key={s.label}
-            className={`text-center ${i > 0 ? "lg:border-l lg:border-white/10" : ""}`}
+            className={`text-center ${i % 2 !== 0 ? "sm:border-l sm:border-white/10" : ""} ${i > 1 ? "lg:border-l lg:border-white/10" : ""}`}
           >
             <dd className="font-heading text-4xl font-extrabold text-white sm:text-5xl">
               <CountUp value={s.value} suffix={s.suffix} decimals={s.decimals ?? 0} />

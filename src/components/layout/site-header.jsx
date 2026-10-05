@@ -46,10 +46,14 @@ function NavLink({ href, children, className }) {
   );
 }
 
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { initials } from "@/lib/format";
+
 export function SiteHeader({ categories }) {
   const scrolled = useScrolled(8);
   const pathname = usePathname();
-  const { isAuthenticated, hydrated } = useAuth();
+  const { user, isAuthenticated, hydrated, logout } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -66,6 +70,8 @@ export function SiteHeader({ categories }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <>
       <header
@@ -74,19 +80,19 @@ export function SiteHeader({ categories }) {
           scrolled ? "glass border-border shadow-soft" : "bg-white"
         )}
       >
-        <div className="container-page flex h-16 items-center gap-4 lg:h-[4.5rem]">
-          {/* mobile menu */}
+        <div className="container-page flex h-16 items-center gap-2 sm:gap-4 lg:h-[4.5rem]">
+          {/* mobile menu button */}
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="size-10 shrink-0 lg:hidden"
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
           >
             <Menu className="size-5" />
           </Button>
 
-          <Logo priority height={42} className="lg:h-[46px]" />
+          <Logo priority height={36} className="h-9 sm:h-[42px] lg:h-[46px]" />
 
           {/* desktop nav */}
           <nav aria-label="Primary" className="ml-4 hidden items-center gap-1 lg:flex">
@@ -164,7 +170,7 @@ export function SiteHeader({ categories }) {
             </NavigationMenu>
           </nav>
 
-          <div className="ml-auto flex items-center gap-1.5">
+          <div className="ml-auto flex items-center gap-1 sm:gap-1.5">
             <button
               onClick={() => setSearchOpen(true)}
               className="focus-ring hidden h-10 w-56 cursor-pointer items-center gap-2 rounded-xl border bg-muted/60 px-3 text-sm text-muted-foreground transition-colors hover:border-brand-300 hover:bg-white xl:flex"
@@ -177,14 +183,14 @@ export function SiteHeader({ categories }) {
             <Button
               variant="ghost"
               size="icon"
-              className="xl:hidden"
+              className="size-10 xl:hidden"
               onClick={() => setSearchOpen(true)}
               aria-label="Search courses"
             >
               <Search className="size-5" />
             </Button>
             <CartButton />
-            <div className="ml-1 hidden sm:block">
+            <div className="ml-0.5">
               <UserMenu />
             </div>
           </div>
@@ -193,30 +199,64 @@ export function SiteHeader({ categories }) {
 
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
 
-      {/* mobile navigation */}
+      {/* mobile drawer navigation */}
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-        <SheetContent side="left" className="w-[88%] gap-0 overflow-y-auto p-0 sm:max-w-sm">
+        <SheetContent side="left" className="flex w-[88%] max-w-sm flex-col gap-0 overflow-y-auto p-0">
           <SheetTitle className="sr-only">Menu</SheetTitle>
           <SheetDescription className="sr-only">Site navigation</SheetDescription>
+          
           <div className="border-b p-5">
-            <Logo height={40} />
+            <Logo height={38} />
           </div>
-          <nav aria-label="Mobile" className="flex-1 space-y-6 p-5">
-            <ul className="space-y-1">
-              {mainNav.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="focus-ring flex items-center justify-between rounded-xl px-3 py-3 text-base font-semibold text-ink hover:bg-brand-50"
-                  >
-                    {item.label}
-                    <ArrowRight className="size-4 text-muted-foreground" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+
+          {/* User profile card in drawer if authenticated */}
+          {hydrated && isAuthenticated && user && (
+            <div className="border-b bg-brand-50/50 p-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="size-11 border border-brand-200">
+                  <AvatarFallback className="bg-gradient-to-br from-brand-500 to-brand-800 text-sm font-bold text-white">
+                    {initials(user.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-bold text-ink">{user.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <Button asChild size="sm" variant="outline" className="w-full text-xs">
+                  <Link href={ROUTES.account} onClick={closeMenu}>My Orders</Link>
+                </Button>
+                <Button asChild size="sm" variant="brand" className="w-full text-xs">
+                  <Link href={`${ROUTES.account}?tab=profile`} onClick={closeMenu}>Profile</Link>
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <nav aria-label="Mobile Navigation" className="flex-1 space-y-6 p-5">
             <div>
-              <p className="mb-2 px-3 text-xs font-bold tracking-wider text-muted-foreground uppercase">
+              <p className="mb-2 px-3 text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                Explore
+              </p>
+              <ul className="space-y-1">
+                {mainNav.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={closeMenu}
+                      className="focus-ring flex items-center justify-between rounded-xl px-3 py-2.5 text-base font-semibold text-ink hover:bg-brand-50 active:bg-brand-100"
+                    >
+                      {item.label}
+                      <ArrowRight className="size-4 text-muted-foreground" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="mb-2 px-3 text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
                 Categories
               </p>
               <ul className="space-y-0.5">
@@ -224,27 +264,69 @@ export function SiteHeader({ categories }) {
                   <li key={c.slug}>
                     <Link
                       href={ROUTES.category(c.slug)}
-                      className="focus-ring flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft hover:bg-brand-50"
+                      onClick={closeMenu}
+                      className="focus-ring flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-ink-soft hover:bg-brand-50 active:bg-brand-100"
                     >
-                      <CategoryIcon name={c.icon} className="size-4 text-primary" />
-                      {c.short}
+                      <span className="flex items-center gap-3">
+                        <CategoryIcon name={c.icon} className="size-4 text-primary" />
+                        {c.short}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {c.courseCount}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="mb-2 px-3 text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
+                Company
+              </p>
+              <ul className="space-y-0.5">
+                {[
+                  { label: "About Us", href: ROUTES.about },
+                  { label: "Careers", href: "/careers" },
+                  { label: "Hire From Us", href: ROUTES.hireFromUs },
+                  { label: "Blog", href: ROUTES.blog },
+                  { label: "FAQs", href: ROUTES.faq },
+                  { label: "Contact Us", href: ROUTES.contact },
+                ].map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={closeMenu}
+                      className="focus-ring flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-ink-soft hover:bg-brand-50"
+                    >
+                      {item.label}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
           </nav>
-          <div className="space-y-2 border-t bg-muted/40 p-5">
+
+          <div className="space-y-2 border-t bg-muted/40 p-5 pb-safe">
             {hydrated && isAuthenticated ? (
-              <Button asChild variant="outline" className="w-full">
-                <Link href={ROUTES.account}>My orders</Link>
+              <Button
+                variant="outline"
+                className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive"
+                onClick={async () => {
+                  closeMenu();
+                  await logout();
+                }}
+              >
+                Log out
               </Button>
             ) : (
               <>
                 <ScheduleSessionDialog>
-                  <Button variant="brand" size="lg" className="w-full">Get started free</Button>
+                  <Button variant="brand" size="lg" className="w-full">
+                    Schedule Free Session
+                  </Button>
                 </ScheduleSessionDialog>
-                <Button asChild variant="outline" size="lg" className="w-full">
+                <Button asChild variant="outline" size="lg" className="w-full" onClick={closeMenu}>
                   <Link href={ROUTES.login()}>Log in</Link>
                 </Button>
               </>
@@ -252,6 +334,9 @@ export function SiteHeader({ categories }) {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Floating/Docked Mobile Bottom Navigation Bar */}
+      <MobileBottomNav onOpenSearch={() => setSearchOpen(true)} />
     </>
   );
 }

@@ -148,7 +148,7 @@ export function LeadsManager({ initialLeads = [] }) {
   };
 
   const selectCls =
-    "h-8 rounded-lg border border-input bg-transparent px-2 text-xs font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
+    "h-8 rounded-lg border border-input bg-card px-2 text-base sm:text-xs font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
 
   return (
     <div className="space-y-6">
@@ -184,7 +184,7 @@ export function LeadsManager({ initialLeads = [] }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search name, email, phone, course…"
-          className="pl-9"
+          className="pl-9 text-base sm:text-sm"
         />
       </div>
 

@@ -29,12 +29,12 @@ export function UserMenu({ className }) {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center gap-2">
-        <Button asChild variant="ghost">
+      <div className="hidden sm:flex items-center gap-2">
+        <Button asChild variant="ghost" size="sm">
           <Link href={ROUTES.login()}>Log in</Link>
         </Button>
         <ScheduleSessionDialog>
-          <Button variant="brand">Get started</Button>
+          <Button variant="brand" size="sm">Get started</Button>
         </ScheduleSessionDialog>
       </div>
     );
@@ -44,7 +44,7 @@ export function UserMenu({ className }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="focus-ring flex cursor-pointer items-center gap-2 rounded-full border bg-white p-1 pr-3 transition-colors hover:border-brand-300 hover:bg-brand-50"
+          className="focus-ring flex cursor-pointer items-center gap-2 rounded-full border bg-white p-0.5 sm:p-1 sm:pr-3 transition-colors hover:border-brand-300 hover:bg-brand-50"
           aria-label="Open account menu"
         >
           <Avatar className="size-8">

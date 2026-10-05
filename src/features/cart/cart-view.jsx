@@ -49,24 +49,24 @@ export function CartView() {
   return (
     <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
       <section aria-label="Selected Courses" className="rounded-3xl border bg-card">
-        <header className="flex items-center justify-between border-b px-6 py-4">
+        <header className="flex items-center justify-between border-b px-4 py-3 sm:px-6 sm:py-4">
           <h2 className="font-bold text-ink">
             {items.length} {items.length === 1 ? "course" : "courses"} selected
           </h2>
         </header>
         <ul className="divide-y">
           {items.map((item) => (
-            <CartItem key={item.id} item={item} onRemove={removeItem} className="p-6" />
+            <CartItem key={item.id} item={item} onRemove={removeItem} className="p-4 sm:p-6" />
           ))}
         </ul>
-        <div className="flex items-start gap-3 rounded-b-3xl border-t bg-brand-50/50 px-6 py-4 text-sm text-ink-soft">
+        <div className="flex items-start gap-3 rounded-b-3xl border-t bg-brand-50/50 px-4 py-3.5 sm:px-6 sm:py-4 text-xs sm:text-sm text-ink-soft">
           <Smartphone className="mt-0.5 size-4 shrink-0 text-primary" />
           After purchase, log in to the {siteConfig.app.name} with the email you use to enroll.
         </div>
       </section>
 
       <aside className="space-y-5 lg:sticky lg:top-28">
-        <div className="rounded-3xl border bg-card p-6 shadow-soft">
+        <div className="rounded-3xl border bg-card p-5 sm:p-6 shadow-soft">
           <h2 className="mb-5 font-heading text-lg font-bold text-ink">Order summary</h2>
           <CouponForm />
           <div className="my-6 border-t" />

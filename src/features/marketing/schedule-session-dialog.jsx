@@ -138,7 +138,7 @@ export function ScheduleSessionDialog({ children, syllabusUrl = null, defaultCou
                   id="lead-course"
                   value={form.course}
                   onChange={set("course")}
-                  className="h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="h-10 w-full rounded-lg border border-input bg-background px-2.5 text-base sm:text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   <option value="">Select a course</option>
                   {courses.map((c) => (

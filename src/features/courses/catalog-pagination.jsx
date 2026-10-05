@@ -28,10 +28,10 @@ function pageList(current, total) {
 export function CatalogPagination({ page, totalPages, basePath, searchParams }) {
   if (totalPages <= 1) return null;
   const itemBase =
-    "focus-ring inline-flex size-10 items-center justify-center rounded-xl border text-sm font-semibold transition-colors";
+    "focus-ring inline-flex size-8.5 sm:size-10 items-center justify-center rounded-lg sm:rounded-xl border text-xs sm:text-sm font-semibold transition-colors";
 
   return (
-    <nav aria-label="Pagination" className="mt-12 flex items-center justify-center gap-1.5">
+    <nav aria-label="Pagination" className="mt-10 sm:mt-12 flex flex-wrap items-center justify-center gap-1 sm:gap-1.5">
       {page > 1 ? (
         <Link href={buildHref(basePath, searchParams, page - 1)} rel="prev" className={cn(itemBase, "hover:border-brand-300 hover:bg-brand-50")} aria-label="Previous page">
           <ChevronLeft className="size-4" />

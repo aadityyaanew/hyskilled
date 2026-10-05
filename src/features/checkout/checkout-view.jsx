@@ -29,9 +29,9 @@ import { siteConfig } from "@/config/site";
 
 function Step({ n, title, children }) {
   return (
-    <section className="rounded-3xl border bg-card p-6 sm:p-8">
-      <h2 className="mb-6 flex items-center gap-3 font-heading text-xl font-bold text-ink">
-        <span className="grid size-8 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+    <section className="rounded-2xl sm:rounded-3xl border bg-card p-5 sm:p-8 shadow-sm">
+      <h2 className="mb-5 flex items-center gap-3 font-heading text-lg sm:text-xl font-bold text-ink">
+        <span className="grid size-7 sm:size-8 place-items-center rounded-full bg-primary text-xs sm:text-sm font-bold text-primary-foreground">
           {n}
         </span>
         {title}
@@ -192,6 +192,24 @@ export function CheckoutView() {
         className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] xl:grid-cols-[minmax(0,1fr)_27rem]"
       >
         <div className="space-y-6">
+          {/* Mobile Order Summary Preview */}
+          <div className="flex items-center justify-between rounded-2xl border border-brand-200 bg-brand-50/60 p-4 lg:hidden shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-8 place-items-center rounded-xl bg-primary text-white">
+                <ShieldCheck className="size-4" />
+              </span>
+              <div>
+                <p className="text-xs font-bold text-ink">{items.length} {items.length === 1 ? "Course" : "Courses"} in Enrollment</p>
+                <p className="text-[11px] text-muted-foreground truncate max-w-[170px] xs:max-w-[220px]">
+                  {items.map((i) => i.title).join(", ")}
+                </p>
+              </div>
+            </div>
+            <span className="font-heading text-base font-extrabold text-primary">
+              {formatPrice(totals.total)}
+            </span>
+          </div>
+
           {!isAuthenticated && (
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand-200 bg-brand-50/60 px-5 py-4 text-sm">
               <p className="font-medium text-ink-soft">Already have a Hyskilled account?</p>
@@ -260,7 +278,7 @@ export function CheckoutView() {
 
         {/* order summary */}
         <aside className="space-y-5 lg:sticky lg:top-24" aria-label="Order summary">
-          <div className="rounded-3xl border bg-card p-6 shadow-soft">
+          <div className="rounded-2xl sm:rounded-3xl border bg-card p-5 sm:p-6 shadow-soft">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="font-heading text-lg font-bold text-ink">Order summary</h2>
               <Link href={ROUTES.cart} className="focus-ring rounded text-sm font-semibold text-primary hover:underline">

@@ -243,15 +243,15 @@ export function CourseTable({ initialCourses = [], categories = [] }) {
             placeholder="Search courses by title or slug..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 text-xs sm:text-sm"
+            className="pl-9 text-base sm:text-sm"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="rounded-xl border border-input bg-background px-3 py-2 text-xs sm:text-sm"
+            className="w-full sm:w-auto rounded-xl border border-input bg-background px-3 py-2 text-base sm:text-sm"
           >
             <option value="all">All Categories</option>
             {categories.map((cat) => (
@@ -264,7 +264,7 @@ export function CourseTable({ initialCourses = [], categories = [] }) {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="rounded-xl border border-input bg-background px-3 py-2 text-xs sm:text-sm"
+            className="w-full sm:w-auto rounded-xl border border-input bg-background px-3 py-2 text-base sm:text-sm"
           >
             <option value="all">All Statuses</option>
             <option value="published">Published</option>

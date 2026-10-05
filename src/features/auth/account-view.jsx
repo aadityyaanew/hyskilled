@@ -200,32 +200,34 @@ export function AccountView() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center gap-5 rounded-3xl border bg-card p-6 shadow-soft sm:p-8">
-        <Avatar className="size-16">
-          <AvatarFallback className="bg-primary text-xl font-bold text-primary-foreground">{initials(user.name)}</AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate font-heading text-2xl font-bold text-ink">{user.name}</h2>
-          <p className="truncate text-muted-foreground">{user.email}</p>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-5 rounded-3xl border bg-card p-5 sm:p-8 shadow-soft">
+        <div className="flex items-center gap-4 min-w-0">
+          <Avatar className="size-14 sm:size-16 shrink-0">
+            <AvatarFallback className="bg-primary text-lg sm:text-xl font-bold text-primary-foreground">{initials(user.name)}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate font-heading text-xl sm:text-2xl font-bold text-ink">{user.name}</h2>
+            <p className="truncate text-xs sm:text-sm text-muted-foreground">{user.email}</p>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline">
+        <div className="flex flex-wrap items-center gap-2.5 sm:ml-auto pt-2 sm:pt-0 border-t border-border sm:border-0">
+          <Button asChild variant="outline" size="sm" className="flex-1 sm:flex-none">
             <a href={`${siteConfig.app.deepLinkBase}library`}>
-              Open the app <ExternalLink />
+              Open app <ExternalLink className="size-3.5" />
             </a>
           </Button>
-          <Button id="account-logout" variant="ghost" onClick={handleLogout} disabled={signingOut}>
-            <LogOut /> Log out
+          <Button id="account-logout" variant="ghost" size="sm" onClick={handleLogout} disabled={signingOut} className="flex-1 sm:flex-none">
+            <LogOut className="size-3.5" /> Log out
           </Button>
         </div>
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="h-auto gap-1 rounded-2xl p-1.5">
-          <TabsTrigger value="orders" className="gap-2 rounded-xl px-5 py-2.5">
+        <TabsList className="grid w-full grid-cols-2 h-auto gap-1 rounded-2xl p-1.5 sm:inline-flex sm:w-auto">
+          <TabsTrigger value="orders" className="gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-semibold">
             <Package className="size-4" /> Orders
           </TabsTrigger>
-          <TabsTrigger value="profile" className="gap-2 rounded-xl px-5 py-2.5">
+          <TabsTrigger value="profile" className="gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-semibold">
             <User className="size-4" /> Profile
           </TabsTrigger>
         </TabsList>

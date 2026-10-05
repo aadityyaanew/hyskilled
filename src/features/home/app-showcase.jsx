@@ -8,7 +8,7 @@ import { siteConfig } from "@/config/site";
 
 function StoreButton({ href, label, store }) {
   return (
-    <Button asChild variant="outline-light" size="lg" className="h-14 justify-start gap-3 rounded-2xl px-5">
+    <Button asChild variant="outline-light" size="lg" className="h-14 w-full sm:w-auto justify-start gap-3 rounded-2xl px-5">
       <a href={href} aria-label={`${label} ${store}`}>
         <Download className="size-5" />
         <span className="text-left leading-tight">
@@ -32,7 +32,7 @@ export function AppShowcase() {
     <section className="section-y">
       <div className="container-page">
         <Reveal>
-          <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-ink via-brand-950 to-brand-800 px-6 py-14 text-white sm:px-12 lg:px-16 lg:py-16">
+          <div className="relative overflow-hidden rounded-3xl sm:rounded-[2.5rem] bg-gradient-to-br from-ink via-brand-950 to-brand-800 px-5 py-10 text-white sm:px-12 lg:px-16 lg:py-16">
             <div aria-hidden className="bg-grid-dark pointer-events-none absolute inset-0 opacity-70" />
             <div aria-hidden className="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-brand-500/40 blur-3xl" />
             <Logo mark tone="white" asLink={false} height={420} className="pointer-events-none absolute -right-16 -bottom-24 opacity-[0.05]" />

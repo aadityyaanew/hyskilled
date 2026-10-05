@@ -34,15 +34,15 @@ export function CompaniesSection() {
           />
         </Reveal>
 
-        <div className="mt-14 relative overflow-hidden flex flex-col gap-6 [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]">
-          <ul className="flex w-max animate-marquee gap-6 pause-on-hover items-center">
+        <div className="mt-10 sm:mt-14 relative overflow-hidden flex flex-col gap-4 sm:gap-6 [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]">
+          <ul className="flex w-max animate-marquee gap-3 sm:gap-6 pause-on-hover items-center">
             {row.map((c, i) => (
               <li
                 key={`row1-${c.name}-${i}`}
                 aria-hidden={i >= companies.length}
-                className="flex items-center gap-4 rounded-full border bg-white px-6 py-3 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md duration-300"
+                className="flex items-center gap-2.5 sm:gap-4 rounded-full border bg-white px-4 py-2 sm:px-6 sm:py-3 shadow-xs sm:shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md duration-300"
               >
-                <div className="relative size-8 shrink-0 overflow-hidden rounded-full">
+                <div className="relative size-6 sm:size-8 shrink-0 overflow-hidden rounded-full">
                   <Image
                     src={`/logos/${c.file}`}
                     alt={`${c.name} logo`}
@@ -51,19 +51,19 @@ export function CompaniesSection() {
                     className="object-contain bg-white"
                   />
                 </div>
-                <span className="font-bold text-ink whitespace-nowrap tracking-tight">{c.name}</span>
+                <span className="font-bold text-xs sm:text-sm text-ink whitespace-nowrap tracking-tight">{c.name}</span>
               </li>
             ))}
           </ul>
           
-          <ul className="flex w-max animate-marquee gap-6 pause-on-hover items-center [animation-direction:reverse]">
+          <ul className="flex w-max animate-marquee gap-3 sm:gap-6 pause-on-hover items-center [animation-direction:reverse]">
             {[...companies].reverse().concat([...companies].reverse()).map((c, i) => (
               <li
                 key={`row2-${c.name}-${i}`}
                 aria-hidden={i >= companies.length}
-                className="flex items-center gap-4 rounded-full border bg-white px-6 py-3 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md duration-300"
+                className="flex items-center gap-2.5 sm:gap-4 rounded-full border bg-white px-4 py-2 sm:px-6 sm:py-3 shadow-xs sm:shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md duration-300"
               >
-                <div className="relative size-8 shrink-0 overflow-hidden rounded-full">
+                <div className="relative size-6 sm:size-8 shrink-0 overflow-hidden rounded-full">
                   <Image
                     src={`/logos/${c.file}`}
                     alt={`${c.name} logo`}
@@ -72,14 +72,14 @@ export function CompaniesSection() {
                     className="object-contain bg-white"
                   />
                 </div>
-                <span className="font-bold text-ink whitespace-nowrap tracking-tight">{c.name}</span>
+                <span className="font-bold text-xs sm:text-sm text-ink whitespace-nowrap tracking-tight">{c.name}</span>
               </li>
             ))}
           </ul>
         </div>
 
         <Reveal delay={100}>
-          <p className="mt-16 mx-auto max-w-3xl text-[11px] text-muted-foreground/60 leading-relaxed text-center font-medium">
+          <p className="mt-10 sm:mt-16 mx-auto max-w-3xl text-[11px] text-muted-foreground/60 leading-relaxed text-center font-medium">
             Disclaimer: Company names and logos are trademarks of their respective owners. Their inclusion is for illustrative and career-awareness purposes only and does not imply partnership, affiliation, endorsement, recruitment, or placement guarantee.
           </p>
         </Reveal>

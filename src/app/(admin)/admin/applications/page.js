@@ -29,48 +29,90 @@ export default async function ApplicationsPage() {
             <p className="mt-1 text-sm">When candidates apply on the Careers page, they will appear here.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b bg-muted/40">
-                <tr>
-                  <th className="px-5 py-3 font-medium text-muted-foreground">Candidate</th>
-                  <th className="px-5 py-3 font-medium text-muted-foreground">Contact</th>
-                  <th className="px-5 py-3 font-medium text-muted-foreground">Role</th>
-                  <th className="px-5 py-3 font-medium text-muted-foreground">Experience</th>
-                  <th className="px-5 py-3 font-medium text-muted-foreground">Applied On</th>
-                  <th className="px-5 py-3 text-right font-medium text-muted-foreground">Resume</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {applications.map((app) => (
-                  <tr key={app.id} className="transition-colors hover:bg-muted/40">
-                    <td className="px-5 py-4 font-medium text-foreground">{app.full_name}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex flex-col text-xs">
-                        <span className="text-foreground">{app.email}</span>
-                        <span className="text-muted-foreground">{app.phone_no}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">{app.role}</td>
-                    <td className="px-5 py-4">{app.experience}</td>
-                    <td className="px-5 py-4 text-muted-foreground">
+          <>
+            {/* Mobile Card List (< md) */}
+            <div className="divide-y md:hidden">
+              {applications.map((app) => (
+                <div key={app.id} className="space-y-3 p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3 className="font-semibold text-foreground">{app.full_name}</h3>
+                      <p className="text-xs font-medium text-primary">
+                        {app.role} • {app.experience}
+                      </p>
+                    </div>
+                    <span className="text-[11px] whitespace-nowrap text-muted-foreground">
                       {new Date(app.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-5 py-4 text-right">
-                      <a
-                        href={app.resume_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-lg border bg-white px-3 py-1.5 text-xs font-semibold text-brand-800 transition-colors hover:bg-brand-50"
-                      >
-                        <Download className="size-3.5" /> Resume
-                      </a>
-                    </td>
+                    </span>
+                  </div>
+
+                  <div className="space-y-1 text-xs text-muted-foreground">
+                    <p className="truncate">
+                      Email: <span className="text-foreground">{app.email}</span>
+                    </p>
+                    <p>
+                      Phone: <span className="text-foreground">{app.phone_no}</span>
+                    </p>
+                  </div>
+
+                  <div className="pt-1">
+                    <a
+                      href={app.resume_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border bg-white px-3 py-2 text-xs font-semibold text-brand-800 transition-colors hover:bg-brand-50"
+                    >
+                      <Download className="size-3.5" /> Download Resume
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table (md+) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="border-b bg-muted/40">
+                  <tr>
+                    <th className="px-5 py-3 font-medium text-muted-foreground">Candidate</th>
+                    <th className="px-5 py-3 font-medium text-muted-foreground">Contact</th>
+                    <th className="px-5 py-3 font-medium text-muted-foreground">Role</th>
+                    <th className="px-5 py-3 font-medium text-muted-foreground">Experience</th>
+                    <th className="px-5 py-3 font-medium text-muted-foreground">Applied On</th>
+                    <th className="px-5 py-3 text-right font-medium text-muted-foreground">Resume</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y">
+                  {applications.map((app) => (
+                    <tr key={app.id} className="transition-colors hover:bg-muted/40">
+                      <td className="px-5 py-4 font-medium text-foreground">{app.full_name}</td>
+                      <td className="px-5 py-4">
+                        <div className="flex flex-col text-xs">
+                          <span className="text-foreground">{app.email}</span>
+                          <span className="text-muted-foreground">{app.phone_no}</span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4">{app.role}</td>
+                      <td className="px-5 py-4">{app.experience}</td>
+                      <td className="px-5 py-4 text-muted-foreground">
+                        {new Date(app.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-5 py-4 text-right">
+                        <a
+                          href={app.resume_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-lg border bg-white px-3 py-1.5 text-xs font-semibold text-brand-800 transition-colors hover:bg-brand-50"
+                        >
+                          <Download className="size-3.5" /> Resume
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>

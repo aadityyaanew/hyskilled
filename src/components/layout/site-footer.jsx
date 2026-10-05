@@ -23,7 +23,7 @@ export function SiteFooter({ categories = [] }) {
         className="pointer-events-none absolute -top-40 left-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-brand-600/25 blur-3xl"
       />
 
-      <div className="container-page relative pt-16 pb-8">
+      <div className="container-page relative pt-16 pb-24 sm:pb-8">
         {/* top: newsletter */}
         <div className="grid gap-8 border-b border-white/10 pb-12 lg:grid-cols-[1.2fr_1fr] lg:items-center">
           <div>

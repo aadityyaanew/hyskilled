@@ -5,7 +5,7 @@ import { initials } from "@/lib/format";
 
 function TestimonialCard({ t }) {
   return (
-    <figure className="relative flex h-full flex-col rounded-3xl border bg-card p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift">
+    <figure className="relative flex h-full flex-col rounded-3xl border bg-card p-5 sm:p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift">
       <Quote className="absolute top-6 right-6 size-8 text-brand-100" fill="currentColor" strokeWidth={0} />
       <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-ink-soft">“{t.quote}”</blockquote>
       <figcaption className="mt-6 flex items-center gap-3 border-t pt-5">

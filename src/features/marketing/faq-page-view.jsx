@@ -39,15 +39,15 @@ export function FaqPageView({ initialFaqs, groups }) {
         </div>
 
         <Tabs value={activeGroup} onValueChange={setActiveGroup} className="w-full sm:w-auto">
-          <TabsList className="h-auto p-1 rounded-2xl flex flex-wrap">
-            <TabsTrigger value="all" className="rounded-xl px-4 py-2 text-xs sm:text-sm">
+          <TabsList className="h-auto p-1 rounded-2xl flex max-w-full overflow-x-auto no-scrollbar gap-1 sm:flex-wrap">
+            <TabsTrigger value="all" className="rounded-xl px-3.5 py-2 text-xs sm:text-sm shrink-0">
               All
             </TabsTrigger>
             {groups.map((g) => (
               <TabsTrigger
                 key={g.id}
                 value={g.id}
-                className="rounded-xl px-4 py-2 text-xs sm:text-sm"
+                className="rounded-xl px-3.5 py-2 text-xs sm:text-sm shrink-0"
               >
                 {g.label}
               </TabsTrigger>

@@ -15,7 +15,7 @@ export function CartItem({ item, onRemove, compact = false, removable = true, cl
       <CourseCover
         course={{ slug: item.slug, categorySlug: item.categorySlug }}
         size="xs"
-        className={cn("shrink-0 rounded-xl", compact ? "size-16" : "size-20 sm:size-24")}
+        className={cn("shrink-0 rounded-xl", compact ? "size-14 sm:size-16" : "size-16 sm:size-24")}
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">

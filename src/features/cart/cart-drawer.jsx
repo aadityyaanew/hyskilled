@@ -62,7 +62,10 @@ export function CartDrawer() {
                 ))}
               </ul>
             </ScrollArea>
-            <SheetFooter className="gap-4 border-t bg-muted/40 p-5">
+            <SheetFooter
+              className="gap-3 sm:gap-4 border-t bg-muted/40 p-4 sm:p-5"
+              style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom, 1.25rem))" }}
+            >
               <TotalsBreakdown totals={totals} couponCode={coupon?.code} emphasize={false} />
               <Button asChild size="lg" variant="brand" onClick={() => setDrawerOpen(false)}>
                 <Link href={ROUTES.checkout}>Complete Enrollment securely</Link>
@@ -70,7 +73,6 @@ export function CartDrawer() {
               <Button asChild variant="outline" onClick={() => setDrawerOpen(false)}>
                 <Link href={ROUTES.cart}>View Selected Courses</Link>
               </Button>
-
             </SheetFooter>
           </>
         )}
