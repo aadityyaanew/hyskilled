@@ -59,6 +59,7 @@ export const checkoutSchema = z.object({
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Enter your name"),
   email: emailField,
+  phone: phoneField,
   topic: z.string().min(1, "Choose a topic"),
   message: z.string().trim().min(10, "Tell us a bit more (10+ characters)"),
 });

@@ -37,7 +37,7 @@ export function ContactForm() {
   } = useForm({
     resolver: zodResolver(contactSchema),
     mode: "onTouched",
-    defaultValues: { name: "", email: "", topic: "", message: "" },
+    defaultValues: { name: "", email: "", phone: "", topic: "", message: "" },
   });
 
   async function onSubmit(data) {
@@ -48,7 +48,7 @@ export function ContactForm() {
         body: JSON.stringify({
           name: data.name,
           email: data.email,
-          phone: "Not Provided",
+          phone: data.phone,
           course: data.topic,
           notes: data.message,
           source: "contact_form"
@@ -125,6 +125,18 @@ export function ContactForm() {
           />
         </FormField>
       </div>
+
+      <FormField id="contact-phone" label="Phone number" error={errors.phone?.message}>
+        <Input
+          id="contact-phone"
+          type="tel"
+          autoComplete="tel"
+          placeholder="+91 9876543210"
+          aria-invalid={Boolean(errors.phone)}
+          aria-describedby="contact-phone-error"
+          {...register("phone")}
+        />
+      </FormField>
 
       <FormField id="contact-topic" label="What can we help you with?" error={errors.topic?.message}>
         <Controller

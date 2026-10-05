@@ -81,12 +81,12 @@ export default async function ContactPage() {
                       {c.href ? (
                         <a
                           href={c.href}
-                          className="font-bold text-ink hover:text-primary transition-colors truncate block"
+                          className="font-bold text-ink hover:text-primary transition-colors block break-words"
                         >
                           {c.value}
                         </a>
                       ) : (
-                        <p className="font-bold text-ink truncate">{c.value}</p>
+                        <p className="font-bold text-ink break-words">{c.value}</p>
                       )}
                       <p className="mt-0.5 text-xs text-muted-foreground">{c.hint}</p>
                     </div>
@@ -96,7 +96,7 @@ export default async function ContactPage() {
 
               <div className="mt-8 rounded-2xl bg-brand-50/60 border border-brand-200 p-5">
                 <div className="flex items-center gap-3">
-                  <span className="grid size-10 place-items-center rounded-xl bg-primary text-white">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-white">
                     <MessageSquare className="size-5" />
                   </span>
                   <div>
