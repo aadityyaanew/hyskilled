@@ -7,14 +7,12 @@ import { load } from "@cashfreepayments/cashfree-js";
  *
  * Flow:
  *   1. createPaymentOrder()  -> POST /api/payments/create-order
- *        server re-prices the cart and returns a *pending* order
- *   2. adapter.launch(order) -> opens the gateway (Razorpay / Stripe / sandbox)
+ *        server re-prices the cart, creates the order on Cashfree, returns payment_session_id
+ *   2. adapter.launch(order) -> opens the Cashfree checkout page
+ *        Cashfree redirects the user to return_url after payment
  *   3. verifyPayment()       -> POST /api/payments/verify
- *        server verifies the gateway signature & marks the order paid
- *   4. Gateway webhook       -> POST /api/payments/webhook (source of truth)
- *
- * To go live, implement `launch` for your gateway below and set
- * NEXT_PUBLIC_PAYMENT_PROVIDER. Nothing else in the UI needs to change.
+ *        server confirms payment status with Cashfree and grants course access
+ *   4. Cashfree webhook      -> POST /api/payments/webhook (source of truth)
  */
 
 export function createPaymentOrder(payload) {
@@ -31,46 +29,27 @@ export function verifyPayment(payload) {
  *                                          paymentId?: string, reason?: string }>
  */
 export const paymentAdapters = {
-  /** Handled by <PaymentSandboxDialog /> – no network gateway involved. */
-  sandbox: { id: "sandbox", ui: "dialog" },
-
   cashfree: {
     id: "cashfree",
     ui: "gateway",
     async launch(order) {
-      const cashfree = await load({ mode: env.cashfreeEnv === "production" ? "production" : "sandbox" });
+      const cashfree = await load({
+        mode: env.cashfreeEnv === "production" ? "production" : "sandbox",
+      });
       const result = await cashfree.checkout({
         paymentSessionId: order.paymentSessionId,
+        redirectTarget: "_self", // stay in same tab for clean UX
       });
       if (result.error) {
         throw new Error(result.error.message);
       }
+      // Cashfree will redirect the browser to return_url —
+      // this line is only reached if the SDK resolves without redirect (rare).
       return { status: "paid", paymentId: order.gatewayOrderId };
-    },
-  },
-
-  razorpay: {
-    id: "razorpay",
-    ui: "gateway",
-    async launch(/* order, { method } */) {
-      // TODO(payments): load https://checkout.razorpay.com/v1/checkout.js and
-      // open Razorpay with { key: env.razorpayKeyId, order_id: order.gatewayOrderId, ... }
-      // then resolve with the handler response for server-side verification.
-      throw new Error("Razorpay is not configured yet.");
-    },
-  },
-
-  stripe: {
-    id: "stripe",
-    ui: "gateway",
-    async launch(/* order */) {
-      // TODO(payments): redirect to Stripe Checkout / confirm a PaymentIntent
-      // using env.stripePublishableKey and the clientSecret from create-order.
-      throw new Error("Stripe is not configured yet.");
     },
   },
 };
 
 export function getPaymentAdapter() {
-  return paymentAdapters[env.paymentProvider] ?? paymentAdapters.sandbox;
+  return paymentAdapters[env.paymentProvider] ?? paymentAdapters.cashfree;
 }

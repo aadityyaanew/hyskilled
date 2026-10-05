@@ -1,9 +1,6 @@
 /**
  * Payment provider registry.
- * `sandbox` is the built-in simulator used until a real gateway is wired in.
- * To integrate a real gateway, implement the adapter contract described in
- * `src/services/payments/README` (see payments.service.js) and flip
- * NEXT_PUBLIC_PAYMENT_PROVIDER.
+ * NEXT_PUBLIC_PAYMENT_PROVIDER controls which gateway is active.
  */
 export const paymentMethods = [
   {
@@ -34,8 +31,8 @@ export const paymentMethods = [
 ];
 
 export const paymentProviders = {
-  sandbox: { id: "sandbox", label: "Sandbox (demo)", live: false },
   cashfree: { id: "cashfree", label: "Cashfree", live: true },
   razorpay: { id: "razorpay", label: "Razorpay", live: true },
   stripe: { id: "stripe", label: "Stripe", live: true },
 };
+

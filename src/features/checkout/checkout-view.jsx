@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, Lock, LogIn, ShieldCheck, ShoppingBag, Smartphone } from "lucide-react";
+import { ArrowLeft, Lock, LogIn, ShieldCheck, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,6 @@ import { TotalsBreakdown } from "@/features/cart/totals-breakdown";
 import { useCart } from "@/features/cart/cart-provider";
 import { useAuth } from "@/features/auth/auth-provider";
 import { PaymentMethodSelector } from "@/features/checkout/payment-method-selector";
-import { PaymentSandboxDialog } from "@/features/checkout/payment-sandbox-dialog";
 import { checkoutSchema } from "@/schemas/forms.schema";
 import { createPaymentOrder, getPaymentAdapter, verifyPayment } from "@/services/client/payments.client";
 import { ordersRepository } from "@/services/client/orders.client";
@@ -42,13 +41,40 @@ function Step({ n, title, children }) {
   );
 }
 
+/** Full-screen overlay shown while Cashfree checkout is loading / in-progress */
+function GatewayLoadingOverlay({ amount }) {
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background/95 backdrop-blur-sm">
+      {/* Animated ring */}
+      <div className="relative">
+        <div className="size-20 animate-spin rounded-full border-4 border-muted border-t-primary" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Lock className="size-7 text-primary" />
+        </div>
+      </div>
+      <div className="text-center">
+        <p className="text-lg font-bold text-ink">Opening secure payment</p>
+        {amount && (
+          <p className="mt-1 text-sm text-muted-foreground">
+            {formatPrice(amount, { precise: !Number.isInteger(amount) })} · Powered by Cashfree
+          </p>
+        )}
+      </div>
+      <p className="flex items-center gap-2 rounded-xl bg-muted/60 px-4 py-2.5 text-xs text-muted-foreground">
+        <ShieldCheck className="size-4 text-emerald-500" />
+        256-bit encrypted · PCI DSS compliant
+      </p>
+    </div>
+  );
+}
+
 export function CheckoutView() {
   const router = useRouter();
   const { items, totals, coupon, clear, removeItem, hydrated } = useCart();
   const { user, isAuthenticated, hydrated: authReady } = useAuth();
 
   const [order, setOrder] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [gatewayOpen, setGatewayOpen] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
 
   const {
@@ -85,18 +111,21 @@ export function CheckoutView() {
           paymentId: verification.paymentId,
           paidAt: new Date().toISOString(),
         });
-        setRedirecting(true);
-        setDialogOpen(false);
         clear();
+        setRedirecting(true);
+        setGatewayOpen(false);
         router.push(ROUTES.orderSuccess(currentOrder.id));
         return;
       } catch {
         result = { status: "failed", reason: "verification_failed" };
       }
     }
-    ordersRepository.update(currentOrder.id, { status: "failed", failureReason: result.reason ?? "payment_failed" });
+    ordersRepository.update(currentOrder.id, {
+      status: "failed",
+      failureReason: result.reason ?? "payment_failed",
+    });
     setRedirecting(true);
-    setDialogOpen(false);
+    setGatewayOpen(false);
     router.push(ROUTES.orderFailed(currentOrder.id, result.reason ?? "payment_failed"));
   }
 
@@ -113,13 +142,13 @@ export function CheckoutView() {
       setOrder(created);
 
       const adapter = getPaymentAdapter();
-      if (adapter.ui === "dialog") {
-        setDialogOpen(true);
-      } else {
-        const result = await adapter.launch(created, { method: values.paymentMethod });
-        await finalize(created, result);
-      }
+      // Show the loading overlay before handing off to the gateway
+      setGatewayOpen(true);
+      const result = await adapter.launch(created, { method: values.paymentMethod });
+      setGatewayOpen(false);
+      await finalize(created, result);
     } catch (error) {
+      setGatewayOpen(false);
       toast.error("We couldn't start your payment", {
         description: error?.message ?? "Please try again in a moment.",
       });
@@ -138,7 +167,7 @@ export function CheckoutView() {
   if (items.length === 0 && !redirecting) {
     return (
       <EmptyState
-        icon={ShoppingBag}
+        icon={ShieldCheck}
         title="No courses selected yet"
         description="Add a course to your learning list to continue."
         action={
@@ -154,6 +183,9 @@ export function CheckoutView() {
 
   return (
     <>
+      {/* Full-screen gateway loading overlay */}
+      {gatewayOpen && <GatewayLoadingOverlay amount={order?.totals?.total} />}
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
@@ -193,7 +225,7 @@ export function CheckoutView() {
             <PaymentMethodSelector control={control} error={errors.paymentMethod?.message} />
             <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
               <Lock className="size-3.5 text-emerald-600" />
-              You'll complete the payment securely on the next step. We never store your card details.
+              You&apos;ll complete the payment securely on the next step. We never store your card details.
             </p>
           </Step>
 
@@ -226,7 +258,7 @@ export function CheckoutView() {
           </div>
         </div>
 
-        {/* summary */}
+        {/* order summary */}
         <aside className="space-y-5 lg:sticky lg:top-24" aria-label="Order summary">
           <div className="rounded-3xl border bg-card p-6 shadow-soft">
             <div className="mb-5 flex items-center justify-between">
@@ -245,10 +277,17 @@ export function CheckoutView() {
             <div className="my-6 border-t" />
             <TotalsBreakdown totals={totals} couponCode={coupon?.code} />
 
-            <Button type="submit" size="xl" variant="brand" className="mt-6 w-full" disabled={isSubmitting || redirecting}>
-              {isSubmitting ? (
+            <Button
+              type="submit"
+              size="xl"
+              variant="brand"
+              className="mt-6 w-full"
+              disabled={isSubmitting || redirecting || gatewayOpen}
+            >
+              {isSubmitting || gatewayOpen ? (
                 <>
-                  <Loader2 className="animate-spin" /> Preparing payment…
+                  <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Preparing payment…
                 </>
               ) : (
                 <>
@@ -258,7 +297,9 @@ export function CheckoutView() {
             </Button>
 
             <ul className="mt-5 space-y-2 text-xs text-muted-foreground">
-              
+              <li className="flex items-center gap-2">
+                <ShieldCheck className="size-3.5 text-emerald-600" /> Secured by Cashfree Payments
+              </li>
               <li className="flex items-center gap-2">
                 <Lock className="size-3.5 text-emerald-600" /> 256-bit encrypted payment
               </li>
@@ -270,17 +311,6 @@ export function CheckoutView() {
           </Link>
         </aside>
       </form>
-
-      <PaymentSandboxDialog
-        order={order}
-        open={dialogOpen}
-        onResult={(result) => finalize(order, result)}
-        onCancel={() => {
-          setDialogOpen(false);
-          if (order) ordersRepository.update(order.id, { status: "cancelled" });
-          toast.info("Payment cancelled", { description: "Your selected courses are safe — you can try again anytime." });
-        }}
-      />
     </>
   );
 }
