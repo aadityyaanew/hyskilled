@@ -15,6 +15,7 @@ export const footerNav = [
       { label: "Categories", href: ROUTES.categories },
       { label: "Program plans", href: ROUTES.pricing },
       { label: "My Learning", href: ROUTES.cart },
+      { label: "Register Your Seat", href: ROUTES.registerSeat },
     ],
   },
   {

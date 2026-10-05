@@ -65,3 +65,12 @@ export const contactSchema = z.object({
 });
 
 export const newsletterSchema = z.object({ email: emailField });
+
+export const seatBookingSchema = z.object({
+  name: z.string().trim().min(2, "Enter your full name"),
+  phone: phoneField,
+  email: emailField,
+  course: z.string().min(1, "Please select a course"),
+  city: z.string().trim().min(2, "Enter your city"),
+  state: z.string().min(1, "Please select your state"),
+});

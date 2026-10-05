@@ -30,6 +30,7 @@ export const ROUTES = {
   blog: "/blog",
   hireFromUs: "/hire-from-us",
   blogPost: (slug) => `/blog/${slug}`,
+  registerSeat: "/register-seat",
   
 
   // Single Admin Panel
