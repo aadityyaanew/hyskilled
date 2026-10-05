@@ -1,4 +1,5 @@
 import { query, execute, isDbConfigured } from "@/lib/db";
+import { ensureCourseOrderColumn } from "@/lib/course-order";
 import { courses as mockCourses } from "@/data/courses";
 import { categories as mockCategories } from "@/data/categories";
 import { coupons as mockCoupons } from "@/data/coupons";
@@ -93,11 +94,12 @@ export async function getDashboardStats() {
 export async function getAdminCourses() {
   if (isDbConfigured()) {
     try {
+      await ensureCourseOrderColumn();
       const rows = await query(
         `SELECT c.*, cat.name as category_name, cat.slug as category_slug
          FROM courses c
          LEFT JOIN categories cat ON cat.id = c.category_id
-         ORDER BY c.created_at DESC`
+         ORDER BY c.display_order ASC, c.id ASC`
       );
       return (rows || []).map((r) => {
         let tags = [];

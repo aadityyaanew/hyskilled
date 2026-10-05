@@ -2,6 +2,7 @@ import { categories } from "@/data/categories";
 import { instructors } from "@/data/instructors";
 import { PAGE_SIZE, PRICE_RANGES } from "@/lib/catalog-options";
 import { query, isDbConfigured } from "@/lib/db";
+import { ensureCourseOrderColumn } from "@/lib/course-order";
 import { safeJsonParse } from "@/lib/admin-api";
 
 export { PAGE_SIZE, SORT_OPTIONS, LEVELS, PRICE_RANGES } from "@/lib/catalog-options";
@@ -75,12 +76,13 @@ export function mapDbCourseRow(r) {
 async function getSourceCourses() {
   if (isDbConfigured()) {
     try {
+      await ensureCourseOrderColumn();
       const rows = await query(`
         SELECT c.*, cat.name as category_name, cat.slug as category_slug
         FROM courses c
         LEFT JOIN categories cat ON cat.id = c.category_id
         WHERE c.status != 'archived' AND c.status != 'draft'
-        ORDER BY c.created_at DESC
+        ORDER BY c.display_order ASC, c.id ASC
       `);
       return (rows || []).map(mapDbCourseRow);
     } catch (err) {
@@ -145,7 +147,7 @@ export async function getCourses(params = {}) {
     level,
     price,
     rating,
-    sort = "popular",
+    sort = "default",
     page = 1,
     pageSize = PAGE_SIZE,
   } = params;
@@ -168,13 +170,14 @@ export async function getCourses(params = {}) {
   });
 
   const sorters = {
+    default: () => 0, // keep admin-defined display order (sort is stable)
     popular: (a, b) => b.c.learners - a.c.learners,
     rating: (a, b) => b.c.rating - a.c.rating || b.c.reviewCount - a.c.reviewCount,
     newest: (a, b) => new Date(b.c.updatedAt) - new Date(a.c.updatedAt),
     "price-asc": (a, b) => a.c.price - b.c.price,
     "price-desc": (a, b) => b.c.price - a.c.price,
   };
-  list.sort(q && sort === "popular" ? (a, b) => b.s - a.s : sorters[sort] ?? sorters.popular);
+  list.sort(q && sort === "default" ? (a, b) => b.s - a.s : sorters[sort] ?? sorters.default);
 
   const total = list.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -229,10 +232,7 @@ export async function getAllCourseSlugs() {
 
 export async function getFeaturedCourses(limit = 6) {
   const all = await getSourceCourses();
-  return [...all]
-    .sort((a, b) => b.learners * b.rating - a.learners * a.rating)
-    .slice(0, limit)
-    .map(withRelations);
+  return all.slice(0, limit).map(withRelations);
 }
 
 export async function getNewCourses(limit = 4) {

@@ -3,6 +3,7 @@
 export const PAGE_SIZE = 9;
 
 export const SORT_OPTIONS = [
+  { value: "default", label: "Featured" },
   { value: "popular", label: "Most popular" },
   { value: "rating", label: "Highest rated" },
   { value: "newest", label: "Newest" },

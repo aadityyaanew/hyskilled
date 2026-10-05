@@ -18,6 +18,9 @@ import {
   Lock,
   Unlock,
   Clock,
+  GripVertical,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -73,6 +76,51 @@ export function CourseTable({ initialCourses = [], categories = [] }) {
 
     return matchesSearch && matchesCat && matchesStatus;
   });
+
+  const [dragId, setDragId] = useState(null);
+  const [overId, setOverId] = useState(null);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
+  const filtersActive =
+    searchTerm.trim() !== "" || selectedCategory !== "all" || selectedStatus !== "all";
+  const canReorder = !filtersActive && !isSavingOrder && courses.length > 1;
+
+  const persistOrder = async (next, previous) => {
+    setCourses(next);
+    setIsSavingOrder(true);
+    setFeedback({ type: "", message: "" });
+    try {
+      const res = await fetch("/api/admin/courses/reorder", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: next.map((c) => c.id) }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || "Failed to save course order.");
+      setFeedback({ type: "success", message: "Course order saved. Storefront updated." });
+    } catch (err) {
+      setCourses(previous);
+      setFeedback({ type: "error", message: err.message });
+    } finally {
+      setIsSavingOrder(false);
+    }
+  };
+
+  const moveCourse = (fromId, toIndex) => {
+    const fromIndex = courses.findIndex((c) => c.id === fromId);
+    if (fromIndex < 0 || toIndex < 0 || toIndex >= courses.length || fromIndex === toIndex) return;
+    const next = [...courses];
+    const [item] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, item);
+    persistOrder(next, courses);
+  };
+
+  const handleDrop = (targetId) => {
+    const id = dragId;
+    setDragId(null);
+    setOverId(null);
+    if (!canReorder || id == null || id === targetId) return;
+    moveCourse(id, courses.findIndex((c) => c.id === targetId));
+  };
 
   const handleReopenCourse = async (course) => {
     const targetId = course.id || course.slug;
@@ -171,6 +219,22 @@ export function CourseTable({ initialCourses = [], categories = [] }) {
         </div>
       )}
 
+      {/* Reorder hint */}
+      <div className="flex items-center gap-2 rounded-2xl border border-border bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
+        {isSavingOrder ? (
+          <>
+            <Loader2 className="size-3.5 animate-spin text-primary" /> Saving new order…
+          </>
+        ) : (
+          <>
+            <GripVertical className="size-3.5" />
+            {filtersActive
+              ? "Clear search and filters to reorder courses."
+              : "Drag rows (or use the arrows) to set the order shown on the homepage and courses page. Changes save automatically."}
+          </>
+        )}
+      </div>
+
       {/* Filter and Search Bar */}
       <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between shadow-sm">
         <div className="relative flex-1 max-w-sm">
@@ -217,6 +281,7 @@ export function CourseTable({ initialCourses = [], categories = [] }) {
           <table className="w-full text-left text-xs sm:text-sm">
             <thead className="border-b border-border bg-muted/40 text-muted-foreground font-semibold">
               <tr>
+                <th className="w-24 px-3 py-3.5">Order</th>
                 <th className="px-5 py-3.5">Course</th>
                 <th className="px-5 py-3.5">Category</th>
                 <th className="px-5 py-3.5">Level</th>
@@ -229,7 +294,7 @@ export function CourseTable({ initialCourses = [], categories = [] }) {
             <tbody className="divide-y divide-border">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-muted-foreground">
+                  <td colSpan={8} className="py-12 text-center text-muted-foreground">
                     No courses match your filter criteria.
                   </td>
                 </tr>
@@ -246,7 +311,75 @@ export function CourseTable({ initialCourses = [], categories = [] }) {
                   const syllabusUrl = course.syllabus_url || course.syllabusUrl;
 
                   return (
-                    <tr key={course.id || course.slug} className="hover:bg-muted/30 transition-colors">
+                    <tr
+                      key={course.id || course.slug}
+                      draggable={canReorder}
+                      onDragStart={(e) => {
+                        setDragId(course.id);
+                        e.dataTransfer.effectAllowed = "move";
+                        e.dataTransfer.setData("text/plain", String(course.id));
+                      }}
+                      onDragOver={(e) => {
+                        if (!canReorder || dragId == null) return;
+                        e.preventDefault();
+                        if (overId !== course.id) setOverId(course.id);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        handleDrop(course.id);
+                      }}
+                      onDragEnd={() => {
+                        setDragId(null);
+                        setOverId(null);
+                      }}
+                      className={`transition-colors hover:bg-muted/30 ${
+                        dragId === course.id ? "opacity-40" : ""
+                      } ${
+                        overId === course.id && dragId !== course.id
+                          ? "bg-primary/10 shadow-[inset_0_2px_0_0_var(--color-primary,#6366f1)]"
+                          : ""
+                      }`}
+                    >
+                      <td className="px-3 py-3.5">
+                        <div className="flex items-center gap-1">
+                          <span
+                            className={`inline-flex ${
+                              canReorder ? "cursor-grab active:cursor-grabbing text-muted-foreground" : "text-muted-foreground/30"
+                            }`}
+                            title={
+                              filtersActive
+                                ? "Clear filters to reorder"
+                                : "Drag to reorder"
+                            }
+                            aria-hidden="true"
+                          >
+                            <GripVertical className="size-4" />
+                          </span>
+                          <span className="w-5 text-center font-mono text-[11px] font-bold text-foreground">
+                            {courses.indexOf(course) + 1}
+                          </span>
+                          <div className="flex flex-col">
+                            <button
+                              type="button"
+                              disabled={!canReorder || courses.indexOf(course) === 0}
+                              onClick={() => moveCourse(course.id, courses.indexOf(course) - 1)}
+                              className="rounded text-muted-foreground hover:text-primary disabled:opacity-25"
+                              aria-label={`Move ${course.title} up`}
+                            >
+                              <ChevronUp className="size-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              disabled={!canReorder || courses.indexOf(course) === courses.length - 1}
+                              onClick={() => moveCourse(course.id, courses.indexOf(course) + 1)}
+                              className="rounded text-muted-foreground hover:text-primary disabled:opacity-25"
+                              aria-label={`Move ${course.title} down`}
+                            >
+                              <ChevronDown className="size-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
                           {imageUrl ? (

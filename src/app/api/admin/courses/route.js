@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireAdmin, slugify } from "@/lib/admin-api";
 import { query, execute, isDbConfigured } from "@/lib/db";
+import { ensureCourseOrderColumn } from "@/lib/course-order";
 
 export async function GET(request) {
   const { errorResponse } = await requireAdmin();
@@ -41,8 +42,9 @@ export async function GET(request) {
       params.push(status);
     }
 
-    sql += ` ORDER BY c.created_at DESC`;
+    sql += ` ORDER BY c.display_order ASC, c.id ASC`;
 
+    await ensureCourseOrderColumn();
     const courses = await query(sql, params);
     return NextResponse.json({ success: true, courses });
   } catch (err) {
@@ -147,13 +149,16 @@ export async function POST(request) {
       );
     }
 
+    await ensureCourseOrderColumn();
+    const [{ nextOrder }] = await query("SELECT COALESCE(MAX(display_order), 0) + 1 AS nextOrder FROM courses");
+
     const result = await execute(
       `INSERT INTO courses (
         slug, title, subtitle, category_id, instructor_id, level, duration_hours,
         price, original_price, badge, tags, short_description, description,
         outcomes, requirements, audience, modules, status, app_course_id,
-        syllabus_drive_file_id, syllabus_url, image_url, closing_date, closing_timer_enabled
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        syllabus_drive_file_id, syllabus_url, image_url, closing_date, closing_timer_enabled, display_order
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         slug,
         title.trim(),
@@ -179,6 +184,7 @@ export async function POST(request) {
         resolvedImageUrl,
         resolvedClosingDate,
         resolvedClosingTimerEnabled ? 1 : 0,
+        Number(nextOrder) || 1,
       ]
     );
 

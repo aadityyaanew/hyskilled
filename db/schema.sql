@@ -80,11 +80,13 @@ CREATE TABLE IF NOT EXISTS courses (
   image_url         VARCHAR(500) NULL,
   closing_date      DATETIME NULL,
   closing_timer_enabled TINYINT(1) NOT NULL DEFAULT 0,
+  display_order     INT NOT NULL DEFAULT 0,
   created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_courses_slug (slug),
   KEY idx_courses_status (status),
+  KEY idx_courses_display_order (display_order),
   KEY idx_courses_category (category_id),
   CONSTRAINT fk_courses_category FOREIGN KEY (category_id) REFERENCES categories (id),
   CONSTRAINT fk_courses_instructor FOREIGN KEY (instructor_id) REFERENCES instructors (id) ON DELETE SET NULL
