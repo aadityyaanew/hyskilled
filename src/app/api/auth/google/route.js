@@ -6,7 +6,9 @@ export async function GET(request) {
   const mock = searchParams.get("mock");
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "localhost:3000";
+  const proto = request.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
+  const origin = process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`;
   const redirectUri = `${origin}/api/auth/google/callback`;
 
   // Dev convenience: if user clicks mock or if Google client ID is not configured yet
