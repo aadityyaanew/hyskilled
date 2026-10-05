@@ -13,13 +13,15 @@
 import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 
-const SRC = "hylogo.jpeg";
-const FULL = { left: 215, top: 40, width: 1300, height: 520 };
-const MARK = { left: 215, top: 40, width: 440, height: 520 };
+const SRC = "public/brand/newlogo.jpeg";
+const FULL = null; // Use the full image
+const MARK = { left: 0, top: 0, width: 639, height: 639 }; // Assuming the mark is a square on the left
 
 async function toTransparent(region, { white = false } = {}) {
-  const { data, info } = await sharp(SRC)
-    .extract(region)
+  let pipeline = sharp(SRC);
+  if (region) pipeline = pipeline.extract(region);
+  
+  const { data, info } = await pipeline
     .removeAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
@@ -45,7 +47,7 @@ async function toTransparent(region, { white = false } = {}) {
 }
 
 async function squareMark(size, background) {
-  const base = (await toTransparent(MARK)).png();
+  const base = (await toTransparent(MARK, { white: true })).png();
   return sharp(await base.toBuffer())
     .resize(size, size, {
       fit: "contain",
@@ -56,7 +58,8 @@ async function squareMark(size, background) {
 
 await mkdir("public/brand", { recursive: true });
 
-await (await toTransparent(FULL)).png().toFile("public/brand/logo.png");
+// User requested logo.png and mark.png to be hero-white without background
+await (await toTransparent(FULL, { white: true })).png().toFile("public/brand/logo.png");
 await (await toTransparent(FULL, { white: true })).png().toFile("public/brand/logo-white.png");
 await (await squareMark(512)).toFile("public/brand/mark.png");
 await (await squareMark(512)).toFile("src/app/icon.png");
