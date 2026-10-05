@@ -29,7 +29,7 @@ export default function CareersPage() {
           <div className="mb-10 text-center">
             <h2 className="text-3xl font-bold text-ink">Apply Now</h2>
             <p className="mt-3 text-muted-foreground">
-              Fill out the form below to apply for open positions like Software Engineer, HR, Marketing, or Lecturer.
+              Fill out the form below to apply for open positions like Software Engineer, HR, Marketing, Instructor, or Business Development.
             </p>
           </div>
           

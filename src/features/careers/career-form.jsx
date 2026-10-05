@@ -103,7 +103,8 @@ export function CareerForm() {
             <option value="Software Engineer">Software Engineer</option>
             <option value="HR">HR</option>
             <option value="Marketing">Marketing</option>
-            <option value="Lecturer">Lecturer</option>
+            <option value="Instructor">Instructor</option>
+            <option value="Business Development">Business Development</option>
             <option value="Other">Other</option>
           </select>
         </div>
