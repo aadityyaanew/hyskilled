@@ -11,6 +11,9 @@ import {
 import { buildMetadata } from "@/lib/seo";
 import { ROUTES } from "@/config/routes";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateStaticParams() {
   const slugs = await getAllCategorySlugs();
   return slugs.map((slug) => ({ slug }));

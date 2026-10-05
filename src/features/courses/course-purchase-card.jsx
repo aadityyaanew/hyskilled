@@ -1,7 +1,9 @@
-import { BarChart2, Clock, Download, Infinity as InfinityIcon, Layers, ShieldCheck, Smartphone, Award } from "lucide-react";
+import { BarChart2, Clock, Download, Infinity as InfinityIcon, Layers, ShieldCheck, Smartphone, Award, FileText, ExternalLink } from "lucide-react";
 import { CourseCover } from "@/features/courses/course-cover";
 import { AddToCartButton } from "@/features/cart/add-to-cart-button";
 import { PriceDisplay } from "@/components/shared/price-display";
+import { CourseCountdown } from "@/components/shared/course-countdown";
+import { Button } from "@/components/ui/button";
 import { courseToLineItem } from "@/lib/line-items";
 import { formatHours } from "@/lib/format";
 import { siteConfig } from "@/config/site";
@@ -21,17 +23,49 @@ export function CoursePurchaseCard({ course }) {
     <div className="overflow-hidden rounded-3xl border bg-white shadow-lift">
       <CourseCover course={course} className="hidden aspect-[16/9] w-full lg:block" />
       <div className="p-6">
+        {(course.closingTimerEnabled || course.isClosed) && (
+          <div className="mb-4">
+            <CourseCountdown
+              closingDate={course.closingDate}
+              closingTimerEnabled={course.closingTimerEnabled}
+              isClosed={course.isClosed}
+              variant="purchase"
+            />
+          </div>
+        )}
+
         <PriceDisplay price={course.price} originalPrice={course.originalPrice} size="lg" />
         <p className="mt-1 text-xs text-muted-foreground">Inclusive of all taxes · One-time payment</p>
 
         <div className="mt-5 space-y-2.5">
-          <AddToCartButton item={item} buyNow size="xl" className="w-full">
-            Start Learning
-          </AddToCartButton>
-          <AddToCartButton item={item} variant="outline" size="lg" className="w-full" />
+          {course.isClosed ? (
+            <Button disabled size="xl" variant="outline" className="w-full opacity-70 bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 font-bold cursor-not-allowed">
+              Enrollment Closed
+            </Button>
+          ) : (
+            <>
+              <AddToCartButton item={item} buyNow size="xl" className="w-full">
+                Start Learning
+              </AddToCartButton>
+              <AddToCartButton item={item} variant="outline" size="lg" className="w-full" />
+            </>
+          )}
         </div>
 
-        
+        {course.syllabusUrl && (
+          <div className="mt-4">
+            <a
+              href={course.syllabusUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-2xl border border-brand-200 bg-brand-50/50 py-2.5 px-3 text-xs font-bold text-brand-800 hover:bg-brand-100/60 transition-colors shadow-xs"
+            >
+              <FileText className="size-4 text-primary" />
+              <span>Download Syllabus (PDF)</span>
+              <ExternalLink className="size-3 text-muted-foreground ml-auto" />
+            </a>
+          </div>
+        )}
 
         <div className="mt-6 border-t pt-5">
           <h2 className="font-heading text-sm font-bold text-ink">This course includes</h2>

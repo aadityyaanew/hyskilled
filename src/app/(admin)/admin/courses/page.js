@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { getAdminCourses, getAdminCategories } from "@/services/admin.service";
 import { CourseTable } from "@/features/admin/course-table";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "Course Catalog Management | Admin",
 };

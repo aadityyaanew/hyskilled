@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireAdmin, slugify } from "@/lib/admin-api";
 import { query, execute, isDbConfigured } from "@/lib/db";
 
@@ -82,7 +83,42 @@ export async function POST(request) {
     modules = [],
     status = "published",
     appCourseId = null,
+    syllabusDriveFileId = null,
+    syllabusUrl = null,
+    imageUrl = null,
+    closingDate = null,
+    closingTimerEnabled = false,
   } = body;
+
+  const resolvedSyllabusDriveFileId = syllabusDriveFileId || body.syllabus_drive_file_id || null;
+  const resolvedSyllabusUrl = syllabusUrl || body.syllabus_url || null;
+  const resolvedImageUrl = imageUrl || body.image_url || body.thumbnail || null;
+  
+  let resolvedClosingDate = null;
+  const rawClosingDate = closingDate || body.closing_date;
+  if (rawClosingDate) {
+    const d = new Date(rawClosingDate);
+    if (!Number.isNaN(d.getTime())) {
+      resolvedClosingDate = d;
+    }
+  }
+
+  const resolvedClosingTimerEnabled = Boolean(
+    closingTimerEnabled ?? body.closing_timer_enabled
+  );
+
+  const resolvedInstructorId = instructorId || body.instructor_id || "aarav-mehta";
+
+  const defaultModules = [
+    { title: "Course Introduction & Fundamentals", summary: "Core foundation principles and ecosystem overview." },
+    { title: "Practical Concepts & Tooling", summary: "In-depth understanding of standard tools and techniques." },
+    { title: "Hands-on Project & Implementation", summary: "Real-world project implementation and industry best practices." },
+    { title: "Advanced Topics & Portfolio Preparation", summary: "Production readiness, deployment, and career guidance." },
+  ];
+  const resolvedModules = Array.isArray(modules) && modules.length > 0 ? modules : defaultModules;
+
+  const defaultAudience = ["Students and professionals looking to upskill in technology", "Anyone wanting hands-on practical project experience"];
+  const resolvedAudience = Array.isArray(audience) && audience.length > 0 ? audience : defaultAudience;
 
   if (!title || !title.trim()) {
     return NextResponse.json({ success: false, message: "Course title is required." }, { status: 422 });
@@ -115,14 +151,15 @@ export async function POST(request) {
       `INSERT INTO courses (
         slug, title, subtitle, category_id, instructor_id, level, duration_hours,
         price, original_price, badge, tags, short_description, description,
-        outcomes, requirements, audience, modules, status, app_course_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        outcomes, requirements, audience, modules, status, app_course_id,
+        syllabus_drive_file_id, syllabus_url, image_url, closing_date, closing_timer_enabled
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         slug,
         title.trim(),
         subtitle?.trim() || null,
         targetCatId,
-        instructorId || null,
+        resolvedInstructorId,
         level,
         Number(durationHours) || 0,
         Number(price) || 0,
@@ -133,12 +170,27 @@ export async function POST(request) {
         description?.trim() || null,
         JSON.stringify(Array.isArray(outcomes) ? outcomes : []),
         JSON.stringify(Array.isArray(requirements) ? requirements : []),
-        JSON.stringify(Array.isArray(audience) ? audience : []),
-        JSON.stringify(Array.isArray(modules) ? modules : []),
+        JSON.stringify(resolvedAudience),
+        JSON.stringify(resolvedModules),
         status || "published",
         appCourseId?.trim() || slug,
+        resolvedSyllabusDriveFileId,
+        resolvedSyllabusUrl,
+        resolvedImageUrl,
+        resolvedClosingDate,
+        resolvedClosingTimerEnabled ? 1 : 0,
       ]
     );
+
+    try {
+      revalidatePath("/admin/courses");
+      revalidatePath("/courses");
+      revalidatePath("/");
+      revalidatePath(`/courses/${slug}`);
+      revalidatePath("/categories");
+    } catch (e) {
+      console.warn("revalidatePath error on create:", e);
+    }
 
     return NextResponse.json({
       success: true,

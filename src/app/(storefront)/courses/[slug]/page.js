@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BarChart2, CalendarClock, Check, Globe, Users } from "lucide-react";
+import { BarChart2, CalendarClock, Check, Globe, Users, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "@/components/shared/page-header";
 import { JsonLd } from "@/components/shared/json-ld";
+import { CourseCountdown } from "@/components/shared/course-countdown";
 
 import { SectionHeading } from "@/components/shared/section-heading";
 import { CoursePurchaseCard } from "@/features/courses/course-purchase-card";
@@ -21,6 +22,9 @@ import { getFaqs, getTestimonials } from "@/services/content.service";
 import { buildMetadata, courseJsonLd } from "@/lib/seo";
 import { formatCompact, formatDate, formatHours } from "@/lib/format";
 import { ROUTES } from "@/config/routes";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function generateStaticParams() {
   const slugs = await getAllCourseSlugs();
@@ -92,6 +96,17 @@ export default async function CourseDetailPage({ params }) {
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-white/75">{course.subtitle}</p>
 
+            {(course.closingTimerEnabled || course.isClosed) && (
+              <div className="mt-5">
+                <CourseCountdown
+                  closingDate={course.closingDate}
+                  closingTimerEnabled={course.closingTimerEnabled}
+                  isClosed={course.isClosed}
+                  variant="hero"
+                />
+              </div>
+            )}
+
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80">
 
               <span className="inline-flex items-center gap-1.5">
@@ -142,10 +157,22 @@ export default async function CourseDetailPage({ params }) {
           </Section>
 
           <Section id="syllabus" title="Syllabus overview">
-            <p className="-mt-2 mb-5 text-sm text-muted-foreground">
-              {course.moduleCount} modules · {formatHours(course.durationHours)} total. Full lessons are
-              delivered inside the Hyskilled app.
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-3 -mt-2 mb-5">
+              <p className="text-sm text-muted-foreground">
+                {course.moduleCount} modules · {formatHours(course.durationHours)} total. Full lessons are
+                delivered inside the Hyskilled app.
+              </p>
+              {course.syllabusUrl && (
+                <a
+                  href={course.syllabusUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-colors shadow-xs"
+                >
+                  <FileText className="size-3.5" /> View Official Syllabus (PDF)
+                </a>
+              )}
+            </div>
             <CourseSyllabus modules={course.modules} />
           </Section>
 

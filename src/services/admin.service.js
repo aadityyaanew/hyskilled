@@ -99,33 +99,40 @@ export async function getAdminCourses() {
          LEFT JOIN categories cat ON cat.id = c.category_id
          ORDER BY c.created_at DESC`
       );
-      if (rows && rows.length > 0) {
-        return rows.map((r) => {
-          let tags = [];
-          try {
-            tags = typeof r.tags === "string" ? JSON.parse(r.tags) : r.tags || [];
-          } catch {
-            tags = [];
-          }
-          return {
-            ...r,
-            price: Number(r.price),
-            originalPrice: r.original_price ? Number(r.original_price) : null,
-            durationHours: r.duration_hours,
-            tags,
-          };
-        });
-      }
+      return (rows || []).map((r) => {
+        let tags = [];
+        try {
+          tags = typeof r.tags === "string" ? JSON.parse(r.tags) : r.tags || [];
+        } catch {
+          tags = [];
+        }
+        const closingDate = r.closing_date ? new Date(r.closing_date).toISOString() : null;
+        const closingTimerEnabled = Boolean(r.closing_timer_enabled);
+        const isClosed =
+          r.status === "closed" ||
+          Boolean(closingTimerEnabled && closingDate && new Date(closingDate).getTime() <= Date.now());
+
+        return {
+          ...r,
+          price: Number(r.price),
+          originalPrice: r.original_price ? Number(r.original_price) : null,
+          durationHours: r.duration_hours,
+          tags,
+          syllabusDriveFileId: r.syllabus_drive_file_id || null,
+          syllabusUrl: r.syllabus_url || null,
+          imageUrl: r.image_url || null,
+          closingDate,
+          closingTimerEnabled,
+          isClosed,
+        };
+      });
     } catch (err) {
-      console.warn("Could not fetch courses from MySQL, using fallback:", err.message);
+      console.error("Could not fetch courses from MySQL:", err.message);
+      return [];
     }
   }
 
-  return mockCourses.map((c) => ({
-    ...c,
-    category_name: c.categorySlug,
-    status: "published",
-  }));
+  return [];
 }
 
 export async function getAdminCategories() {
@@ -138,30 +145,26 @@ export async function getAdminCategories() {
          GROUP BY cat.id
          ORDER BY cat.sort_order ASC, cat.id ASC`
       );
-      if (rows && rows.length > 0) {
-        return rows.map((cat) => {
-          let keywords = [];
-          try {
-            keywords = typeof cat.keywords === "string" ? JSON.parse(cat.keywords) : cat.keywords || [];
-          } catch {
-            keywords = [];
-          }
-          return {
-            ...cat,
-            keywords,
-          };
-        });
-      }
+      return (rows || []).map((cat) => {
+        let keywords = [];
+        try {
+          keywords = typeof cat.keywords === "string" ? JSON.parse(cat.keywords) : cat.keywords || [];
+        } catch {
+          keywords = [];
+        }
+        return {
+          ...cat,
+          keywords,
+          course_count: Number(cat.course_count) || 0,
+        };
+      });
     } catch (err) {
-      console.warn("Could not fetch categories from MySQL, using fallback:", err.message);
+      console.error("Could not fetch categories from MySQL:", err.message);
+      return [];
     }
   }
 
-  return mockCategories.map((c, i) => ({
-    ...c,
-    id: i + 1,
-    course_count: mockCourses.filter((x) => x.categorySlug === c.slug).length,
-  }));
+  return [];
 }
 
 export async function getAdminBundles() {

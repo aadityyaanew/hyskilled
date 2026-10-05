@@ -1,26 +1,111 @@
-import { courses } from "@/data/courses";
 import { categories } from "@/data/categories";
 import { instructors } from "@/data/instructors";
 import { PAGE_SIZE, PRICE_RANGES } from "@/lib/catalog-options";
+import { query, isDbConfigured } from "@/lib/db";
+import { safeJsonParse } from "@/lib/admin-api";
 
 export { PAGE_SIZE, SORT_OPTIONS, LEVELS, PRICE_RANGES } from "@/lib/catalog-options";
-
-/**
- * Catalogue service.
- *
- * Every function is async and returns plain serialisable data so that the
- * implementation can be swapped for `backendApi.get("/courses")` without
- * touching any page or component.
- */
 
 const categoryBySlug = new Map(categories.map((c) => [c.slug, c]));
 const instructorById = new Map(instructors.map((i) => [i.id, i]));
 
+export function isCourseClosed(course) {
+  if (!course) return false;
+  if (course.status === "closed") return true;
+  if (course.closingTimerEnabled && course.closingDate) {
+    const closeTime = new Date(course.closingDate).getTime();
+    if (!Number.isNaN(closeTime) && closeTime <= Date.now()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function mapDbCourseRow(r) {
+  const tags = safeJsonParse(r.tags, []);
+  const outcomes = safeJsonParse(r.outcomes, []);
+  const requirements = safeJsonParse(r.requirements, []);
+  const audience = safeJsonParse(r.audience, []);
+  const modules = safeJsonParse(r.modules, []);
+
+  const closingDate = r.closing_date ? new Date(r.closing_date).toISOString() : null;
+  const closingTimerEnabled = Boolean(r.closing_timer_enabled);
+  const isClosed =
+    r.status === "closed" ||
+    Boolean(closingTimerEnabled && closingDate && new Date(closingDate).getTime() <= Date.now());
+
+  const categorySlug = r.category_slug || r.categorySlug || "generative-ai";
+
+  return {
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    subtitle: r.subtitle || "",
+    categorySlug,
+    instructorId: r.instructor_id || r.instructorId || "ananya-sharma",
+    level: r.level || "Beginner",
+    durationHours: Number(r.duration_hours) || 20,
+    price: Number(r.price) || 0,
+    originalPrice: r.original_price ? Number(r.original_price) : null,
+    rating: Number(r.rating) || 4.8,
+    reviewCount: Number(r.review_count) || 0,
+    learners: Number(r.learners) || 0,
+    badge: r.badge || null,
+    tags: Array.isArray(tags) ? tags : [],
+    shortDescription: r.short_description || r.shortDescription || "",
+    description: r.description || "",
+    outcomes: Array.isArray(outcomes) ? outcomes : [],
+    requirements: Array.isArray(requirements) ? requirements : [],
+    audience: Array.isArray(audience) ? audience : [],
+    modules: Array.isArray(modules) ? modules : [],
+    moduleCount: Array.isArray(modules) && modules.length > 0 ? modules.length : 6,
+    status: r.status || "published",
+    appCourseId: r.app_course_id || r.slug,
+    syllabusDriveFileId: r.syllabus_drive_file_id || null,
+    syllabusUrl: r.syllabus_url || null,
+    imageUrl: r.image_url || null,
+    thumbnail: r.image_url || null,
+    closingDate,
+    closingTimerEnabled,
+    isClosed,
+    updatedAt: r.updated_at ? new Date(r.updated_at).toISOString() : new Date().toISOString(),
+  };
+}
+
+async function getSourceCourses() {
+  if (isDbConfigured()) {
+    try {
+      const rows = await query(`
+        SELECT c.*, cat.name as category_name, cat.slug as category_slug
+        FROM courses c
+        LEFT JOIN categories cat ON cat.id = c.category_id
+        WHERE c.status != 'archived' AND c.status != 'draft'
+        ORDER BY c.created_at DESC
+      `);
+      return (rows || []).map(mapDbCourseRow);
+    } catch (err) {
+      console.error("Could not fetch published courses from MySQL:", err.message);
+      return [];
+    }
+  }
+
+  return [];
+}
+
 function withRelations(course) {
+  if (!course) return null;
+  const isClosed = isCourseClosed(course);
   return {
     ...course,
-    category: categoryBySlug.get(course.categorySlug) ?? null,
-    instructor: instructorById.get(course.instructorId) ?? null,
+    isClosed,
+    category: categoryBySlug.get(course.categorySlug) ?? {
+      slug: course.categorySlug,
+      name: course.categorySlug?.replace(/-/g, " ") || "Tech",
+      short: course.categorySlug?.toUpperCase() || "Tech",
+      hue: 24,
+      keywords: [],
+    },
+    instructor: instructorById.get(course.instructorId) ?? instructors[0],
   };
 }
 
@@ -35,11 +120,11 @@ function score(course, q) {
   const terms = needle.split(/\s+/);
   const category = categoryBySlug.get(course.categorySlug);
   const haystacks = [
-    [course.title, 5],
-    [course.tags.join(" "), 4],
+    [course.title || "", 5],
+    [(course.tags || []).join(" "), 4],
     [category?.name ?? "", 3],
-    [course.subtitle, 2],
-    [course.shortDescription, 1],
+    [course.subtitle || "", 2],
+    [course.shortDescription || "", 1],
   ];
   let total = 0;
   for (const term of terms) {
@@ -47,17 +132,12 @@ function score(course, q) {
     for (const [text, weight] of haystacks) {
       if (text.toLowerCase().includes(term)) termScore += weight;
     }
-    if (termScore === 0) return 0; // every term must match somewhere
+    if (termScore === 0) return 0;
     total += termScore;
   }
   return total;
 }
 
-/**
- * List courses with search, filters, sorting and pagination.
- * @param {{q?:string, category?:string|string[], level?:string|string[], price?:string,
- *          rating?:number, sort?:string, page?:number, pageSize?:number}} params
- */
 export async function getCourses(params = {}) {
   const {
     q = "",
@@ -75,7 +155,8 @@ export async function getCourses(params = {}) {
   const priceRange = PRICE_RANGES.find((r) => r.value === price);
   const minRating = Number(rating) || 0;
 
-  let list = courses.map((c) => ({ c, s: q ? score(c, q) : 0 }));
+  const sourceCourses = await getSourceCourses();
+  let list = sourceCourses.map((c) => ({ c, s: q ? score(c, q) : 0 }));
   if (q) list = list.filter((x) => x.s > 0);
 
   list = list.filter(({ c }) => {
@@ -106,52 +187,85 @@ export async function getCourses(params = {}) {
 }
 
 export async function getAllCourses() {
-  return courses.map(withRelations);
+  const sourceCourses = await getSourceCourses();
+  return sourceCourses.map(withRelations);
 }
 
 export async function getCourseBySlug(slug) {
-  const course = courses.find((c) => c.slug === slug);
-  return course ? withRelations(course) : null;
+  if (isDbConfigured()) {
+    try {
+      const rows = await query(
+        `SELECT c.*, cat.name as category_name, cat.slug as category_slug
+         FROM courses c
+         LEFT JOIN categories cat ON cat.id = c.category_id
+         WHERE c.slug = ? LIMIT 1`,
+        [slug]
+      );
+      if (rows && rows.length > 0) {
+        return withRelations(mapDbCourseRow(rows[0]));
+      }
+      return null;
+    } catch (err) {
+      console.error("Could not fetch course by slug from MySQL:", err.message);
+      return null;
+    }
+  }
+
+  return null;
 }
 
 export async function getAllCourseSlugs() {
-  return courses.map((c) => c.slug);
+  if (isDbConfigured()) {
+    try {
+      const rows = await query("SELECT slug FROM courses WHERE status != 'archived'");
+      return (rows || []).map((r) => r.slug);
+    } catch (err) {
+      console.error("Could not fetch course slugs from MySQL:", err.message);
+      return [];
+    }
+  }
+  return [];
 }
 
 export async function getFeaturedCourses(limit = 6) {
-  return [...courses]
+  const all = await getSourceCourses();
+  return [...all]
     .sort((a, b) => b.learners * b.rating - a.learners * a.rating)
     .slice(0, limit)
     .map(withRelations);
 }
 
 export async function getNewCourses(limit = 4) {
-  return [...courses]
+  const all = await getSourceCourses();
+  return [...all]
     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
     .slice(0, limit)
     .map(withRelations);
 }
 
 export async function getCoursesByCategory(categorySlug, limit) {
-  const list = courses.filter((c) => c.categorySlug === categorySlug).map(withRelations);
+  const all = await getSourceCourses();
+  const list = all.filter((c) => c.categorySlug === categorySlug).map(withRelations);
   return limit ? list.slice(0, limit) : list;
 }
 
 export async function getCoursesBySlugs(slugs) {
+  const all = await getSourceCourses();
   return slugs
-    .map((s) => courses.find((c) => c.slug === s))
+    .map((s) => all.find((c) => c.slug === s))
     .filter(Boolean)
     .map(withRelations);
 }
 
 export async function getRelatedCourses(course, limit = 3) {
-  return courses
+  const all = await getSourceCourses();
+  return all
     .filter((c) => c.slug !== course.slug)
     .map((c) => ({
       c,
       s:
         (c.categorySlug === course.categorySlug ? 10 : 0) +
-        c.tags.filter((t) => course.tags.includes(t)).length * 2 +
+        (course.tags || []).filter((t) => (c.tags || []).includes(t)).length * 2 +
         c.rating,
     }))
     .sort((a, b) => b.s - a.s)
@@ -159,10 +273,10 @@ export async function getRelatedCourses(course, limit = 3) {
     .map(({ c }) => withRelations(c));
 }
 
-/** Lightweight results for the global search dialog. */
 export async function searchCourses(q, limit = 6) {
   if (!q || q.trim().length < 2) return [];
-  return courses
+  const all = await getSourceCourses();
+  return all
     .map((c) => ({ c, s: score(c, q) }))
     .filter((x) => x.s > 0)
     .sort((a, b) => b.s - a.s)
@@ -178,6 +292,8 @@ export async function searchCourses(q, limit = 6) {
         categorySlug: full.categorySlug,
         categoryName: full.category?.short,
         rating: full.rating,
+        imageUrl: full.imageUrl || null,
+        isClosed: full.isClosed,
       };
     });
 }
@@ -185,4 +301,3 @@ export async function searchCourses(q, limit = 6) {
 export async function getInstructors(limit) {
   return limit ? instructors.slice(0, limit) : instructors;
 }
-

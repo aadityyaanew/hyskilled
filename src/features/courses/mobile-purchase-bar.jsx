@@ -26,9 +26,15 @@ export function MobilePurchaseBar({ course }) {
     >
       <div className="mx-auto flex max-w-xl items-center justify-between gap-4">
         <PriceDisplay price={course.price} originalPrice={course.originalPrice} size="sm" showDiscount={false} />
-        <AddToCartButton item={courseToLineItem(course)} buyNow size="lg" className="flex-1 sm:flex-none sm:px-10">
-          Start Learning
-        </AddToCartButton>
+        {course.isClosed ? (
+          <span className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-2 text-xs font-bold text-destructive">
+            Enrollment Closed
+          </span>
+        ) : (
+          <AddToCartButton item={courseToLineItem(course)} buyNow size="lg" className="flex-1 sm:flex-none sm:px-10">
+            Start Learning
+          </AddToCartButton>
+        )}
       </div>
     </div>
   );

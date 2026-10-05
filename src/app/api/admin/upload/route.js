@@ -18,21 +18,50 @@ export async function POST(req) {
     const formData = await req.formData();
     const file = formData.get("file");
 
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    if (!file || typeof file === "string") {
+      return NextResponse.json({ error: "No image file provided" }, { status: 400 });
+    }
+
+    // Allowed image formats
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+      "image/svg+xml",
+    ];
+
+    if (!allowedTypes.includes(file.type.toLowerCase())) {
+      return NextResponse.json(
+        { error: "Invalid image format. Allowed formats: PNG, JPG, JPEG, WebP, GIF, SVG." },
+        { status: 400 }
+      );
+    }
+
+    // 10 MB limit
+    const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+    if (file.size > MAX_IMAGE_SIZE) {
+      return NextResponse.json(
+        { error: `Image size exceeds the 10MB limit (provided: ${(file.size / (1024 * 1024)).toFixed(1)}MB).` },
+        { status: 400 }
+      );
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const base64String = `data:${file.type};base64,${buffer.toString("base64")}`;
 
+    const folder = (formData.get("folder") || "hyskilled_courses").toString();
+
     const result = await cloudinary.uploader.upload(base64String, {
-      folder: "hyskilled_uploads",
+      folder,
+      resource_type: "auto",
     });
 
-    return NextResponse.json({ url: result.secure_url });
+    return NextResponse.json({ success: true, url: result.secure_url });
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Failed to upload image" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to upload image" }, { status: 500 });
   }
 }

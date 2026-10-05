@@ -5,6 +5,9 @@ import { getCategories } from "@/services/categories.service";
 import { buildMetadata } from "@/lib/seo";
 import { ROUTES } from "@/config/routes";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = buildMetadata({
   title: "All Courses",
   description:

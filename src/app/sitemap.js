@@ -1,6 +1,6 @@
 import { siteConfig } from "@/config/site";
-import { courses } from "@/data/courses";
-import { categories } from "@/data/categories";
+import { getAllCourseSlugs } from "@/services/courses.service";
+import { getAllCategorySlugs } from "@/services/categories.service";
 import { getPublishedPosts } from "@/services/blogs.service";
 
 export default async function sitemap() {
@@ -27,23 +27,28 @@ export default async function sitemap() {
     priority: r.priority,
   }));
 
+  const [courseSlugs, categorySlugs, posts] = await Promise.all([
+    getAllCourseSlugs(),
+    getAllCategorySlugs(),
+    getPublishedPosts(),
+  ]);
+
   // Dynamic course pages
-  const courseRoutes = courses.map((c) => ({
-    url: `${baseUrl}/courses/${c.slug}`,
+  const courseRoutes = courseSlugs.map((slug) => ({
+    url: `${baseUrl}/courses/${slug}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.8,
   }));
 
   // Dynamic category pages
-  const categoryRoutes = categories.map((cat) => ({
-    url: `${baseUrl}/categories/${cat.slug}`,
+  const categoryRoutes = categorySlugs.map((slug) => ({
+    url: `${baseUrl}/categories/${slug}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.7,
   }));
 
-  const posts = await getPublishedPosts();
   const blogRoutes = posts.map((p) => ({
     url: `${baseUrl}/blog/${p.slug}`,
     lastModified: p.updated_at ? new Date(p.updated_at) : now,

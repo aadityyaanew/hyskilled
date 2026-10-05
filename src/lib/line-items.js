@@ -15,6 +15,8 @@ export function courseToLineItem(course) {
     price: course.price,
     originalPrice: course.originalPrice,
     categorySlug: course.categorySlug,
+    imageUrl: course.imageUrl || course.image_url || null,
+    isClosed: Boolean(course.isClosed),
   };
 }
 

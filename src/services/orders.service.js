@@ -24,7 +24,12 @@ export async function buildOrder({ items, couponCode, customer, paymentMethod, p
       if (bundle) lineItems.push(bundleToLineItem(bundle));
     } else {
       const course = await getCourseBySlug(slug);
-      if (course) lineItems.push(courseToLineItem(course));
+      if (course) {
+        if (course.isClosed) {
+          throw new Error(`Enrollment for "${course.title}" has closed and is no longer accepting new registrations.`);
+        }
+        lineItems.push(courseToLineItem(course));
+      }
     }
   }
   if (lineItems.length === 0) {

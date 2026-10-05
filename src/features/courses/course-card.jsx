@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { CourseCover } from "@/features/courses/course-cover";
 import { AddToCartButton } from "@/features/cart/add-to-cart-button";
 import { PriceDisplay } from "@/components/shared/price-display";
+import { CourseCountdown } from "@/components/shared/course-countdown";
 
 import { courseToLineItem } from "@/lib/line-items";
 import { formatCompact, formatHours } from "@/lib/format";
@@ -27,7 +28,17 @@ export function CourseCard({ course, className, priority = false }) {
     >
       <div className="relative">
         <CourseCover course={course} className="aspect-[16/10] w-full" />
-        {course.badge && (
+        {(course.closingTimerEnabled || course.isClosed) && (
+          <div className="absolute top-3 left-3 z-10 pointer-events-none">
+            <CourseCountdown
+              closingDate={course.closingDate}
+              closingTimerEnabled={course.closingTimerEnabled}
+              isClosed={course.isClosed}
+              variant="card"
+            />
+          </div>
+        )}
+        {course.badge && !course.isClosed && (
           <Badge className={cn("absolute top-3 right-3 shadow-sm", badgeStyles[course.badge])}>
             {course.badge}
           </Badge>

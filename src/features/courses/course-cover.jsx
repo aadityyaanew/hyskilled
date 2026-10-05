@@ -1,15 +1,18 @@
+import Image from "next/image";
 import { categories } from "@/data/categories";
 import { CategoryIcon } from "@/features/categories/category-icon";
 import { cn } from "@/lib/utils";
 
 /**
- * Generated course cover art – a gradient + pattern + category glyph that is
- * unique per category/course, so the catalogue looks polished without needing
- * a library of uploaded thumbnails. When real thumbnails exist, render
- * <Image src={course.thumbnail}> here and keep this as the fallback.
+ * Course cover art.
+ * If an uploaded image (e.g. from Cloudinary) exists on the course,
+ * renders the image with an overlay. Otherwise, renders the polished
+ * procedural brand cover.
  */
 export function CourseCover({ course, category, className, size = "md", label }) {
   const cat = category ?? categories.find((c) => c.slug === course?.categorySlug) ?? categories[0];
+  const customImage = course?.imageUrl || course?.image_url || course?.thumbnail;
+
   // Slight per-course hue variation inside the category family.
   const seed = (course?.slug ?? cat.slug).split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   const hue = cat.hue + ((seed % 5) - 2) * 3;
@@ -18,6 +21,37 @@ export function CourseCover({ course, category, className, size = "md", label })
     size === "xs"
       ? "size-9 right-1/2 bottom-1/2 translate-x-1/2 translate-y-1/2"
       : "right-5 bottom-4 size-24 sm:size-28";
+
+  if (customImage) {
+    return (
+      <div
+        className={cn("relative isolate overflow-hidden bg-slate-900", className)}
+        role="img"
+        aria-label={label ?? `${course?.title || cat.name} course cover`}
+      >
+        <Image
+          src={customImage}
+          alt={course?.title || "Course thumbnail"}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-500 group-hover/cover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+        {tags.length > 0 && (
+          <div className="absolute top-4 left-4 flex max-w-[70%] flex-wrap gap-1.5 z-10">
+            {tags.map((t) => (
+              <span
+                key={t}
+                className="rounded-full border border-white/20 bg-black/40 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white backdrop-blur-md"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div

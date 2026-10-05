@@ -2,8 +2,10 @@ import { notFound } from "next/navigation";
 import { CourseForm } from "@/features/admin/course-form";
 import { getAdminCategories } from "@/services/admin.service";
 import { query, isDbConfigured } from "@/lib/db";
-import { courses as mockCourses } from "@/data/courses";
 import { safeJsonParse } from "@/lib/admin-api";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata = {
   title: "Edit Course | Admin",
@@ -41,17 +43,6 @@ export default async function EditCoursePage({ params }) {
       }
     } catch (err) {
       console.error("Error fetching course for edit:", err);
-    }
-  }
-
-  if (!course) {
-    const foundMock = mockCourses.find((c) => c.slug === id);
-    if (foundMock) {
-      course = {
-        ...foundMock,
-        id: foundMock.slug,
-        category_slug: foundMock.categorySlug,
-      };
     }
   }
 

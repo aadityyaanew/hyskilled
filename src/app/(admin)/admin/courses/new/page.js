@@ -1,6 +1,9 @@
 import { CourseForm } from "@/features/admin/course-form";
 import { getAdminCategories } from "@/services/admin.service";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "Create Course | Admin",
 };

@@ -20,6 +20,9 @@ import { getTestimonials, getFaqs } from "@/services/content.service";
 import { buildMetadata } from "@/lib/seo";
 import { siteConfig } from "@/config/site";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   ...buildMetadata({ path: "/" }),
   title: { absolute: `${siteConfig.name} — Premium Tech Courses in AI, Data Science, UI/UX & Web Development` },
