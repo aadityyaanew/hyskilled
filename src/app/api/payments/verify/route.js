@@ -50,7 +50,7 @@ export async function POST(request) {
           if (userRows.length > 0) {
             userId = userRows[0].id;
           } else {
-            const [newUserRes] = await execute(
+            const newUserRes = await execute(
               `INSERT INTO users (google_id, email, name, phone, status)
                VALUES (?, ?, ?, ?, 'active')`,
               [
@@ -60,7 +60,7 @@ export async function POST(request) {
                 order.customer_phone || null,
               ]
             );
-            userId = newUserRes.insertId;
+            userId = newUserRes?.insertId;
           }
           await execute("UPDATE orders SET user_id = ? WHERE id = ?", [userId, orderId]);
         }

@@ -33,6 +33,13 @@ export async function POST(request) {
     }
 
     if (order.provider === "cashfree") {
+      let returnBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hyskilled.com";
+      // Cashfree Production gateway requires HTTPS for return_url.
+      // If running on localhost (http://), fall back to production domain so order creation succeeds.
+      if (process.env.CASHFREE_ENV === "production" && !returnBaseUrl.startsWith("https://")) {
+        returnBaseUrl = "https://hyskilled.com";
+      }
+
       const request = {
         order_id: order.id,
         order_amount: order.totals.total,
@@ -44,7 +51,7 @@ export async function POST(request) {
           customer_phone: order.customer.phone || "9999999999",
         },
         order_meta: {
-          return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/status?order_id=${order.id}`,
+          return_url: `${returnBaseUrl.replace(/\/$/, "")}/checkout/status?order_id=${order.id}`,
         }
       };
       const response = await getCashfree().PGCreateOrder(request);
