@@ -28,6 +28,7 @@ export const ROUTES = {
   privacy: "/privacy",
   refundPolicy: "/refund-policy",
   blog: "/blog",
+  hireFromUs: "/hire-from-us",
   blogPost: (slug) => `/blog/${slug}`,
   
 

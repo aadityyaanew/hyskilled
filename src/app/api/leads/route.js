@@ -23,6 +23,7 @@ export async function POST(request) {
   const email = String(body.email || "").trim().slice(0, 190);
   const course = String(body.course || "").trim().slice(0, 255) || null;
   const notes = String(body.notes || "").trim().slice(0, 2000) || null;
+  const source = String(body.source || "schedule_session").trim().slice(0, 60);
 
   const errors = {};
   if (name.length < 2) errors.name = "Please enter your name.";
@@ -30,7 +31,7 @@ export async function POST(request) {
     errors.phone = "Please enter a valid phone number.";
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Please enter a valid email.";
-  if (!course) errors.course = "Please select a course.";
+  if (!course && source === "schedule_session") errors.course = "Please select a course.";
 
   if (Object.keys(errors).length) {
     return NextResponse.json(
@@ -41,8 +42,8 @@ export async function POST(request) {
 
   try {
     await execute(
-      `INSERT INTO leads (name, phone, email, course, notes) VALUES (?, ?, ?, ?, ?)`,
-      [name, phone, email, course, notes]
+      `INSERT INTO leads (name, phone, email, course, notes, source) VALUES (?, ?, ?, ?, ?, ?)`,
+      [name, phone, email, course, notes, source]
     );
     return NextResponse.json({ success: true, message: "Session request received." });
   } catch (err) {

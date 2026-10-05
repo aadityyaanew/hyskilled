@@ -45,6 +45,25 @@ function StatusBadge({ status }) {
   );
 }
 
+function LeadTypeBadge({ source }) {
+  let label = "Schedule Session";
+  let cls = "bg-blue-50 text-blue-700 ring-blue-200";
+
+  if (source === "hire_from_us") {
+    label = "Hire Lead";
+    cls = "bg-purple-50 text-purple-700 ring-purple-200";
+  } else if (source === "contact_form") {
+    label = "Contact Lead";
+    cls = "bg-orange-50 text-orange-700 ring-orange-200";
+  }
+
+  return (
+    <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ring-1 ${cls}`}>
+      {label}
+    </span>
+  );
+}
+
 export function LeadsManager({ initialLeads = [] }) {
   const router = useRouter();
   const [leads, setLeads] = useState(initialLeads);
@@ -181,8 +200,9 @@ export function LeadsManager({ initialLeads = [] }) {
               <thead className="border-b bg-muted/40 text-left text-xs font-semibold text-muted-foreground uppercase">
                 <tr>
                   <th className="px-4 py-3">Lead</th>
+                  <th className="px-4 py-3">Type</th>
                   <th className="px-4 py-3">Contact</th>
-                  <th className="px-4 py-3">Course</th>
+                  <th className="px-4 py-3">Course / Topic</th>
                   <th className="px-4 py-3">Received</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3 text-right">Actions</th>
@@ -195,6 +215,9 @@ export function LeadsManager({ initialLeads = [] }) {
                       <button onClick={() => openLead(l)} className="font-semibold text-foreground hover:text-primary hover:underline">
                         {l.name}
                       </button>
+                    </td>
+                    <td className="px-4 py-3">
+                      <LeadTypeBadge source={l.source} />
                     </td>
                     <td className="px-4 py-3 text-xs text-muted-foreground">
                       <a href={`mailto:${l.email}`} className="flex items-center gap-1.5 hover:text-primary">
@@ -242,9 +265,10 @@ export function LeadsManager({ initialLeads = [] }) {
                 <DialogDescription>Received {formatDateTime(selected.created_at)}</DialogDescription>
               </DialogHeader>
               <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                <div><dt className="text-xs font-semibold text-muted-foreground">Type</dt><dd><LeadTypeBadge source={selected.source} /></dd></div>
+                <div><dt className="text-xs font-semibold text-muted-foreground">Course / Topic</dt><dd>{selected.course || "—"}</dd></div>
                 <div><dt className="text-xs font-semibold text-muted-foreground">Email</dt><dd><a className="text-primary hover:underline" href={`mailto:${selected.email}`}>{selected.email}</a></dd></div>
                 <div><dt className="text-xs font-semibold text-muted-foreground">Phone</dt><dd><a className="text-primary hover:underline" href={`tel:${selected.phone}`}>{selected.phone}</a></dd></div>
-                <div className="sm:col-span-2"><dt className="text-xs font-semibold text-muted-foreground">Course</dt><dd>{selected.course || "—"}</dd></div>
                 <div className="sm:col-span-2">
                   <dt className="text-xs font-semibold text-muted-foreground">Notes from lead</dt>
                   <dd className="whitespace-pre-wrap rounded-lg bg-muted/50 p-3">{selected.notes || "—"}</dd>

@@ -41,13 +41,32 @@ export function ContactForm() {
   });
 
   async function onSubmit(data) {
-    // Simulated contact submission
-    await new Promise((r) => setTimeout(r, 800));
-    setSubmitted(true);
-    toast.success("Message sent successfully!", {
-      description: "Our advisory team will respond within 24 hours.",
-    });
-    reset();
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          phone: "Not Provided",
+          course: data.topic,
+          notes: data.message,
+          source: "contact_form"
+        }),
+      });
+      const resData = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(resData.message || "Failed to submit request.");
+        return;
+      }
+      setSubmitted(true);
+      toast.success("Message sent successfully!", {
+        description: "Our advisory team will respond within 24 hours.",
+      });
+      reset();
+    } catch (err) {
+      toast.error("Network error. Please try again later.");
+    }
   }
 
   if (submitted) {
