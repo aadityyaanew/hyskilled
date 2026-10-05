@@ -21,6 +21,7 @@ export const footerNav = [
     title: "Company",
     links: [
       { label: "About Hyskilled", href: ROUTES.about },
+      { label: "Careers", href: "/careers" },
       { label: "Hire from us", href: ROUTES.hireFromUs },
       { label: "Blog", href: ROUTES.blog },
       { label: "Contact us", href: ROUTES.contact },

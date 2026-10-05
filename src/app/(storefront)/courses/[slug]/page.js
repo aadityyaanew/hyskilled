@@ -169,7 +169,7 @@ export default async function CourseDetailPage({ params }) {
                     type="button"
                     className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-colors shadow-xs"
                   >
-                    <FileText className="size-3.5" /> View Official Syllabus (PDF)
+                    <FileText className="size-3.5" /> Download Brochure
                   </button>
                 </ScheduleSessionDialog>
               )}

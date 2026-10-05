@@ -52,20 +52,7 @@ export function CoursePurchaseCard({ course }) {
           )}
         </div>
 
-        {course.syllabusUrl && (
-          <div className="mt-4">
-            <a
-              href={course.syllabusUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-2xl border border-brand-200 bg-brand-50/50 py-2.5 px-3 text-xs font-bold text-brand-800 hover:bg-brand-100/60 transition-colors shadow-xs"
-            >
-              <FileText className="size-4 text-primary" />
-              <span>Download Syllabus (PDF)</span>
-              <ExternalLink className="size-3 text-muted-foreground ml-auto" />
-            </a>
-          </div>
-        )}
+
 
         <div className="mt-6 border-t pt-5">
           <h2 className="font-heading text-sm font-bold text-ink">This course includes</h2>
