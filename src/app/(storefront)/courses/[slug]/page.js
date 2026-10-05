@@ -13,6 +13,7 @@ import { InstructorCard } from "@/features/courses/instructor-card";
 import { MobilePurchaseBar } from "@/features/courses/mobile-purchase-bar";
 import { CourseCard } from "@/features/courses/course-card";
 import { FaqAccordion } from "@/features/marketing/faq-section";
+import { ScheduleSessionDialog } from "@/features/marketing/schedule-session-dialog";
 import {
   getAllCourseSlugs,
   getCourseBySlug,
@@ -163,14 +164,14 @@ export default async function CourseDetailPage({ params }) {
                 delivered inside the Hyskilled app.
               </p>
               {course.syllabusUrl && (
-                <a
-                  href={course.syllabusUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-colors shadow-xs"
-                >
-                  <FileText className="size-3.5" /> View Official Syllabus (PDF)
-                </a>
+                <ScheduleSessionDialog syllabusUrl={course.syllabusUrl} defaultCourse={course.title}>
+                  <button
+                    type="button"
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-colors shadow-xs"
+                  >
+                    <FileText className="size-3.5" /> View Official Syllabus (PDF)
+                  </button>
+                </ScheduleSessionDialog>
               )}
             </div>
             <CourseSyllabus modules={course.modules} />

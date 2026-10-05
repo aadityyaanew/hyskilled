@@ -19,6 +19,7 @@ import { CartButton } from "@/features/cart/cart-button";
 import { UserMenu } from "@/features/auth/user-menu";
 import { useAuth } from "@/features/auth/auth-provider";
 import { SearchDialog } from "@/features/search/search-dialog";
+import { ScheduleSessionDialog } from "@/features/marketing/schedule-session-dialog";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { mainNav } from "@/config/navigation";
 import { ROUTES } from "@/config/routes";
@@ -240,9 +241,9 @@ export function SiteHeader({ categories }) {
               </Button>
             ) : (
               <>
-                <Button asChild variant="brand" size="lg" className="w-full">
-                  <Link href={ROUTES.register()}>Get started free</Link>
-                </Button>
+                <ScheduleSessionDialog>
+                  <Button variant="brand" size="lg" className="w-full">Get started free</Button>
+                </ScheduleSessionDialog>
                 <Button asChild variant="outline" size="lg" className="w-full">
                   <Link href={ROUTES.login()}>Log in</Link>
                 </Button>

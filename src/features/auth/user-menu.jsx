@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/features/auth/auth-provider";
 import { ROUTES } from "@/config/routes";
 import { initials } from "@/lib/format";
+import { ScheduleSessionDialog } from "@/features/marketing/schedule-session-dialog";
 import { toast } from "sonner";
 
 export function UserMenu({ className }) {
@@ -32,9 +33,9 @@ export function UserMenu({ className }) {
         <Button asChild variant="ghost">
           <Link href={ROUTES.login()}>Log in</Link>
         </Button>
-        <Button asChild variant="brand">
-          <Link href={ROUTES.register()}>Get started</Link>
-        </Button>
+        <ScheduleSessionDialog>
+          <Button variant="brand">Get started</Button>
+        </ScheduleSessionDialog>
       </div>
     );
   }

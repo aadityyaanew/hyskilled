@@ -18,9 +18,9 @@ const EMPTY = { name: "", phone: "", email: "", course: "", notes: "" };
 const labelCls = "mb-1.5 block text-xs font-semibold text-foreground";
 const errCls = "mt-1 text-xs text-destructive";
 
-export function ScheduleSessionDialog({ children }) {
+export function ScheduleSessionDialog({ children, syllabusUrl = null, defaultCourse = "" }) {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState(EMPTY);
+  const [form, setForm] = useState({ ...EMPTY, course: defaultCourse });
   const [courses, setCourses] = useState([]);
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState("");
@@ -45,7 +45,7 @@ export function ScheduleSessionDialog({ children }) {
     if (!next) {
       setTimeout(() => {
         setDone(false);
-        setForm(EMPTY);
+        setForm({ ...EMPTY, course: defaultCourse });
         setErrors({});
         setFormError("");
       }, 200);
@@ -90,9 +90,17 @@ export function ScheduleSessionDialog({ children }) {
               Thanks, {form.name.split(" ")[0]}. Our team will contact you shortly to confirm your
               session.
             </DialogDescription>
-            <Button variant="brand" className="mt-3" onClick={() => onOpenChange(false)}>
-              Done
-            </Button>
+            {syllabusUrl ? (
+              <Button asChild variant="brand" className="mt-3">
+                <a href={syllabusUrl} target="_blank" rel="noopener noreferrer" onClick={() => onOpenChange(false)}>
+                  Open Official Syllabus (PDF)
+                </a>
+              </Button>
+            ) : (
+              <Button variant="brand" className="mt-3" onClick={() => onOpenChange(false)}>
+                Done
+              </Button>
+            )}
           </div>
         ) : (
           <>
