@@ -31,12 +31,6 @@ export function TotalsBreakdown({ totals, couponCode, className, emphasize = tru
           <dd className="font-medium">-{formatPrice(discount, { precise: !Number.isInteger(discount) })}</dd>
         </div>
       )}
-      <div className="flex justify-between text-muted-foreground">
-        <dt>
-          {label} ({Math.round(rate * 100)}%){inclusive && " included"}
-        </dt>
-        <dd>{formatPrice(tax, { precise: true })}</dd>
-      </div>
       <div
         className={cn(
           "flex items-baseline justify-between border-t pt-3",
