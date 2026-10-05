@@ -47,7 +47,7 @@ async function toTransparent(region, { white = false } = {}) {
 }
 
 async function squareMark(size, background) {
-  const base = (await toTransparent(MARK, { white: true })).png();
+  const base = (await toTransparent(MARK)).png();
   return sharp(await base.toBuffer())
     .resize(size, size, {
       fit: "contain",
@@ -58,9 +58,11 @@ async function squareMark(size, background) {
 
 await mkdir("public/brand", { recursive: true });
 
-// User requested logo.png and mark.png to be hero-white without background
-await (await toTransparent(FULL, { white: true })).png().toFile("public/brand/logo.png");
+// Generate standard colored logo (transparent bg)
+await (await toTransparent(FULL)).png().toFile("public/brand/logo.png");
+// Generate white logo for dark backgrounds
 await (await toTransparent(FULL, { white: true })).png().toFile("public/brand/logo-white.png");
+
 await (await squareMark(512)).toFile("public/brand/mark.png");
 await (await squareMark(512)).toFile("src/app/icon.png");
 await (await squareMark(180, { r: 255, g: 255, b: 255, alpha: 1 })).toFile("src/app/apple-icon.png");

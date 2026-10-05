@@ -24,7 +24,7 @@ export const siteConfig = {
     full: "/brand/logo.png",
     white: "/brand/logo-white.png",
     mark: "/brand/mark.png",
-    ratio: 1300 / 520,
+    ratio: 1600 / 639,
   },
   contact: {
     email: "support@hyskilled.com",
