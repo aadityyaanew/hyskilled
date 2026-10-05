@@ -13,6 +13,20 @@ export async function GET(request) {
   const mock = searchParams.get("mock");
   const targetUrl = state ? decodeURIComponent(state) : "/account";
 
+  // Derive the correct public origin — request.url resolves to 0.0.0.0:3000
+  // behind Vercel / Cloudflare, so we must use forwarded headers or the env var.
+  const host =
+    request.headers.get("x-forwarded-host") ||
+    request.headers.get("host") ||
+    "localhost:3000";
+  const proto =
+    request.headers.get("x-forwarded-proto") ||
+    (host.includes("localhost") ? "http" : "https");
+  const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`;
+
+  /** Helper – build an absolute redirect URL safely */
+  const siteUrl = (path) => new URL(path, siteOrigin);
+
   let googleUser = null;
 
   if (mock === "true") {
@@ -26,15 +40,12 @@ export async function GET(request) {
     };
   } else {
     if (!code) {
-      return NextResponse.redirect(new URL("/login?error=auth_cancelled", request.url));
+      return NextResponse.redirect(siteUrl("/login?error=auth_cancelled"));
     }
 
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "localhost:3000";
-    const proto = request.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`;
-    const redirectUri = `${origin}/api/auth/google/callback`;
+    const redirectUri = `${siteOrigin}/api/auth/google/callback`;
 
     try {
       // 1. Exchange code for token
@@ -53,7 +64,7 @@ export async function GET(request) {
       if (!tokenRes.ok) {
         const errorText = await tokenRes.text();
         console.error("Failed to exchange Google OAuth code:", errorText);
-        return NextResponse.redirect(new URL("/login?error=oauth_exchange_failed", request.url));
+        return NextResponse.redirect(siteUrl("/login?error=oauth_exchange_failed"));
       }
 
       const tokenData = await tokenRes.json();
@@ -64,13 +75,13 @@ export async function GET(request) {
       });
 
       if (!userRes.ok) {
-        return NextResponse.redirect(new URL("/login?error=oauth_profile_failed", request.url));
+        return NextResponse.redirect(siteUrl("/login?error=oauth_profile_failed"));
       }
 
       googleUser = await userRes.json();
     } catch (err) {
       console.error("Google auth error:", err);
-      return NextResponse.redirect(new URL("/login?error=server_error", request.url));
+      return NextResponse.redirect(siteUrl("/login?error=server_error"));
     }
   }
 
@@ -89,7 +100,7 @@ export async function GET(request) {
       // If user exists and has a phone number -> direct login!
       if (existingUser && existingUser.phone && existingUser.phone.trim().length >= 10) {
         if (existingUser.status === "suspended") {
-          return NextResponse.redirect(new URL("/login?error=account_suspended", request.url));
+          return NextResponse.redirect(siteUrl("/login?error=account_suspended"));
         }
 
         // Update last login
@@ -108,7 +119,7 @@ export async function GET(request) {
         };
 
         const sessionToken = await signJwt({ user: userPayload }, "30d");
-        const response = NextResponse.redirect(new URL(targetUrl, request.url));
+        const response = NextResponse.redirect(siteUrl(targetUrl));
         response.cookies.set(COOKIE_NAMES.userSession, sessionToken, getCookieOptions(30 * 24 * 3600));
         response.cookies.delete(COOKIE_NAMES.pendingOnboarding);
         return response;
@@ -133,7 +144,7 @@ export async function GET(request) {
     "15m"
   );
 
-  const onboardingUrl = new URL("/auth/complete-profile", request.url);
+  const onboardingUrl = siteUrl("/auth/complete-profile");
   const response = NextResponse.redirect(onboardingUrl);
   response.cookies.set(COOKIE_NAMES.pendingOnboarding, pendingToken, getCookieOptions(15 * 60));
   return response;
