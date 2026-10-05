@@ -55,6 +55,12 @@ function LeadTypeBadge({ source }) {
   } else if (source === "contact_form") {
     label = "Contact Lead";
     cls = "bg-orange-50 text-orange-700 ring-orange-200";
+  } else if (source === "homepage_popup") {
+    label = "Homepage Popup";
+    cls = "bg-indigo-50 text-indigo-700 ring-indigo-200";
+  } else if (source === "download_brochure") {
+    label = "Download Brochure";
+    cls = "bg-teal-50 text-teal-700 ring-teal-200";
   }
 
   return (

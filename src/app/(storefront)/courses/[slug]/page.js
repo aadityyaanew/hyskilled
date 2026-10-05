@@ -170,7 +170,13 @@ export default async function CourseDetailPage({ params }) {
                 delivered inside the Hyskilled app.
               </p>
               {course.syllabusUrl && (
-                <ScheduleSessionDialog syllabusUrl={course.syllabusUrl} defaultCourse={course.title}>
+                <ScheduleSessionDialog 
+                  syllabusUrl={course.syllabusUrl} 
+                  defaultCourse={course.title}
+                  title="Download brochure"
+                  description="Fill out the form below to download the complete course brochure."
+                  source="download_brochure"
+                >
                   <button
                     type="button"
                     className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-colors shadow-xs"

@@ -18,7 +18,15 @@ const EMPTY = { name: "", phone: "", email: "", course: "", notes: "" };
 const labelCls = "mb-1.5 block text-xs font-semibold text-foreground";
 const errCls = "mt-1 text-xs text-destructive";
 
-export function ScheduleSessionDialog({ children, syllabusUrl = null, defaultCourse = "" }) {
+export function ScheduleSessionDialog({ 
+  children, 
+  syllabusUrl = null, 
+  defaultCourse = "", 
+  title = "Schedule your session", 
+  description = "Tell us a bit about yourself and we'll get back to you to book a free session.",
+  autoOpen = false,
+  source = "schedule_session"
+}) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ ...EMPTY, course: defaultCourse });
   const [courses, setCourses] = useState([]);
@@ -34,6 +42,13 @@ export function ScheduleSessionDialog({ children, syllabusUrl = null, defaultCou
       .then((d) => setCourses(d.courses || []))
       .catch(() => {});
   }, [open, courses.length]);
+
+  useEffect(() => {
+    if (autoOpen) {
+      const timer = setTimeout(() => setOpen(true), 500); // Small delay to let page load first
+      return () => clearTimeout(timer);
+    }
+  }, [autoOpen]);
 
   const set = (key) => (e) => {
     setForm((p) => ({ ...p, [key]: e.target.value }));
@@ -60,7 +75,7 @@ export function ScheduleSessionDialog({ children, syllabusUrl = null, defaultCou
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, source }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -108,9 +123,9 @@ export function ScheduleSessionDialog({ children, syllabusUrl = null, defaultCou
               <span className="grid size-11 place-items-center rounded-xl bg-brand-50 text-primary">
                 <CalendarCheck className="size-5" />
               </span>
-              <DialogTitle className="text-xl font-bold">Schedule your session</DialogTitle>
+              <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
               <DialogDescription>
-                Tell us a bit about yourself and we&apos;ll get back to you to book a free session.
+                {description}
               </DialogDescription>
             </DialogHeader>
 

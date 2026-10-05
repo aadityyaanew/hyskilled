@@ -11,6 +11,7 @@ import { TestimonialsSection } from "@/features/marketing/testimonials-section";
 import { CompaniesSection } from "@/features/home/companies-section";
 import { FaqSection } from "@/features/marketing/faq-section";
 import { CtaBanner } from "@/features/marketing/cta-banner";
+import { ScheduleSessionDialog } from "@/features/marketing/schedule-session-dialog";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { Reveal } from "@/components/shared/reveal";
 import { getCategories } from "@/services/categories.service";
@@ -85,6 +86,15 @@ export default async function HomePage() {
       <CompaniesSection />
       <FaqSection faqs={faqs} />
       <CtaBanner />
+
+      <ScheduleSessionDialog
+        autoOpen={true}
+        title="Register here for free Counselling"
+        description="Fill out the form below to book a free session with our career experts and find the right path for you."
+        source="homepage_popup"
+      >
+        <span className="hidden" aria-hidden="true" />
+      </ScheduleSessionDialog>
     </>
   );
 }
