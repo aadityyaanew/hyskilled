@@ -33,11 +33,11 @@ export async function POST(request) {
     }
 
     if (order.provider === "cashfree") {
-      let returnBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hyskilled.com";
+      let returnBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hyskilledwebsite.vercel.app";
       // Cashfree Production gateway requires HTTPS for return_url.
       // If running on localhost (http://), fall back to production domain so order creation succeeds.
       if (process.env.CASHFREE_ENV === "production" && !returnBaseUrl.startsWith("https://")) {
-        returnBaseUrl = "https://hyskilled.com";
+        returnBaseUrl = "https://hyskilledwebsite.vercel.app";
       }
 
       const request = {
