@@ -12,6 +12,11 @@ export function SettingsManager() {
     code: "WELCOME20",
     enabled: true,
   });
+  const [heroCourse, setHeroCourse] = useState({
+    text: "Generative AI Engineering is live",
+    href: "/courses/generative-ai-engineering-llm-apps",
+    enabled: true,
+  });
   const [experts, setExperts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -22,6 +27,7 @@ export function SettingsManager() {
       .then((res) => res.json())
       .then((data) => {
         if (data.announcement) setAnnouncement(data.announcement);
+        if (data.heroCourse) setHeroCourse(data.heroCourse);
         if (data.experts) setExperts(data.experts);
         setIsLoading(false);
       })
@@ -40,7 +46,7 @@ export function SettingsManager() {
       const res = await fetch("/api/admin/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ announcement, experts }),
+        body: JSON.stringify({ announcement, heroCourse, experts }),
       });
       if (!res.ok) throw new Error("Failed to save settings");
       
@@ -138,6 +144,48 @@ export function SettingsManager() {
               />
               <label htmlFor="banner-active" className="text-sm font-medium text-foreground cursor-pointer">
                 Show banner on the website
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Hero Course Pill */}
+        <div className="rounded-3xl border bg-card p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-bold">Hero Course Pill</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-foreground mb-1.5">
+                Pill Text
+              </label>
+              <Input
+                required
+                value={heroCourse.text}
+                onChange={(e) => setHeroCourse((p) => ({ ...p, text: e.target.value }))}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-foreground mb-1.5">
+                Course Link (Href)
+              </label>
+              <Input
+                required
+                value={heroCourse.href}
+                onChange={(e) => setHeroCourse((p) => ({ ...p, href: e.target.value }))}
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="hero-course-active"
+                checked={heroCourse.enabled}
+                onChange={(e) => setHeroCourse((p) => ({ ...p, enabled: e.target.checked }))}
+                className="rounded border-input text-primary focus:ring-primary size-4"
+              />
+              <label htmlFor="hero-course-active" className="text-sm font-medium text-foreground cursor-pointer">
+                Show pill in the Hero section
               </label>
             </div>
           </div>

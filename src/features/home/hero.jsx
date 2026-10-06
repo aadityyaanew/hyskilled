@@ -7,6 +7,7 @@ import { HeroSearch } from "@/features/home/hero-search";
 import { HeroVisual } from "@/features/home/hero-visual";
 import { siteConfig } from "@/config/site";
 import { ROUTES } from "@/config/routes";
+import { getSetting } from "@/services/settings.service";
 
 const features = [
   { icon: CirclePlay, title: "Expert-Led", desc: "Live & Recorded" },
@@ -15,7 +16,12 @@ const features = [
   { icon: Users, title: "Job Support", desc: "Placement Guidance" },
 ];
 
-export function Hero() {
+export async function Hero() {
+  const heroCourse = await getSetting("heroCourse", {
+    text: "Generative AI Engineering is live",
+    href: "/courses/generative-ai-engineering-llm-apps",
+    enabled: true
+  });
   return (
     <section className="relative isolate overflow-hidden bg-gradient-to-b from-white via-brand-50/60 to-white">
       <div aria-hidden className="bg-grid pointer-events-none absolute inset-0 -z-10" />
@@ -32,18 +38,20 @@ export function Hero() {
       <div className="container-page block lg:hidden pt-4 pb-12">
         <div className="animate-fade-up">
           {/* Announcement Pill */}
-          <div className="flex justify-center xs:justify-start">
-            <Link
-              href={ROUTES.course("generative-ai-engineering-llm-apps")}
-              className="focus-ring group inline-flex items-center gap-2 rounded-full border border-brand-200/90 bg-white/95 py-1 pr-3 pl-1 text-xs shadow-xs backdrop-blur-sm transition-colors hover:border-brand-300"
-            >
-              <Badge variant="default" className="bg-primary text-primary-foreground px-2 py-0.5 text-[10px] font-bold">
-                New
-              </Badge>
-              <span className="font-semibold text-ink-soft">Generative AI Engineering is live</span>
-              <ArrowRight className="size-3 text-primary transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </div>
+          {heroCourse?.enabled && (
+            <div className="flex justify-center xs:justify-start">
+              <Link
+                href={heroCourse.href}
+                className="focus-ring group inline-flex items-center gap-2 rounded-full border border-brand-200/90 bg-white/95 py-1 pr-3 pl-1 text-xs shadow-xs backdrop-blur-sm transition-colors hover:border-brand-300"
+              >
+                <Badge variant="default" className="bg-primary text-primary-foreground px-2 py-0.5 text-[10px] font-bold">
+                  New
+                </Badge>
+                <span className="font-semibold text-ink-soft">{heroCourse.text}</span>
+                <ArrowRight className="size-3 text-primary transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          )}
 
           {/* Punchy Mobile Heading */}
           <h1 className="mt-3.5 text-[2.15rem] leading-[1.12] font-black text-ink tracking-tight text-center xs:text-left">
@@ -105,16 +113,18 @@ export function Hero() {
       {/* ── DESKTOP HERO (Side-by-side 2 columns with herodesktop.svg) ── */}
       <div className="container-page hidden lg:grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] pt-16 pb-20 lg:pt-20 lg:pb-24">
         <div className="animate-fade-up">
-          <Link
-            href={ROUTES.course("generative-ai-engineering-llm-apps")}
-            className="focus-ring group inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white py-1 pr-3 pl-1 text-sm shadow-sm transition-colors hover:border-brand-300"
-          >
-            <Badge variant="default" className="bg-primary text-primary-foreground">
-              New
-            </Badge>
-            <span className="font-medium text-ink-soft">Generative AI Engineering is live</span>
-            <ArrowRight className="size-3.5 text-primary transition-transform group-hover:translate-x-0.5" />
-          </Link>
+          {heroCourse?.enabled && (
+            <Link
+              href={heroCourse.href}
+              className="focus-ring group inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white py-1 pr-3 pl-1 text-sm shadow-sm transition-colors hover:border-brand-300"
+            >
+              <Badge variant="default" className="bg-primary text-primary-foreground">
+                New
+              </Badge>
+              <span className="font-medium text-ink-soft">{heroCourse.text}</span>
+              <ArrowRight className="size-3.5 text-primary transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          )}
 
           <h1 className="mt-5 text-4xl leading-[1.08] font-extrabold text-ink sm:text-6xl lg:text-[4.1rem]">
             Build in-demand tech skills that <span className="text-gradient">get you hired.</span>

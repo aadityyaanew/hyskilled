@@ -28,16 +28,6 @@ export function CourseCard({ course, className, priority = false }) {
     >
       <div className="relative">
         <CourseCover course={course} className="aspect-[16/10] w-full" />
-        {(course.closingTimerEnabled || course.isClosed) && (
-          <div className="absolute top-3 left-3 z-10 pointer-events-none">
-            <CourseCountdown
-              closingDate={course.closingDate}
-              closingTimerEnabled={course.closingTimerEnabled}
-              isClosed={course.isClosed}
-              variant="card"
-            />
-          </div>
-        )}
         {course.badge && !course.isClosed && (
           <Badge className={cn("absolute top-3 right-3 shadow-sm", badgeStyles[course.badge])}>
             {course.badge}
@@ -46,6 +36,16 @@ export function CourseCard({ course, className, priority = false }) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
+        {(course.closingTimerEnabled || course.isClosed) && (
+          <div className="mb-3">
+            <CourseCountdown
+              closingDate={course.closingDate}
+              closingTimerEnabled={course.closingTimerEnabled}
+              isClosed={course.isClosed}
+              variant="card"
+            />
+          </div>
+        )}
         <div className="flex items-center justify-between gap-2 text-xs font-semibold">
           <span className="text-primary">{course.category?.short}</span>
           <span className="inline-flex items-center gap-1 text-muted-foreground">

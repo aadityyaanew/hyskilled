@@ -18,7 +18,13 @@ export async function GET() {
 
     const experts = await getSetting("experts", []);
 
-    return NextResponse.json({ announcement, experts });
+    const heroCourse = await getSetting("heroCourse", {
+      text: "Generative AI Engineering is live",
+      href: "/courses/generative-ai-engineering-llm-apps",
+      enabled: true
+    });
+
+    return NextResponse.json({ announcement, experts, heroCourse });
   } catch (err) {
     return NextResponse.json({ message: err.message }, { status: 500 });
   }
@@ -38,6 +44,9 @@ export async function PUT(req) {
     }
     if (data.experts) {
       await setSetting("experts", data.experts);
+    }
+    if (data.heroCourse) {
+      await setSetting("heroCourse", data.heroCourse);
     }
 
     // Bust the cache for the storefront layout so settings apply immediately

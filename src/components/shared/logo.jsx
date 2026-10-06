@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
@@ -16,6 +19,7 @@ export function Logo({
   priority = false,
   asLink = true,
 }) {
+  const pathname = usePathname();
   const src = mark
     ? siteConfig.logo.mark
     : tone === "white"
@@ -36,9 +40,18 @@ export function Logo({
   );
 
   if (!asLink) return img;
+
+  const handleClick = (e) => {
+    if (pathname === ROUTES.home) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <Link
       href={ROUTES.home}
+      onClick={handleClick}
       aria-label={`${siteConfig.name} home`}
       className="focus-ring inline-flex rounded-md"
     >
