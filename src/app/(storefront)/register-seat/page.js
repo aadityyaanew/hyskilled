@@ -1,4 +1,4 @@
-﻿import { BookOpen, CheckCircle, GraduationCap, IndianRupee, Star, Users } from "lucide-react";
+import { BookOpen, CheckCircle, GraduationCap, IndianRupee, Star, Users } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { SeatBookingForm } from "@/features/seat-booking/seat-booking-form";
 import { buildMetadata } from "@/lib/seo";
@@ -69,7 +69,7 @@ export default function RegisterSeatPage() {
             {/* ─── Left: info panel ─── */}
             <div className="space-y-10">
               {/* Booking amount card */}
-              <div className="relative overflow-hidden rounded-3xl bg-ink p-8 text-white shadow-lift">
+              <div className="relative overflow-hidden rounded-3xl bg-ink p-6 sm:p-8 text-white shadow-lift">
                 <div
                   aria-hidden
                   className="pointer-events-none absolute -top-12 -right-12 size-48 rounded-full bg-brand-600/40 blur-3xl"
@@ -83,7 +83,7 @@ export default function RegisterSeatPage() {
                     Booking Amount
                   </p>
                   <div className="mt-3 flex items-end gap-1">
-                    <span className="font-heading text-6xl font-extrabold text-white">₹2,500</span>
+                    <span className="font-heading text-5xl sm:text-6xl font-extrabold text-white">₹2,500</span>
                   </div>
                   <p className="mt-2 text-sm text-white/70">
                     Fully adjusted against tuition fees · Non-refundable

@@ -20,6 +20,7 @@ import {
   Briefcase,
   Inbox,
   GraduationCap,
+  ClipboardList,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ const NAV_ITEMS = [
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/leads", label: "Leads", icon: Inbox },
   { href: "/admin/applications", label: "Applications", icon: Briefcase },
+  { href: "/admin/enrollment-docs", label: "Enrollment Docs", icon: ClipboardList },
   { href: "/admin/blogs", label: "Blog", icon: Newspaper },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];

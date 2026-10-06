@@ -160,18 +160,18 @@ function LeadCaptureStep({ onComplete }) {
   };
 
   const inputCls =
-    "w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background focus:outline-none focus:ring-1 focus:ring-primary";
+    "w-full rounded-xl border border-input bg-background px-3.5 py-3 sm:py-2.5 text-base sm:text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-background focus:outline-none focus:ring-1 focus:ring-primary";
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4 flex-1 overflow-y-auto">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4 sm:p-5 flex-1 overflow-y-auto">
       <div className="rounded-2xl bg-primary/5 border border-primary/10 p-4 text-sm text-foreground/80 leading-relaxed">
         <p>
           <span className="font-bold text-foreground">Hey there! 👋</span> I&apos;m <strong>HYRA</strong>, your AI companion.
         </p>
-        <p className="mt-2">Before we chat, I&apos;d love to know a bit about you so I can give you the best guidance! ✨</p>
+        <p className="mt-2">Before we chat, please share your details so I can guide you better! ✨</p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4 sm:space-y-3">
         <div>
           <label className="mb-1.5 block text-xs font-semibold text-foreground">Your Name *</label>
           <input
@@ -182,7 +182,7 @@ function LeadCaptureStep({ onComplete }) {
             className={inputCls}
             autoComplete="name"
           />
-          {errors.name && <p className="mt-0.5 text-[10px] text-destructive">{errors.name}</p>}
+          {errors.name && <p className="mt-1 text-[11px] text-destructive">{errors.name}</p>}
         </div>
 
         <div>
@@ -196,7 +196,7 @@ function LeadCaptureStep({ onComplete }) {
             className={inputCls}
             autoComplete="tel"
           />
-          {errors.mobile && <p className="mt-0.5 text-[10px] text-destructive">{errors.mobile}</p>}
+          {errors.mobile && <p className="mt-1 text-[11px] text-destructive">{errors.mobile}</p>}
         </div>
 
         <div>
@@ -209,7 +209,7 @@ function LeadCaptureStep({ onComplete }) {
             className={inputCls}
             autoComplete="email"
           />
-          {errors.email && <p className="mt-0.5 text-[10px] text-destructive">{errors.email}</p>}
+          {errors.email && <p className="mt-1 text-[11px] text-destructive">{errors.email}</p>}
         </div>
       </div>
 
@@ -424,7 +424,7 @@ export function HyskilledChatbot() {
         <div
           role="dialog"
           aria-label="HYRA AI Chat Window"
-          className="fixed inset-x-3 bottom-20 top-16 z-50 flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-card/98 shadow-2xl backdrop-blur-xl transition-all animate-in fade-in zoom-in-95 duration-200 sm:inset-auto sm:right-6 sm:bottom-24 sm:h-[600px] sm:w-[410px]"
+          className="fixed inset-0 z-[100] flex flex-col overflow-hidden bg-background sm:bg-card/98 sm:shadow-2xl sm:backdrop-blur-xl transition-all animate-in fade-in zoom-in-95 duration-200 sm:inset-auto sm:right-6 sm:bottom-24 sm:h-[600px] sm:w-[410px] sm:rounded-2xl sm:border sm:border-border/80"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border/70 bg-muted/40 px-4 py-3">

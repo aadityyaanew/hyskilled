@@ -31,7 +31,7 @@ export const ROUTES = {
   hireFromUs: "/hire-from-us",
   blogPost: (slug) => `/blog/${slug}`,
   registerSeat: "/register-seat",
-  
+  enrollment: (orderId) => `/enrollment/${encodeURIComponent(orderId)}`,
 
   // Single Admin Panel
   admin: {
@@ -43,6 +43,8 @@ export const ROUTES = {
     orders: "/admin/orders",
     students: "/admin/students",
     enrollments: "/admin/enrollments",
+    enrollmentDocs: "/admin/enrollment-docs",
+    instructors: "/admin/instructors",
     coupons: "/admin/coupons",
     blogs: "/admin/blogs",
   },

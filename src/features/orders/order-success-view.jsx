@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, Download, ExternalLink, LogIn, Mail, Printer, SearchX, Smartphone } from "lucide-react";
+import { ArrowRight, Download, ExternalLink, LogIn, Mail, Printer, SearchX, Smartphone, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
 import { OrderSummaryCard } from "@/features/orders/order-summary-card";
@@ -73,6 +73,33 @@ export function OrderSuccessView() {
               </Link>
             </Button>
           </div>
+        </div>
+      </div>
+
+      {/* Post-Payment Enrollment Documentation Action */}
+      <div className="relative overflow-hidden rounded-[2rem] border-2 border-brand-500/30 bg-gradient-to-br from-brand-50/50 via-white to-brand-50/20 p-6 sm:p-8 shadow-soft">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2.5">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-800">
+              <ClipboardCheck className="size-3.5" />
+              Action Required · Post-Payment Step
+            </div>
+            <h2 className="font-heading text-xl font-bold text-ink sm:text-2xl">
+              Complete Your Enrollment Documentation
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
+              Thank you for choosing Hyskilled. Please provide your personal details, address, government ID, and academic documents to complete your enrollment verification.
+            </p>
+            <p className="text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200/60 rounded-xl px-3 py-1.5 inline-block">
+              Important: Batch allocation will take place only after 100% of the applicable tuition fee has been paid and successfully verified.
+            </p>
+          </div>
+          <Button asChild size="xl" variant="brand" className="shrink-0 shadow-lg shadow-brand-500/20">
+            <Link href={ROUTES.enrollment(order.id)}>
+              Complete Documentation
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
         </div>
       </div>
 
