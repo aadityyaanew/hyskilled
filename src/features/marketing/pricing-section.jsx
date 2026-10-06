@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { ROUTES } from "@/config/routes";
 /** Pricing / bundles block – reused on the homepage and /pricing. */
 export function PricingSection({ bundles, showCta = true, heading }) {
   const scrollRef = useRef(null);
+  const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
     if (!scrollRef.current || window.innerWidth >= 1024) return;
@@ -20,6 +21,8 @@ export function PricingSection({ bundles, showCta = true, heading }) {
     const targetIdx = Math.max(0, bundles.findIndex(b => b.highlight) >= 0 
       ? bundles.findIndex(b => b.highlight) 
       : Math.floor(bundles.length / 2));
+      
+    setActiveIdx(targetIdx);
       
     const timer = setTimeout(() => {
       const container = scrollRef.current;
@@ -33,6 +36,51 @@ export function PricingSection({ bundles, showCta = true, heading }) {
 
     return () => clearTimeout(timer);
   }, [bundles]);
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container || window.innerWidth >= 1024) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = Array.from(container.children).indexOf(entry.target);
+            if (idx !== -1) {
+              setActiveIdx(idx);
+            }
+          }
+        });
+      },
+      {
+        root: container,
+        threshold: 0.6, // Fire when card is 60% visible
+      }
+    );
+
+    Array.from(container.children).forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
+  }, [bundles]);
+
+  const scrollToIdx = (idx) => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const targetCard = container.children[idx];
+    if (targetCard) {
+      const scrollPos = targetCard.offsetLeft - (container.clientWidth / 2) + (targetCard.clientWidth / 2);
+      container.scrollTo({ left: scrollPos, behavior: "smooth" });
+      setActiveIdx(idx);
+    }
+  };
+
+  const getShortName = (name) => {
+    return name
+      .replace(" Career Track", "")
+      .replace(" Professional Track", "")
+      .replace(" Builder Track", "")
+      .replace(" Track", "");
+  };
 
   return (
     <section className="section-y relative overflow-hidden bg-muted/40">
@@ -49,7 +97,29 @@ export function PricingSection({ bundles, showCta = true, heading }) {
           />
         </Reveal>
 
-        <div ref={scrollRef} className="-mx-5 mt-12 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto px-5 pt-4 pb-8 [scrollbar-width:none] sm:-mx-8 sm:px-8 lg:mx-auto lg:grid lg:max-w-6xl lg:grid-cols-3 lg:overflow-visible lg:px-0 lg:pt-0 lg:pb-0 lg:gap-8 [&::-webkit-scrollbar]:hidden">
+        {/* Mobile Tab Indicator */}
+        <div className="mt-10 mb-2 flex justify-center lg:hidden">
+          <div className="flex items-center rounded-full border bg-background p-1 shadow-sm">
+            {bundles.map((b, i) => {
+              const isActive = activeIdx === i;
+              return (
+                <button
+                  key={b.id}
+                  onClick={() => scrollToIdx(i)}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {getShortName(b.name)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div ref={scrollRef} className="-mx-5 mt-4 flex snap-x snap-mandatory items-stretch gap-6 overflow-x-auto px-5 pt-4 pb-8 [scrollbar-width:none] sm:-mx-8 sm:px-8 lg:mx-auto lg:mt-12 lg:grid lg:max-w-6xl lg:grid-cols-3 lg:overflow-visible lg:px-0 lg:pt-0 lg:pb-0 lg:gap-8 [&::-webkit-scrollbar]:hidden">
           {bundles.map((b, i) => (
             <Reveal 
               key={b.slug} 
