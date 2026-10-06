@@ -420,8 +420,17 @@ export function CourseTable({ initialCourses = [], categories = [] }) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 whitespace-nowrap capitalize text-muted-foreground">
-                        {course.category_name || course.categorySlug}
+                      <td className="px-5 py-3.5 whitespace-nowrap text-muted-foreground">
+                        <div className="font-medium text-foreground capitalize">
+                          {course.category_name || course.categorySlug}
+                        </div>
+                        {course.instructor_id && (
+                          <div className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <span className="text-primary font-medium font-mono text-[10px]">
+                              Mentor: {course.instructor_id}
+                            </span>
+                          </div>
+                        )}
                       </td>
                       <td className="px-5 py-3.5 whitespace-nowrap text-muted-foreground">
                         {course.level}

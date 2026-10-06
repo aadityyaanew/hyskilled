@@ -22,6 +22,12 @@ import {
   Calendar,
   AlertTriangle,
   FileUp,
+  Users,
+  Globe,
+  GraduationCap,
+  BookOpen,
+  Plus,
+  GripVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +47,7 @@ function formatForDateTimeLocal(dateVal) {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-export function CourseForm({ course = null, categories = [] }) {
+export function CourseForm({ course = null, categories = [], instructors: initialInstructors = [] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEditing = Boolean(course?.id || course?.slug);
@@ -50,6 +56,35 @@ export function CourseForm({ course = null, categories = [] }) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+
+  const [instructorsList, setInstructorsList] = useState(initialInstructors);
+  const [loadingInstructors, setLoadingInstructors] = useState(false);
+
+  useEffect(() => {
+    if (initialInstructors && initialInstructors.length > 0) {
+      setInstructorsList(initialInstructors);
+      return;
+    }
+    let isMounted = true;
+    setLoadingInstructors(true);
+    fetch("/api/admin/instructors")
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && data.success && Array.isArray(data.instructors)) {
+          setInstructorsList(data.instructors);
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not fetch instructors in CourseForm:", err);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingInstructors(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialInstructors]);
 
   // Drive & Cloudinary Upload States
   const [imageUploading, setImageUploading] = useState(false);
@@ -76,7 +111,9 @@ export function CourseForm({ course = null, categories = [] }) {
     categorySlug: course?.category_slug || course?.categorySlug || categories[0]?.slug || "generative-ai",
     categoryId: course?.category_id || categories[0]?.id || 1,
     level: course?.level || "Beginner",
+    language: course?.language || "English",
     durationHours: course?.duration_hours || course?.durationHours || 30,
+    learners: course?.learners !== undefined ? course.learners : 0,
     price: course?.price !== undefined ? course.price : 3999,
     originalPrice: course?.original_price !== undefined ? (course.original_price ?? "") : (course?.originalPrice ?? 7999),
     badge: course?.badge || "",
@@ -87,6 +124,8 @@ export function CourseForm({ course = null, categories = [] }) {
     requirements: initialRequirements,
     status: course?.status || "published",
     appCourseId: course?.app_course_id || course?.slug || "",
+    instructorId: course?.instructor_id || course?.instructorId || "aarav-mehta",
+    instructorBioOverride: course?.instructor_bio_override || "",
     // New Feature Fields
     imageUrl: course?.image_url || course?.imageUrl || course?.thumbnail || "",
     syllabusDriveFileId: course?.syllabus_drive_file_id || course?.syllabusDriveFileId || "",
@@ -94,6 +133,21 @@ export function CourseForm({ course = null, categories = [] }) {
     closingDate: formatForDateTimeLocal(course?.closing_date || course?.closingDate),
     closingTimerEnabled: Boolean(course?.closing_timer_enabled ?? course?.closingTimerEnabled ?? false),
   });
+
+  // Modules state – managed separately for easy add/remove/reorder
+  const initialModules = Array.isArray(course?.modules)
+    ? course.modules
+    : [];
+  const [modules, setModules] = useState(
+    initialModules.length > 0
+      ? initialModules
+      : [
+          { title: "Course Introduction & Fundamentals", summary: "Core foundation principles and ecosystem overview." },
+          { title: "Practical Concepts & Tooling", summary: "In-depth understanding of standard tools and techniques." },
+          { title: "Hands-on Project & Implementation", summary: "Real-world project implementation and industry best practices." },
+          { title: "Advanced Topics & Portfolio Preparation", summary: "Production readiness, deployment, and career guidance." },
+        ]
+  );
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -249,14 +303,21 @@ export function CourseForm({ course = null, categories = [] }) {
       .map((t) => t.trim())
       .filter(Boolean);
 
+    const validModules = modules.filter((m) => m.title?.trim());
+
     const payload = {
       ...formData,
       price: Number(formData.price),
       originalPrice: formData.originalPrice !== "" ? Number(formData.originalPrice) : null,
       durationHours: Number(formData.durationHours),
+      learners: Number(formData.learners) || 0,
       tags: parsedTags,
       outcomes: parsedOutcomes,
       requirements: parsedRequirements,
+      modules: validModules,
+      instructorId: formData.instructorId,
+      instructorBioOverride: formData.instructorBioOverride || null,
+      language: formData.language || "English",
       closingDate: formData.closingDate ? new Date(formData.closingDate).toISOString() : null,
       closingTimerEnabled: Boolean(formData.closingTimerEnabled),
     };
@@ -510,6 +571,121 @@ export function CourseForm({ course = null, categories = [] }) {
               onChange={handleChange}
               placeholder="Sync ID for mobile learning app"
             />
+          </div>
+        </div>
+      </div>
+
+      {/* 1b. Instructor / Mentor Allotment Card */}
+      <div className="space-y-6 rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+            <GraduationCap className="size-5" />
+          </div>
+          <div>
+            <h2 className="font-heading text-lg font-bold text-foreground">Instructor / Mentor Allotment</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Assign a mentor and optionally override their bio for this course.</p>
+          </div>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-foreground">Select Instructor *</label>
+              <Link
+                href="/admin/instructors"
+                target="_blank"
+                className="text-[11px] font-semibold text-primary hover:underline inline-flex items-center gap-1"
+              >
+                + Manage Instructors
+              </Link>
+            </div>
+            <select
+              name="instructorId"
+              value={formData.instructorId}
+              onChange={handleChange}
+              disabled={loadingInstructors}
+              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm"
+            >
+              {loadingInstructors && instructorsList.length === 0 ? (
+                <option value="">Loading instructors…</option>
+              ) : instructorsList.length === 0 ? (
+                <option value="">No instructors found</option>
+              ) : (
+                instructorsList.map((inst) => (
+                  <option key={inst.id} value={inst.id}>
+                    {inst.name} {inst.title ? `— ${inst.title}` : ""}
+                  </option>
+                ))
+              )}
+            </select>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Lead instructor assigned to this course card and detail page.
+            </p>
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold text-foreground mb-1.5">Instructor Bio / Overview (Optional Override)</label>
+            <Textarea
+              rows={3}
+              name="instructorBioOverride"
+              value={formData.instructorBioOverride}
+              onChange={handleChange}
+              placeholder="Leave empty to use the default instructor bio. Override here to write a course-specific description…"
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground">This custom bio will appear on the course page instead of the default instructor bio.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 1c. Learner Stats & Language Card */}
+      <div className="space-y-6 rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-500/10 text-emerald-600">
+            <Users className="size-5" />
+          </div>
+          <div>
+            <h2 className="font-heading text-lg font-bold text-foreground">Learner Stats & Language</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Update the total learner count shown on the course page and set the language of instruction.</p>
+          </div>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label className="block text-xs font-semibold text-foreground mb-1.5">
+              <span className="flex items-center gap-1.5"><Users className="size-3.5" /> Total Learners</span>
+            </label>
+            <Input
+              type="number"
+              min="0"
+              name="learners"
+              value={formData.learners}
+              onChange={handleChange}
+              placeholder="e.g. 1240"
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground">Shown as "{`{count}`} learners" on the course page.</p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-foreground mb-1.5">
+              <span className="flex items-center gap-1.5"><Globe className="size-3.5" /> Language of Instruction</span>
+            </label>
+            <select
+              name="language"
+              value={formData.language}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm"
+            >
+              <option value="English">English</option>
+              <option value="Hindi">Hindi</option>
+              <option value="English & Hindi">English & Hindi</option>
+              <option value="Tamil">Tamil</option>
+              <option value="Telugu">Telugu</option>
+              <option value="Kannada">Kannada</option>
+              <option value="Malayalam">Malayalam</option>
+              <option value="Bengali">Bengali</option>
+              <option value="Marathi">Marathi</option>
+              <option value="Gujarati">Gujarati</option>
+            </select>
           </div>
         </div>
       </div>
@@ -901,6 +1077,90 @@ export function CourseForm({ course = null, categories = [] }) {
               placeholder="e.g. LLMs, RAG, LangChain, Agents, Python"
             />
           </div>
+        </div>
+      </div>
+
+      {/* 6b. Syllabus / Modules Editor Card */}
+      <div className="space-y-6 rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-violet-500/10 text-violet-600">
+              <BookOpen className="size-5" />
+            </div>
+            <div>
+              <h2 className="font-heading text-lg font-bold text-foreground">Syllabus / Modules</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">Add, edit or remove modules shown in the course syllabus section.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setModules((prev) => [...prev, { title: "", summary: "" }])}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-input bg-background px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted transition-colors"
+          >
+            <Plus className="size-3.5" /> Add Module
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {modules.map((mod, idx) => (
+            <div key={idx} className="group relative rounded-2xl border border-border bg-muted/20 p-4 transition-colors hover:border-primary/30">
+              <div className="flex items-start gap-3">
+                <span className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xs font-bold text-primary">
+                  {idx + 1}
+                </span>
+                <div className="flex-1 space-y-2.5 min-w-0">
+                  <Input
+                    placeholder={`Module ${idx + 1} title`}
+                    value={mod.title}
+                    onChange={(e) => {
+                      const updated = [...modules];
+                      updated[idx] = { ...updated[idx], title: e.target.value };
+                      setModules(updated);
+                    }}
+                  />
+                  <Input
+                    placeholder="Short summary (optional)"
+                    value={mod.summary || ""}
+                    onChange={(e) => {
+                      const updated = [...modules];
+                      updated[idx] = { ...updated[idx], summary: e.target.value };
+                      setModules(updated);
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col items-center gap-1 shrink-0">
+                  {idx > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = [...modules];
+                        [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                        setModules(updated);
+                      }}
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                      title="Move up"
+                    >
+                      <GripVertical className="size-4" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setModules((prev) => prev.filter((_, i) => i !== idx))}
+                    className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                    title="Remove module"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {modules.length === 0 && (
+            <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+              No modules added yet. Click &ldquo;Add Module&rdquo; to build the syllabus.
+            </div>
+          )}
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { instructors } from "@/data/instructors";
 import { PAGE_SIZE, PRICE_RANGES } from "@/lib/catalog-options";
 import { query, isDbConfigured } from "@/lib/db";
 import { ensureCourseOrderColumn } from "@/lib/course-order";
+import { ensureInstructorsTable } from "@/lib/instructors-db";
 import { safeJsonParse } from "@/lib/admin-api";
 
 export { PAGE_SIZE, SORT_OPTIONS, LEVELS, PRICE_RANGES } from "@/lib/catalog-options";
@@ -37,14 +38,28 @@ export function mapDbCourseRow(r) {
 
   const categorySlug = r.category_slug || r.categorySlug || "generative-ai";
 
+  const instructorRow = r.inst_name ? {
+    id: r.instructor_id || r.instructorId,
+    name: r.inst_name,
+    title: r.inst_title || "",
+    bio: r.instructor_bio_override || r.inst_bio || "",
+    rating: Number(r.inst_rating) || 4.8,
+    learners: Number(r.inst_learners) || 0,
+    courses: 1,
+    imageUrl: r.inst_image_url || null,
+  } : null;
+
   return {
     id: r.id,
     slug: r.slug,
     title: r.title,
     subtitle: r.subtitle || "",
     categorySlug,
-    instructorId: r.instructor_id || r.instructorId || "ananya-sharma",
+    instructorId: r.instructor_id || r.instructorId || "aarav-mehta",
+    instructorBioOverride: r.instructor_bio_override || null,
+    instructorRow,
     level: r.level || "Beginner",
+    language: r.language || "English",
     durationHours: Number(r.duration_hours) || 20,
     price: Number(r.price) || 0,
     originalPrice: r.original_price ? Number(r.original_price) : null,
@@ -78,9 +93,12 @@ async function getSourceCourses() {
     try {
       await ensureCourseOrderColumn();
       const rows = await query(`
-        SELECT c.*, cat.name as category_name, cat.slug as category_slug
+        SELECT c.*, cat.name as category_name, cat.slug as category_slug,
+               inst.name as inst_name, inst.title as inst_title, inst.bio as inst_bio,
+               inst.rating as inst_rating, inst.learners as inst_learners, inst.image_url as inst_image_url
         FROM courses c
         LEFT JOIN categories cat ON cat.id = c.category_id
+        LEFT JOIN instructors inst ON inst.id = c.instructor_id
         WHERE c.status != 'archived' AND c.status != 'draft'
         ORDER BY c.display_order ASC, c.id ASC
       `);
@@ -97,6 +115,21 @@ async function getSourceCourses() {
 function withRelations(course) {
   if (!course) return null;
   const isClosed = isCourseClosed(course);
+
+  let instructor = course.instructorRow;
+  if (!instructor) {
+    const fallback = instructorById.get(course.instructorId) ?? instructors[0];
+    instructor = fallback ? {
+      ...fallback,
+      bio: course.instructorBioOverride || fallback.bio,
+    } : null;
+  } else if (course.instructorBioOverride) {
+    instructor = {
+      ...instructor,
+      bio: course.instructorBioOverride,
+    };
+  }
+
   return {
     ...course,
     isClosed,
@@ -107,7 +140,7 @@ function withRelations(course) {
       hue: 24,
       keywords: [],
     },
-    instructor: instructorById.get(course.instructorId) ?? instructors[0],
+    instructor,
   };
 }
 
@@ -197,10 +230,14 @@ export async function getAllCourses() {
 export async function getCourseBySlug(slug) {
   if (isDbConfigured()) {
     try {
+      await ensureInstructorsTable();
       const rows = await query(
-        `SELECT c.*, cat.name as category_name, cat.slug as category_slug
+        `SELECT c.*, cat.name as category_name, cat.slug as category_slug,
+                inst.name as inst_name, inst.title as inst_title, inst.bio as inst_bio,
+                inst.rating as inst_rating, inst.learners as inst_learners, inst.image_url as inst_image_url
          FROM courses c
          LEFT JOIN categories cat ON cat.id = c.category_id
+         LEFT JOIN instructors inst ON inst.id = c.instructor_id
          WHERE c.slug = ? LIMIT 1`,
         [slug]
       );
@@ -299,5 +336,32 @@ export async function searchCourses(q, limit = 6) {
 }
 
 export async function getInstructors(limit) {
+  if (isDbConfigured()) {
+    try {
+      await ensureInstructorsTable();
+      const rows = await query(
+        `SELECT inst.*, COUNT(c.id) as courses_count
+         FROM instructors inst
+         LEFT JOIN courses c ON c.instructor_id = inst.id
+         GROUP BY inst.id
+         ORDER BY inst.name ASC`
+      );
+      if (rows && rows.length > 0) {
+        const list = rows.map((r) => ({
+          id: r.id,
+          name: r.name,
+          title: r.title || "",
+          bio: r.bio || "",
+          rating: Number(r.rating) || 4.8,
+          learners: Number(r.learners) || 0,
+          courses: Number(r.courses_count) || 0,
+          imageUrl: r.image_url || null,
+        }));
+        return limit ? list.slice(0, limit) : list;
+      }
+    } catch (e) {
+      console.warn("Could not fetch instructors from DB:", e.message);
+    }
+  }
   return limit ? instructors.slice(0, limit) : instructors;
 }

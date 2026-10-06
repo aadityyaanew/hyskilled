@@ -66,7 +66,12 @@ export function CourseCard({ course, className, priority = false }) {
 
         <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">{course.shortDescription}</p>
 
-
+        {course.instructor?.name && (
+          <div className="mt-2.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="font-medium text-foreground/80">Mentor:</span>
+            <span className="truncate font-semibold text-primary">{course.instructor.name}</span>
+          </div>
+        )}
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">

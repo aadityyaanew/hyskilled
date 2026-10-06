@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin, slugify, safeJsonParse } from "@/lib/admin-api";
 import { query, execute, isDbConfigured } from "@/lib/db";
 import { deleteFileFromR2 } from "@/lib/r2";
+import { ensureInstructorsTable } from "@/lib/instructors-db";
 
 export async function GET(request, { params }) {
   const { errorResponse } = await requireAdmin();
@@ -42,6 +43,9 @@ export async function GET(request, { params }) {
     course.imageUrl = course.image_url || null;
     course.closingDate = course.closing_date ? new Date(course.closing_date).toISOString() : null;
     course.closingTimerEnabled = Boolean(course.closing_timer_enabled);
+    course.language = course.language || "English";
+    course.instructorBioOverride = course.instructor_bio_override || "";
+    course.learners = Number(course.learners) || 0;
 
     return NextResponse.json({ success: true, course });
   } catch (err) {
@@ -70,7 +74,11 @@ export async function PUT(request, { params }) {
     categoryId: providedCategoryId,
     categorySlug,
     instructorId,
+    instructorBioOverride,
+    instructor_bio_override,
     level = "Beginner",
+    language,
+    learners,
     durationHours = 20,
     price = 0,
     originalPrice = null,
@@ -113,6 +121,8 @@ export async function PUT(request, { params }) {
   }
 
   try {
+    await ensureInstructorsTable();
+
     const isNumeric = /^\d+$/.test(id);
     const existing = await query(
       isNumeric ? "SELECT * FROM courses WHERE id = ? LIMIT 1" : "SELECT * FROM courses WHERE slug = ? LIMIT 1",
@@ -155,6 +165,11 @@ export async function PUT(request, { params }) {
 
     // Safely preserve relational fields if not explicitly sent in body
     const targetInstructorId = instructorId !== undefined ? (instructorId || null) : (existingCourse.instructor_id || "aarav-mehta");
+    const targetInstructorBioOverride = instructorBioOverride !== undefined
+      ? (instructorBioOverride || null)
+      : (instructor_bio_override !== undefined ? (instructor_bio_override || null) : (existingCourse.instructor_bio_override || null));
+    const targetLanguage = language !== undefined ? (language || "English") : (existingCourse.language || "English");
+    const targetLearners = learners !== undefined ? Number(learners) : Number(existingCourse.learners || 0);
     const targetModules = modules !== undefined ? (Array.isArray(modules) ? modules : []) : safeJsonParse(existingCourse.modules, []);
     const targetAudience = audience !== undefined ? (Array.isArray(audience) ? audience : []) : safeJsonParse(existingCourse.audience, []);
     const targetOutcomes = outcomes !== undefined ? (Array.isArray(outcomes) ? outcomes : []) : safeJsonParse(existingCourse.outcomes, []);
@@ -168,7 +183,10 @@ export async function PUT(request, { params }) {
         subtitle = ?,
         category_id = ?,
         instructor_id = ?,
+        instructor_bio_override = ?,
         level = ?,
+        language = ?,
+        learners = ?,
         duration_hours = ?,
         price = ?,
         original_price = ?,
@@ -195,7 +213,10 @@ export async function PUT(request, { params }) {
         subtitle?.trim() || null,
         targetCatId,
         targetInstructorId,
+        targetInstructorBioOverride,
         level,
+        targetLanguage,
+        targetLearners,
         Number(durationHours) || 0,
         Number(price) || 0,
         originalPrice ? Number(originalPrice) : null,

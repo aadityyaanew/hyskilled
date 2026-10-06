@@ -94,7 +94,7 @@ export function ScheduleSessionDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[90svh] w-[95vw] overflow-y-auto sm:w-full sm:max-w-lg !top-[5%] !translate-y-0 sm:!top-1/2 sm:!-translate-y-1/2 sm:max-h-[92dvh] p-4 sm:p-6 gap-3 sm:gap-4">
+      <DialogContent className="max-h-[92svh] w-[96vw] overflow-y-auto rounded-2xl sm:w-full sm:max-w-lg !top-[4%] !translate-y-0 sm:!top-1/2 sm:!-translate-y-1/2 sm:max-h-[92dvh] p-4 sm:p-6 gap-3 sm:gap-4">
         {done ? (
           <div className="flex flex-col items-center gap-3 py-8 text-center">
             <span className="grid size-14 place-items-center rounded-full bg-emerald-50 text-emerald-600">
@@ -132,23 +132,21 @@ export function ScheduleSessionDialog({
               </DialogDescription>
             </DialogHeader>
 
-            <form onSubmit={submit} className="space-y-2.5 sm:space-y-4 mt-2 sm:mt-0" noValidate>
+            <form onSubmit={submit} className="space-y-3 sm:space-y-4 mt-2 sm:mt-0" noValidate>
               <div>
                 <label className={labelCls} htmlFor="lead-name">Full name *</label>
-                <Input id="lead-name" value={form.name} onChange={set("name")} placeholder="Your name" autoComplete="name" className="h-9 sm:h-10 text-sm" />
+                <Input id="lead-name" value={form.name} onChange={set("name")} placeholder="Your name" autoComplete="name" className="h-11 text-base sm:h-10 sm:text-sm" />
                 {errors.name && <p className={errCls}>{errors.name}</p>}
               </div>
-              <div className="grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-2">
-                <div>
-                  <label className={labelCls} htmlFor="lead-phone">Phone *</label>
-                  <Input id="lead-phone" type="tel" value={form.phone} onChange={set("phone")} placeholder="+91" autoComplete="tel" className="h-9 sm:h-10 text-sm" />
-                  {errors.phone && <p className={errCls}>{errors.phone}</p>}
-                </div>
-                <div>
-                  <label className={labelCls} htmlFor="lead-email">Email *</label>
-                  <Input id="lead-email" type="email" value={form.email} onChange={set("email")} placeholder="you@mail.com" autoComplete="email" className="h-9 sm:h-10 text-sm" />
-                  {errors.email && <p className={errCls}>{errors.email}</p>}
-                </div>
+              <div>
+                <label className={labelCls} htmlFor="lead-phone">Phone *</label>
+                <Input id="lead-phone" type="tel" value={form.phone} onChange={set("phone")} placeholder="+91 9876543210" autoComplete="tel" className="h-11 text-base sm:h-10 sm:text-sm" />
+                {errors.phone && <p className={errCls}>{errors.phone}</p>}
+              </div>
+              <div>
+                <label className={labelCls} htmlFor="lead-email">Email *</label>
+                <Input id="lead-email" type="email" value={form.email} onChange={set("email")} placeholder="you@mail.com" autoComplete="email" className="h-11 text-base sm:h-10 sm:text-sm" />
+                {errors.email && <p className={errCls}>{errors.email}</p>}
               </div>
               <div>
                 <label className={labelCls} htmlFor="lead-course">Course *</label>
@@ -156,7 +154,7 @@ export function ScheduleSessionDialog({
                   id="lead-course"
                   value={form.course}
                   onChange={set("course")}
-                  className="h-9 sm:h-10 w-full rounded-lg border border-input bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="h-11 sm:h-10 w-full rounded-lg border border-input bg-background px-2.5 text-base sm:text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   <option value="">Select a course</option>
                   {courses.map((c) => (
@@ -172,7 +170,7 @@ export function ScheduleSessionDialog({
                   id="lead-experience"
                   value={form.experience}
                   onChange={set("experience")}
-                  className="h-9 sm:h-10 w-full rounded-lg border border-input bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="h-11 sm:h-10 w-full rounded-lg border border-input bg-background px-2.5 text-base sm:text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                   required
                 >
                   <option value="">Select your experience</option>
@@ -189,7 +187,7 @@ export function ScheduleSessionDialog({
                 <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{formError}</p>
               )}
 
-              <Button type="submit" variant="brand" className="w-full h-9 sm:h-11 mt-1" disabled={submitting}>
+              <Button type="submit" variant="brand" className="w-full h-12 sm:h-11 mt-1 text-base sm:text-sm" disabled={submitting}>
                 {submitting ? <><Loader2 className="animate-spin size-4 mr-2" /> Submitting…</> : "Request session"}
               </Button>
             </form>

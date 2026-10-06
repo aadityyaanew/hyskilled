@@ -19,6 +19,7 @@ import {
   Newspaper,
   Briefcase,
   Inbox,
+  GraduationCap,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
+  { href: "/admin/instructors", label: "Instructors", icon: GraduationCap },
   { href: "/admin/bundles", label: "Bundles", icon: Package },
   { href: "/admin/orders", label: "Orders & Sales", icon: CreditCard },
   { href: "/admin/students", label: "Students", icon: Users },

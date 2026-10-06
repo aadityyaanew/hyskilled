@@ -3,6 +3,7 @@ import { ensureCourseOrderColumn } from "@/lib/course-order";
 import { courses as mockCourses } from "@/data/courses";
 import { categories as mockCategories } from "@/data/categories";
 import { coupons as mockCoupons } from "@/data/coupons";
+import { ensureInstructorsTable } from "@/lib/instructors-db";
 
 /**
  * Admin Service: Raw SQL data layer for the Admin Panel.
@@ -342,6 +343,41 @@ export async function getAdminCoupons() {
     min_order: c.minOrder || null,
     is_active: true,
     used_count: 0,
+  }));
+}
+
+export async function getAdminInstructors() {
+  if (isDbConfigured()) {
+    try {
+      await ensureInstructorsTable();
+      const rows = await query(
+        `SELECT inst.*, COUNT(c.id) as courses_count
+         FROM instructors inst
+         LEFT JOIN courses c ON c.instructor_id = inst.id
+         GROUP BY inst.id
+         ORDER BY inst.name ASC`
+      );
+      return (rows || []).map((r) => ({
+        id: r.id,
+        name: r.name,
+        title: r.title || "",
+        bio: r.bio || "",
+        rating: Number(r.rating) || 4.8,
+        learners: Number(r.learners) || 0,
+        courses: Number(r.courses_count) || 0,
+        imageUrl: r.image_url || null,
+        createdAt: r.created_at,
+        updatedAt: r.updated_at,
+      }));
+    } catch (err) {
+      console.warn("Could not fetch instructors from MySQL, using fallback:", err.message);
+    }
+  }
+
+  const { instructors: mockInstructors } = await import("@/data/instructors");
+  return mockInstructors.map((i) => ({
+    ...i,
+    imageUrl: null,
   }));
 }
 

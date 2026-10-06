@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { CourseForm } from "@/features/admin/course-form";
-import { getAdminCategories } from "@/services/admin.service";
+import { getAdminCategories, getAdminInstructors } from "@/services/admin.service";
 import { query, isDbConfigured } from "@/lib/db";
 import { safeJsonParse } from "@/lib/admin-api";
 
@@ -13,7 +13,10 @@ export const metadata = {
 
 export default async function EditCoursePage({ params }) {
   const { id } = await params;
-  const categories = await getAdminCategories();
+  const [categories, instructors] = await Promise.all([
+    getAdminCategories(),
+    getAdminInstructors(),
+  ]);
 
   let course = null;
 
@@ -35,6 +38,9 @@ export default async function EditCoursePage({ params }) {
         course = rows[0];
         course.price = Number(course.price);
         course.original_price = course.original_price ? Number(course.original_price) : null;
+        course.language = course.language || "English";
+        course.instructorBioOverride = course.instructor_bio_override || "";
+        course.learners = Number(course.learners) || 0;
         course.tags = safeJsonParse(course.tags, []);
         course.outcomes = safeJsonParse(course.outcomes, []);
         course.requirements = safeJsonParse(course.requirements, []);
@@ -61,7 +67,7 @@ export default async function EditCoursePage({ params }) {
         </p>
       </div>
 
-      <CourseForm course={course} categories={categories} />
+      <CourseForm course={course} categories={categories} instructors={instructors} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -142,35 +142,36 @@ export function SeatBookingForm() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
-      className="space-y-5 rounded-3xl border bg-card p-6 shadow-soft sm:p-8"
+      className="space-y-4 rounded-3xl border bg-card p-4 shadow-soft sm:space-y-5 sm:p-8"
       aria-label="Register your seat form"
     >
-      {/* Name + Phone */}
-      <div className="grid gap-5 sm:grid-cols-2">
-        <FormField id="seat-name" label="Full name" error={errors.name?.message}>
-          <Input
-            id="seat-name"
-            autoComplete="name"
-            placeholder="Priya Sharma"
-            aria-invalid={Boolean(errors.name)}
-            aria-describedby="seat-name-error"
-            {...register("name")}
-          />
-        </FormField>
+      {/* Name */}
+      <FormField id="seat-name" label="Full name" error={errors.name?.message}>
+        <Input
+          id="seat-name"
+          autoComplete="name"
+          placeholder="Priya Sharma"
+          aria-invalid={Boolean(errors.name)}
+          aria-describedby="seat-name-error"
+          className="h-11 text-base sm:h-10 sm:text-sm"
+          {...register("name")}
+        />
+      </FormField>
 
-        <FormField id="seat-phone" label="Mobile number" error={errors.phone?.message}>
-          <Input
-            id="seat-phone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="+91 9876543210"
-            aria-invalid={Boolean(errors.phone)}
-            aria-describedby="seat-phone-error"
-            {...register("phone")}
-          />
-        </FormField>
-      </div>
+      {/* Phone */}
+      <FormField id="seat-phone" label="Mobile number" error={errors.phone?.message}>
+        <Input
+          id="seat-phone"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          placeholder="+91 9876543210"
+          aria-invalid={Boolean(errors.phone)}
+          aria-describedby="seat-phone-error"
+          className="h-11 text-base sm:h-10 sm:text-sm"
+          {...register("phone")}
+        />
+      </FormField>
 
       {/* Email */}
       <FormField id="seat-email" label="Email address" error={errors.email?.message}>
@@ -181,6 +182,7 @@ export function SeatBookingForm() {
           placeholder="priya@example.com"
           aria-invalid={Boolean(errors.email)}
           aria-describedby="seat-email-error"
+          className="h-11 text-base sm:h-10 sm:text-sm"
           {...register("email")}
         />
       </FormField>
@@ -192,7 +194,7 @@ export function SeatBookingForm() {
           name="course"
           render={({ field }) => (
             <Select onValueChange={field.onChange} value={field.value}>
-              <SelectTrigger id="seat-course" aria-invalid={Boolean(errors.course)}>
+              <SelectTrigger id="seat-course" aria-invalid={Boolean(errors.course)} className="h-11 text-base sm:h-10 sm:text-sm">
                 <SelectValue placeholder="Select a course" />
               </SelectTrigger>
               <SelectContent>
@@ -220,7 +222,7 @@ export function SeatBookingForm() {
       </FormField>
 
       {/* City + State */}
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
         <FormField id="seat-city" label="City" error={errors.city?.message}>
           <Input
             id="seat-city"
@@ -228,6 +230,7 @@ export function SeatBookingForm() {
             placeholder="Noida"
             aria-invalid={Boolean(errors.city)}
             aria-describedby="seat-city-error"
+            className="h-11 text-base sm:h-10 sm:text-sm"
             {...register("city")}
           />
         </FormField>
@@ -238,7 +241,7 @@ export function SeatBookingForm() {
             name="state"
             render={({ field }) => (
               <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger id="seat-state" aria-invalid={Boolean(errors.state)}>
+                <SelectTrigger id="seat-state" aria-invalid={Boolean(errors.state)} className="h-11 text-base sm:h-10 sm:text-sm">
                   <SelectValue placeholder="Select state" />
                 </SelectTrigger>
                 <SelectContent className="max-h-56">
@@ -255,9 +258,9 @@ export function SeatBookingForm() {
       </div>
 
       {/* Note */}
-      <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3.5">
+      <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-3 sm:px-4 sm:py-3.5">
         <AlertCircle className="mt-0.5 size-4 shrink-0 text-amber-600" />
-        <p className="text-sm text-amber-800 leading-relaxed">
+        <p className="text-xs leading-relaxed text-amber-800 sm:text-sm">
           <span className="font-semibold">Note:</span> The ₹2,500 booking amount will be adjusted
           against the applicable tuition fees and is non-refundable.
         </p>
@@ -269,7 +272,7 @@ export function SeatBookingForm() {
         type="submit"
         size="xl"
         variant="brand"
-        className="w-full text-base font-bold"
+        className="w-full text-base font-bold h-12 sm:h-auto"
         disabled={isSubmitting}
       >
         {isSubmitting ? (

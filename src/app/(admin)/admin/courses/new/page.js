@@ -1,5 +1,5 @@
 import { CourseForm } from "@/features/admin/course-form";
-import { getAdminCategories } from "@/services/admin.service";
+import { getAdminCategories, getAdminInstructors } from "@/services/admin.service";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -9,7 +9,10 @@ export const metadata = {
 };
 
 export default async function NewCoursePage() {
-  const categories = await getAdminCategories();
+  const [categories, instructors] = await Promise.all([
+    getAdminCategories(),
+    getAdminInstructors(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -22,7 +25,7 @@ export default async function NewCoursePage() {
         </p>
       </div>
 
-      <CourseForm categories={categories} />
+      <CourseForm categories={categories} instructors={instructors} />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin, slugify } from "@/lib/admin-api";
 import { query, execute, isDbConfigured } from "@/lib/db";
 import { ensureCourseOrderColumn } from "@/lib/course-order";
+import { ensureInstructorsTable } from "@/lib/instructors-db";
 
 export async function GET(request) {
   const { errorResponse } = await requireAdmin();
@@ -45,6 +46,7 @@ export async function GET(request) {
     sql += ` ORDER BY c.display_order ASC, c.id ASC`;
 
     await ensureCourseOrderColumn();
+    await ensureInstructorsTable();
     const courses = await query(sql, params);
     return NextResponse.json({ success: true, courses });
   } catch (err) {
@@ -71,7 +73,11 @@ export async function POST(request) {
     categorySlug,
     categoryId: providedCategoryId,
     instructorId = null,
+    instructorBioOverride = null,
+    instructor_bio_override = null,
     level = "Beginner",
+    language = "English",
+    learners = 0,
     durationHours = 20,
     price = 0,
     originalPrice = null,
@@ -95,6 +101,9 @@ export async function POST(request) {
   const resolvedSyllabusDriveFileId = syllabusDriveFileId || body.syllabus_drive_file_id || null;
   const resolvedSyllabusUrl = syllabusUrl || body.syllabus_url || null;
   const resolvedImageUrl = imageUrl || body.image_url || body.thumbnail || null;
+  const resolvedInstructorBioOverride = instructorBioOverride || instructor_bio_override || body.instructorBioOverride || body.instructor_bio_override || null;
+  const resolvedLanguage = language || body.language || "English";
+  const resolvedLearners = Number(learners !== undefined ? learners : body.learners) || 0;
   
   let resolvedClosingDate = null;
   const rawClosingDate = closingDate || body.closing_date;
@@ -150,25 +159,29 @@ export async function POST(request) {
     }
 
     await ensureCourseOrderColumn();
+    await ensureInstructorsTable();
     const [{ nextOrder }] = await query("SELECT COALESCE(MAX(display_order), 0) + 1 AS nextOrder FROM courses");
 
     const result = await execute(
       `INSERT INTO courses (
-        slug, title, subtitle, category_id, instructor_id, level, duration_hours,
-        price, original_price, badge, tags, short_description, description,
+        slug, title, subtitle, category_id, instructor_id, instructor_bio_override, level, language, duration_hours,
+        price, original_price, learners, badge, tags, short_description, description,
         outcomes, requirements, audience, modules, status, app_course_id,
         syllabus_drive_file_id, syllabus_url, image_url, closing_date, closing_timer_enabled, display_order
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         slug,
         title.trim(),
         subtitle?.trim() || null,
         targetCatId,
         resolvedInstructorId,
+        resolvedInstructorBioOverride,
         level,
+        resolvedLanguage,
         Number(durationHours) || 0,
         Number(price) || 0,
         originalPrice ? Number(originalPrice) : null,
+        resolvedLearners,
         badge?.trim() || null,
         JSON.stringify(Array.isArray(tags) ? tags : []),
         shortDescription?.trim() || null,
