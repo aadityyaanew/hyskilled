@@ -323,17 +323,27 @@ export default function EnrollmentDocForm({
     }
     if (idx === 2) {
       if (!form.govtIdUrl)         e.govtIdUrl  = "Government ID document is required.";
+      if (!form.aadhaarNumber.trim()) e.aadhaarNumber = "Aadhaar number is required.";
     }
     if (idx === 3) {
       if (!form.highestQualification) e.highestQualification = "Please select highest qualification.";
+      if (!form.institutionName.trim()) e.institutionName    = "Institution name is required.";
       if (!form.graduationYear.trim()) e.graduationYear      = "Year of passing is required.";
       if (!form.percentageCgpa.trim()) e.percentageCgpa      = "Percentage / CGPA is required.";
       if (!form.marksheetUrl)          e.marksheetUrl        = "Marksheet / Degree certificate is required.";
     }
     if (idx === 4) {
       if (!form.currentStatus)     e.currentStatus = "Please select current status.";
+      if (!form.workExperienceYears) e.workExperienceYears = "Years of experience is required.";
+      if (!form.currentCompany.trim()) e.currentCompany = "Company name is required.";
+      if (!form.designation.trim()) e.designation = "Designation is required.";
+      if (!form.resumeUrl) e.resumeUrl = "Resume / CV is required.";
     }
     if (idx === 5) {
+      if (!String(form.selectedCourse).trim()) e.selectedCourse = "Course is required.";
+      if (!String(form.selectedCategory).trim()) e.selectedCategory = "Category is required.";
+      if (form.totalFee === "" || form.totalFee === null) e.totalFee = "Total fee is required.";
+      if (form.paidAmount === "" || form.paidAmount === null) e.paidAmount = "Paid amount is required.";
       if (!form.paymentRefId.trim()) e.paymentRefId = "Payment Reference / Transaction ID is required.";
       if (!form.receiptUrl)          e.receiptUrl   = "Fee receipt / Payment screenshot is required.";
     }
@@ -621,13 +631,14 @@ export default function EnrollmentDocForm({
                   </Select>
                 </FormField>
 
-                <FormField id="aadhaarNumber" label="Aadhaar Number" optional hint="12-digit number (Optional)">
+                <FormField id="aadhaarNumber" label="Aadhaar Number" required hint="12-digit number" error={errors.aadhaarNumber}>
                   <Input
                     id="aadhaarNumber"
                     value={form.aadhaarNumber}
                     onChange={(e) => set("aadhaarNumber")(e.target.value)}
                     placeholder="XXXX XXXX XXXX"
                     maxLength={16}
+                    aria-invalid={!!errors.aadhaarNumber}
                   />
                 </FormField>
               </div>
@@ -691,12 +702,13 @@ export default function EnrollmentDocForm({
                 </div>
 
                 <div className="sm:col-span-1">
-                  <FormField id="institutionName" label="College / University / School" optional>
+                  <FormField id="institutionName" label="College / University / School" required error={errors.institutionName}>
                     <Input
                       id="institutionName"
                       value={form.institutionName}
                       onChange={(e) => set("institutionName")(e.target.value)}
                       placeholder="Institution name"
+                      aria-invalid={!!errors.institutionName}
                     />
                   </FormField>
                 </div>
@@ -736,9 +748,9 @@ export default function EnrollmentDocForm({
                   </Select>
                 </FormField>
 
-                <FormField id="workExperienceYears" label="Years of Experience" optional hint="If applicable">
+                <FormField id="workExperienceYears" label="Years of Experience" required error={errors.workExperienceYears}>
                   <Select value={form.workExperienceYears} onValueChange={set("workExperienceYears")}>
-                    <SelectTrigger id="workExperienceYears">
+                    <SelectTrigger id="workExperienceYears" aria-invalid={!!errors.workExperienceYears}>
                       <SelectValue placeholder="Select experience" />
                     </SelectTrigger>
                     <SelectContent>
@@ -751,32 +763,36 @@ export default function EnrollmentDocForm({
                   </Select>
                 </FormField>
 
-                <FormField id="currentCompany" label="Company / Organization Name" optional hint="If working">
+                <FormField id="currentCompany" label="Company / Organization Name" required error={errors.currentCompany}>
                   <Input
                     id="currentCompany"
                     value={form.currentCompany}
                     onChange={(e) => set("currentCompany")(e.target.value)}
                     placeholder="e.g. Acme Tech"
+                    aria-invalid={!!errors.currentCompany}
                   />
                 </FormField>
 
-                <FormField id="designation" label="Designation / Role" optional hint="If working">
+                <FormField id="designation" label="Designation / Role" required error={errors.designation}>
                   <Input
                     id="designation"
                     value={form.designation}
                     onChange={(e) => set("designation")(e.target.value)}
                     placeholder="e.g. Junior Developer"
+                    aria-invalid={!!errors.designation}
                   />
                 </FormField>
               </div>
 
               <FileUploadField
                 label="Resume / CV"
-                hint="Upload resume if available (PDF, DOC, DOCX — max 10 MB)"
+                hint="Upload resume (PDF, DOC, DOCX — max 10 MB)"
                 type="resume"
                 value={form.resumeUrl}
                 onChange={set("resumeUrl")}
                 accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                required
+                error={errors.resumeUrl}
               />
             </div>
           )}
@@ -799,25 +815,27 @@ export default function EnrollmentDocForm({
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <FormField id="selectedCourse" label="Course Selected" optional>
+                <FormField id="selectedCourse" label="Course Selected" required error={errors.selectedCourse}>
                   <Input
                     id="selectedCourse"
                     value={form.selectedCourse}
                     onChange={(e) => set("selectedCourse")(e.target.value)}
                     placeholder="Enrolled Course"
+                    aria-invalid={!!errors.selectedCourse}
                   />
                 </FormField>
 
-                <FormField id="selectedCategory" label="Category / Domain" optional>
+                <FormField id="selectedCategory" label="Category / Domain" required error={errors.selectedCategory}>
                   <Input
                     id="selectedCategory"
                     value={form.selectedCategory}
                     onChange={(e) => set("selectedCategory")(e.target.value)}
                     placeholder="e.g. Full Stack Development"
+                    aria-invalid={!!errors.selectedCategory}
                   />
                 </FormField>
 
-                <FormField id="totalFee" label="Total Course Fee (₹)" optional>
+                <FormField id="totalFee" label="Total Course Fee (₹)" required error={errors.totalFee}>
                   <Input
                     id="totalFee"
                     type="number"
@@ -825,10 +843,11 @@ export default function EnrollmentDocForm({
                     value={form.totalFee}
                     onChange={(e) => set("totalFee")(e.target.value)}
                     placeholder="0"
+                    aria-invalid={!!errors.totalFee}
                   />
                 </FormField>
 
-                <FormField id="paidAmount" label="Amount Paid (₹)" optional>
+                <FormField id="paidAmount" label="Amount Paid (₹)" required error={errors.paidAmount}>
                   <Input
                     id="paidAmount"
                     type="number"
@@ -836,6 +855,7 @@ export default function EnrollmentDocForm({
                     value={form.paidAmount}
                     onChange={(e) => set("paidAmount")(e.target.value)}
                     placeholder="0"
+                    aria-invalid={!!errors.paidAmount}
                   />
                 </FormField>
               </div>
