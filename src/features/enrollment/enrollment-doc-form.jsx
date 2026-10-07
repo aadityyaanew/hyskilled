@@ -323,7 +323,7 @@ export default function EnrollmentDocForm({
     }
     if (idx === 2) {
       if (!form.govtIdUrl) e.govtIdUrl = "Government ID document is required.";
-      if (!form.aadhaarNumber.trim()) e.aadhaarNumber = "Aadhaar number is required.";
+      if (!form.aadhaarNumber.trim()) e.aadhaarNumber = "ID number is required.";
     }
     if (idx === 3) {
       if (!form.highestQualification) e.highestQualification = "Please select highest qualification.";
@@ -631,13 +631,13 @@ export default function EnrollmentDocForm({
                   </Select>
                 </FormField>
 
-                <FormField id="aadhaarNumber" label="Aadhaar Number" required hint="12-digit number" error={errors.aadhaarNumber}>
+                <FormField id="aadhaarNumber" label="ID Number" required hint="Enter your ID number" error={errors.aadhaarNumber}>
                   <Input
                     id="aadhaarNumber"
                     value={form.aadhaarNumber}
                     onChange={(e) => set("aadhaarNumber")(e.target.value)}
-                    placeholder="XXXX XXXX XXXX"
-                    maxLength={16}
+                    placeholder="Enter ID Number"
+                    maxLength={50}
                     aria-invalid={!!errors.aadhaarNumber}
                   />
                 </FormField>
