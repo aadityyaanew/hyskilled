@@ -55,6 +55,11 @@ export async function PATCH(request, { params }) {
     current_company,
     designation,
     work_experience_years,
+    selected_course,
+    selected_category,
+    total_fee,
+    paid_amount,
+    payment_ref_id,
   } = body;
 
   const allowed = ["pending", "verified", "rejected"];
@@ -90,6 +95,11 @@ export async function PATCH(request, { params }) {
       current_company,
       designation,
       work_experience_years,
+      selected_course,
+      selected_category,
+      total_fee,
+      paid_amount,
+      payment_ref_id,
     };
 
     for (const [key, value] of Object.entries(fieldsMap)) {
@@ -120,19 +130,24 @@ export async function PATCH(request, { params }) {
       }
 
       // Perform an insert with all provided fields
-      const insertKeys = ["order_id", "user_id", "email", "total_fee"];
-      const insertVals = [order_id, order.user_id || null, email || order.customer_email || "N/A", order.total || 0];
+      const insertKeys = ["order_id", "user_id", "email"];
+      const insertVals = [order_id, order.user_id || null, email || order.customer_email || "N/A"];
 
       // Add other fields from fieldsMap
       for (const [key, value] of Object.entries(fieldsMap)) {
         if (value !== undefined && key !== "email") {
           insertKeys.push(key);
-          insertVals.push(value);
+          if (key === "total_fee" && (value === "" || value === null)) {
+            insertVals.push(order.total || 0);
+          } else {
+            insertVals.push(value);
+          }
         }
       }
 
       // Add default required fields if missing
       const defaults = {
+        total_fee: order.total || 0,
         full_name: "N/A",
         father_name: "N/A",
         dob: "1970-01-01",

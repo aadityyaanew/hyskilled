@@ -142,6 +142,11 @@ function DetailDialog({ doc, onClose, onUpdate }) {
     current_company: doc.current_company || "",
     designation: doc.designation || "",
     work_experience_years: doc.work_experience_years || "",
+    selected_course: doc.selected_course || "",
+    selected_category: doc.selected_category || "",
+    total_fee: doc.total_fee || "",
+    paid_amount: doc.paid_amount || "",
+    payment_ref_id: doc.payment_ref_id || "",
   });
 
   const handleChange = (field, value) => {
@@ -174,7 +179,9 @@ function DetailDialog({ doc, onClose, onUpdate }) {
     }
   }
 
-  const balance = Number(doc.balance) || 0;
+  const balance = isEditing
+    ? (Number(formData.total_fee || 0) - Number(formData.paid_amount || 0))
+    : (doc.balance !== undefined ? Number(doc.balance) : (Number(doc.total_fee || 0) - Number(doc.paid_amount || 0)));
 
   return (
     <Dialog open onOpenChange={onClose}>
@@ -258,10 +265,10 @@ function DetailDialog({ doc, onClose, onUpdate }) {
           </DetailSection>
 
           <DetailSection icon={CreditCard} title="Payment">
-            <DetailRow label="Course"      value={doc.selected_course} />
-            <DetailRow label="Category"    value={doc.selected_category} />
-            <DetailRow label="Total Fee"   value={formatCurrency(doc.total_fee)} />
-            <DetailRow label="Paid"        value={formatCurrency(doc.paid_amount)} />
+            <DetailRow label="Course"      value={isEditing ? formData.selected_course : doc.selected_course} isEditing={isEditing} onChange={(val) => handleChange("selected_course", val)} />
+            <DetailRow label="Category"    value={isEditing ? formData.selected_category : doc.selected_category} isEditing={isEditing} onChange={(val) => handleChange("selected_category", val)} />
+            <DetailRow label="Total Fee"   value={isEditing ? formData.total_fee : formatCurrency(doc.total_fee)} isEditing={isEditing} onChange={(val) => handleChange("total_fee", val)} />
+            <DetailRow label="Paid"        value={isEditing ? formData.paid_amount : formatCurrency(doc.paid_amount)} isEditing={isEditing} onChange={(val) => handleChange("paid_amount", val)} />
             <div className="flex justify-between gap-3 text-sm items-center">
               <span className="text-muted-foreground shrink-0">Balance</span>
               <span className={cn("font-bold", balance === 0 ? "text-emerald-600" : "text-destructive")}>
@@ -269,7 +276,7 @@ function DetailDialog({ doc, onClose, onUpdate }) {
                 {balance === 0 && <Badge variant="success" className="ml-1.5">Paid</Badge>}
               </span>
             </div>
-            <DetailRow label="Reference ID" value={doc.payment_ref_id} />
+            <DetailRow label="Reference ID" value={isEditing ? formData.payment_ref_id : doc.payment_ref_id} isEditing={isEditing} onChange={(val) => handleChange("payment_ref_id", val)} />
             <FileLink  label="Receipt"      url={doc.receipt_url} />
           </DetailSection>
 
