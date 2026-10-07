@@ -32,7 +32,7 @@ export async function AnnouncementBar() {
           href={ROUTES.courses}
           className="focus-ring inline-flex items-center gap-1 rounded font-bold text-amber-200 sm:text-white underline-offset-4 hover:underline shrink-0"
         >
-          <span className="hidden xs:inline">Shop now</span> <ArrowRight className="size-3 sm:size-3.5" />
+          <span className="hidden xs:inline">Enroll now</span> <ArrowRight className="size-3 sm:size-3.5" />
         </Link>
       </div>
     </div>
