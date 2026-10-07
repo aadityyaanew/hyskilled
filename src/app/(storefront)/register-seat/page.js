@@ -65,7 +65,7 @@ export default function RegisterSeatPage() {
 
       <section className="section-y">
         <div className="container-page">
-          <div className="grid gap-12 lg:grid-cols-[1fr_1.35fr] lg:gap-16 xl:gap-20">
+          <div className="flex flex-col-reverse gap-8 sm:gap-12 lg:grid lg:grid-cols-[1fr_1.35fr] lg:gap-16 xl:gap-20">
             {/* ─── Left: info panel ─── */}
             <div className="space-y-10">
               {/* Booking amount card */}
@@ -83,7 +83,7 @@ export default function RegisterSeatPage() {
                     Booking Amount
                   </p>
                   <div className="mt-3 flex items-end gap-1">
-                    <span className="font-heading text-5xl sm:text-6xl font-extrabold text-white">₹2,500</span>
+                    <span className="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold text-white">₹2,500</span>
                   </div>
                   <p className="mt-2 text-sm text-white/70">
                     Fully adjusted against tuition fees · Non-refundable
