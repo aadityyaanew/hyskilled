@@ -90,10 +90,10 @@ export async function POST(request) {
 
     // Check if already submitted for this order
     const existing = await query(
-      "SELECT id FROM enrollment_docs WHERE order_id = ? LIMIT 1",
+      "SELECT id, declaration_agreed FROM enrollment_docs WHERE order_id = ? LIMIT 1",
       [orderId]
     );
-    if (existing.length > 0) {
+    if (existing.length > 0 && existing[0].declaration_agreed === 1) {
       return NextResponse.json(
         {
           success: false,
@@ -116,48 +116,78 @@ export async function POST(request) {
       // non-fatal
     }
 
-    const result = await execute(
-      `INSERT INTO enrollment_docs (
-        order_id, user_id,
-        full_name, father_name, dob, mobile, email,
-        country, address, city, state, postal_code,
-        govt_id_type, govt_id_url, aadhaar_number,
-        highest_qualification, institution_name, graduation_year, percentage_cgpa, marksheet_url,
-        current_status, work_experience_years, current_company, designation,
-        photo_url, resume_url,
-        total_fee, paid_amount, payment_ref_id, receipt_url,
-        selected_course, selected_category,
-        declaration_agreed, digital_signature
-      ) VALUES (
-        ?, ?,
-        ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?,
-        ?, ?, ?,
-        ?, ?, ?, ?, ?,
-        ?, ?, ?, ?,
-        ?, ?,
-        ?, ?, ?, ?,
-        ?, ?,
-        ?, ?
-      )`,
-      [
-        orderId, userId,
-        fullName.trim(), fatherName.trim(), dob, mobile.trim(), email.trim().toLowerCase(),
-        (country || "India").trim(), address.trim(), city.trim(), state.trim(), postalCode.trim(),
-        govtIdType || null, govtIdUrl || null, aadhaarNumber || null,
-        highestQualification, institutionName || null, graduationYear || null, percentageCgpa || null, marksheetUrl || null,
-        currentStatus || null, workExperienceYears || null, currentCompany || null, designation || null,
-        photoUrl || null, resumeUrl || null,
-        Number(totalFee) || 0, Number(paidAmount) || 0, paymentRefId || null, receiptUrl || null,
-        selectedCourse || null, selectedCategory || null,
-        declarationAgreed ? 1 : 0, digitalSignature.trim(),
-      ]
-    );
+    let docId;
+    if (existing.length > 0) {
+      docId = existing[0].id;
+      await execute(
+        `UPDATE enrollment_docs SET
+          user_id = ?, full_name = ?, father_name = ?, dob = ?, mobile = ?, email = ?,
+          country = ?, address = ?, city = ?, state = ?, postal_code = ?,
+          govt_id_type = ?, govt_id_url = ?, aadhaar_number = ?,
+          highest_qualification = ?, institution_name = ?, graduation_year = ?, percentage_cgpa = ?, marksheet_url = ?,
+          current_status = ?, work_experience_years = ?, current_company = ?, designation = ?,
+          photo_url = ?, resume_url = ?,
+          total_fee = ?, paid_amount = ?, payment_ref_id = ?, receipt_url = ?,
+          selected_course = ?, selected_category = ?,
+          declaration_agreed = ?, digital_signature = ?, status = 'pending'
+        WHERE id = ?`,
+        [
+          userId, fullName.trim(), fatherName.trim(), dob, mobile.trim(), email.trim().toLowerCase(),
+          (country || "India").trim(), address.trim(), city.trim(), state.trim(), postalCode.trim(),
+          govtIdType || null, govtIdUrl || null, aadhaarNumber || null,
+          highestQualification, institutionName || null, graduationYear || null, percentageCgpa || null, marksheetUrl || null,
+          currentStatus || null, workExperienceYears || null, currentCompany || null, designation || null,
+          photoUrl || null, resumeUrl || null,
+          Number(totalFee) || 0, Number(paidAmount) || 0, paymentRefId || null, receiptUrl || null,
+          selectedCourse || null, selectedCategory || null,
+          declarationAgreed ? 1 : 0, digitalSignature.trim(), docId
+        ]
+      );
+    } else {
+      const result = await execute(
+        `INSERT INTO enrollment_docs (
+          order_id, user_id,
+          full_name, father_name, dob, mobile, email,
+          country, address, city, state, postal_code,
+          govt_id_type, govt_id_url, aadhaar_number,
+          highest_qualification, institution_name, graduation_year, percentage_cgpa, marksheet_url,
+          current_status, work_experience_years, current_company, designation,
+          photo_url, resume_url,
+          total_fee, paid_amount, payment_ref_id, receipt_url,
+          selected_course, selected_category,
+          declaration_agreed, digital_signature
+        ) VALUES (
+          ?, ?,
+          ?, ?, ?, ?, ?,
+          ?, ?, ?, ?, ?,
+          ?, ?, ?,
+          ?, ?, ?, ?, ?,
+          ?, ?, ?, ?,
+          ?, ?,
+          ?, ?, ?, ?,
+          ?, ?,
+          ?, ?
+        )`,
+        [
+          orderId, userId,
+          fullName.trim(), fatherName.trim(), dob, mobile.trim(), email.trim().toLowerCase(),
+          (country || "India").trim(), address.trim(), city.trim(), state.trim(), postalCode.trim(),
+          govtIdType || null, govtIdUrl || null, aadhaarNumber || null,
+          highestQualification, institutionName || null, graduationYear || null, percentageCgpa || null, marksheetUrl || null,
+          currentStatus || null, workExperienceYears || null, currentCompany || null, designation || null,
+          photoUrl || null, resumeUrl || null,
+          Number(totalFee) || 0, Number(paidAmount) || 0, paymentRefId || null, receiptUrl || null,
+          selectedCourse || null, selectedCategory || null,
+          declarationAgreed ? 1 : 0, digitalSignature.trim(),
+        ]
+      );
+      docId = result.insertId;
+    }
 
     return NextResponse.json({
       success: true,
       message: "Enrollment documentation submitted successfully!",
-      docId: result.insertId,
+      docId: docId,
     });
   } catch (err) {
     console.error("Enrollment submit error:", err);

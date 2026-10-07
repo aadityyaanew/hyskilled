@@ -29,9 +29,13 @@ export async function GET(request) {
 
     if (status) {
       if (status === "missing_docs") {
-        whereClauses.push("ed.id IS NULL");
+        whereClauses.push("(ed.id IS NULL OR (ed.declaration_agreed = 0 AND ed.status = 'pending'))");
       } else if (["pending", "verified", "rejected"].includes(status)) {
-        whereClauses.push("ed.status = ?");
+        if (status === "pending") {
+          whereClauses.push("ed.status = ? AND ed.declaration_agreed = 1");
+        } else {
+          whereClauses.push("ed.status = ?");
+        }
         params.push(status);
       }
     }
@@ -81,7 +85,7 @@ export async function GET(request) {
         COALESCE(ed.selected_category, MAX(oi.category_slug)) AS selected_category,
         COALESCE(ed.declaration_agreed, 0) AS declaration_agreed, 
         ed.digital_signature,
-        COALESCE(ed.status, 'missing_docs') AS status, 
+        CASE WHEN ed.id IS NULL OR (ed.declaration_agreed = 0 AND ed.status = 'pending') THEN 'missing_docs' ELSE ed.status END AS status, 
         ed.admin_notes,
         COALESCE(ed.submitted_at, o.paid_at) AS submitted_at, 
         ed.updated_at

@@ -21,7 +21,9 @@ async function getOrderDetails(orderId) {
               o.total, o.status,
               oi.item_slug, oi.title as item_title,
               c.price as course_price,
-              (SELECT 1 FROM enrollment_docs ed WHERE ed.order_id = o.id LIMIT 1) as already_submitted
+              (SELECT 1 FROM enrollment_docs ed WHERE ed.order_id = o.id AND ed.declaration_agreed = 1 LIMIT 1) as already_submitted,
+              (SELECT total_fee FROM enrollment_docs ed WHERE ed.order_id = o.id LIMIT 1) as ed_total_fee,
+              (SELECT paid_amount FROM enrollment_docs ed WHERE ed.order_id = o.id LIMIT 1) as ed_paid_amount
        FROM orders o
        LEFT JOIN order_items oi ON oi.order_id = o.id AND oi.item_type = 'course'
        LEFT JOIN courses c ON (c.slug = oi.item_slug OR c.title = oi.title)
@@ -46,7 +48,7 @@ export default async function EnrollmentDocPage({ params }) {
   }
 
   // Already submitted guard
-  if (order?.already_submitted) {
+  if (order?.already_submitted === 1) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4 py-16">
         <div className="max-w-md w-full rounded-3xl border bg-card p-10 text-center shadow-soft">
@@ -99,8 +101,8 @@ export default async function EnrollmentDocPage({ params }) {
           <EnrollmentDocForm
             orderId={orderId}
             initialCourse={order?.item_title || ""}
-            totalFee={order?.course_price || order?.total || ""}
-            paidAmount={order?.total || ""}
+            totalFee={order?.ed_total_fee !== null ? order.ed_total_fee : (order?.course_price || order?.total || "")}
+            paidAmount={order?.ed_paid_amount !== null ? order.ed_paid_amount : (order?.total || "")}
           />
         </Suspense>
       </div>
