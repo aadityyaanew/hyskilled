@@ -107,7 +107,7 @@ export function SeatBookingForm() {
         <div>
           <p className="text-lg font-bold text-ink">Opening secure payment</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            ₹2 booking amount · Powered by Cashfree
+            ₹2,500 booking amount · Powered by Cashfree
           </p>
         </div>
         <p className="flex items-center gap-2 rounded-xl bg-muted/60 px-4 py-2.5 text-xs text-muted-foreground">
@@ -128,7 +128,7 @@ export function SeatBookingForm() {
           Seat Booked Successfully!
         </h3>
         <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
-          Your ₹2 booking amount has been received. Our team will contact you shortly to
+          Your ₹2,500 booking amount has been received. Our team will contact you shortly to
           confirm your seat and guide you through the next steps.
         </p>
         <p className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-50 px-4 py-2 text-sm font-semibold text-primary">
@@ -261,7 +261,7 @@ export function SeatBookingForm() {
       <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-3 sm:px-4 sm:py-3.5">
         <AlertCircle className="mt-0.5 size-4 shrink-0 text-amber-600" />
         <p className="text-xs leading-relaxed text-amber-800 sm:text-sm">
-          <span className="font-semibold">Note:</span> The ₹2 booking amount will be adjusted
+          <span className="font-semibold">Note:</span> The ₹2,500 booking amount will be adjusted
           against the applicable tuition fees and is non-refundable.
         </p>
       </div>
@@ -283,7 +283,7 @@ export function SeatBookingForm() {
         ) : (
           <>
             <IndianRupee className="size-5" />
-            Pay ₹2 &amp; Reserve My Seat
+            Pay ₹2,500 &amp; Reserve My Seat
           </>
         )}
       </Button>

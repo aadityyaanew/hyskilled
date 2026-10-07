@@ -5,7 +5,7 @@ import { seatBookingSchema } from "@/schemas/forms.schema";
 
 export const dynamic = "force-dynamic";
 
-const BOOKING_AMOUNT = 2;
+const BOOKING_AMOUNT = 2500;
 const BOOKING_CURRENCY = "INR";
 
 export async function POST(request) {
