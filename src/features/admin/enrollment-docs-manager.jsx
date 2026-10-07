@@ -6,7 +6,7 @@ import {
   CheckCircle2, XCircle, Clock, ExternalLink,
   ChevronLeft, ChevronRight, Loader2, X, AlertCircle,
   IndianRupee, User, MapPin, ShieldCheck, GraduationCap,
-  Briefcase, CreditCard, ClipboardCheck,
+  Briefcase, CreditCard, ClipboardCheck, Copy, Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +45,7 @@ function StatusBadge({ status }) {
     pending:  { variant: "warning",     label: "Pending",  Icon: Clock },
     verified: { variant: "success",     label: "Verified", Icon: CheckCircle2 },
     rejected: { variant: "destructive", label: "Rejected", Icon: XCircle },
+    missing_docs: { variant: "secondary", label: "Missing Docs", Icon: AlertCircle },
   };
   const { variant, label, Icon } = map[status] || map.pending;
   return (
@@ -68,12 +69,20 @@ function DetailSection({ icon: Icon, title, children }) {
   );
 }
 
-function DetailRow({ label, value }) {
-  if (!value) return null;
+function DetailRow({ label, value, isEditing, onChange }) {
+  if (!isEditing && !value) return null;
   return (
-    <div className="flex justify-between gap-3 text-sm">
+    <div className="flex justify-between gap-3 text-sm items-center">
       <span className="text-muted-foreground shrink-0">{label}</span>
-      <span className="font-medium text-foreground text-right break-all">{value}</span>
+      {isEditing ? (
+        <Input 
+          value={value || ""} 
+          onChange={(e) => onChange && onChange(e.target.value)} 
+          className="h-8 text-right max-w-[200px]" 
+        />
+      ) : (
+        <span className="font-medium text-foreground text-right break-all">{value}</span>
+      )}
     </div>
   );
 }
@@ -101,14 +110,57 @@ function DetailDialog({ doc, onClose, onUpdate }) {
   const [status, setStatus] = useState(doc.status);
   const [notes, setNotes] = useState(doc.admin_notes || "");
   const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  
+  const handleCopyLink = () => {
+    const link = `https://hyskilled.com/enrollment/${doc.order_id}`;
+    navigator.clipboard.writeText(link);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+    toast.success("Link copied to clipboard!");
+  };
+  
+  const [formData, setFormData] = useState({
+    full_name: doc.full_name || "",
+    father_name: doc.father_name || "",
+    dob: doc.dob || "",
+    mobile: doc.mobile || "",
+    email: doc.email || "",
+    address: doc.address || "",
+    city: doc.city || "",
+    state: doc.state || "",
+    postal_code: doc.postal_code || "",
+    country: doc.country || "",
+    govt_id_type: doc.govt_id_type || "",
+    aadhaar_number: doc.aadhaar_number || "",
+    highest_qualification: doc.highest_qualification || "",
+    institution_name: doc.institution_name || "",
+    graduation_year: doc.graduation_year || "",
+    percentage_cgpa: doc.percentage_cgpa || "",
+    current_status: doc.current_status || "",
+    current_company: doc.current_company || "",
+    designation: doc.designation || "",
+    work_experience_years: doc.work_experience_years || "",
+  });
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   async function handleSave() {
     setSaving(true);
     try {
+      const payload = { 
+        status: status === "missing_docs" ? "pending" : status, 
+        adminNotes: notes, 
+        order_id: doc.order_id,
+        ...formData 
+      };
       const res = await fetch(`/api/admin/enrollment-docs/${doc.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, adminNotes: notes }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Failed to update.");
@@ -128,9 +180,27 @@ function DetailDialog({ doc, onClose, onUpdate }) {
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            Enrollment Doc #{doc.id}
-            <StatusBadge status={doc.status} />
+          <DialogTitle className="flex flex-col sm:flex-row sm:items-center gap-3 pr-8">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-foreground">Enrollment Doc</span>
+              <button
+                onClick={handleCopyLink}
+                className="flex items-center gap-1.5 text-xs bg-muted hover:bg-primary/10 text-primary transition-colors px-2 py-1 rounded-md border border-primary/20 shrink-0"
+                title="Copy link to send to user"
+              >
+                #{doc.order_id}
+                {copiedLink ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3 opacity-70 group-hover:opacity-100" />}
+              </button>
+              <StatusBadge status={doc.status} />
+            </div>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="sm:ml-auto w-fit" 
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              {isEditing ? "Cancel Edit" : "Edit Details"}
+            </Button>
           </DialogTitle>
           <DialogDescription className="font-mono text-xs">
             Order: {doc.order_id}
@@ -150,40 +220,40 @@ function DetailDialog({ doc, onClose, onUpdate }) {
           )}
 
           <DetailSection icon={User} title="Personal Details">
-            <DetailRow label="Full Name"    value={doc.full_name} />
-            <DetailRow label="Father's Name" value={doc.father_name} />
-            <DetailRow label="Date of Birth" value={doc.dob} />
-            <DetailRow label="Mobile"        value={doc.mobile} />
-            <DetailRow label="Email"         value={doc.email} />
+            <DetailRow label="Full Name"    value={formData.full_name} isEditing={isEditing} onChange={(val) => handleChange("full_name", val)} />
+            <DetailRow label="Father's Name" value={formData.father_name} isEditing={isEditing} onChange={(val) => handleChange("father_name", val)} />
+            <DetailRow label="Date of Birth" value={formData.dob} isEditing={isEditing} onChange={(val) => handleChange("dob", val)} />
+            <DetailRow label="Mobile"        value={formData.mobile} isEditing={isEditing} onChange={(val) => handleChange("mobile", val)} />
+            <DetailRow label="Email"         value={formData.email} isEditing={isEditing} onChange={(val) => handleChange("email", val)} />
           </DetailSection>
 
           <DetailSection icon={MapPin} title="Address">
-            <DetailRow label="Address"  value={doc.address} />
-            <DetailRow label="City"     value={doc.city} />
-            <DetailRow label="State"    value={doc.state} />
-            <DetailRow label="PIN"      value={doc.postal_code} />
-            <DetailRow label="Country"  value={doc.country} />
+            <DetailRow label="Address"  value={formData.address} isEditing={isEditing} onChange={(val) => handleChange("address", val)} />
+            <DetailRow label="City"     value={formData.city} isEditing={isEditing} onChange={(val) => handleChange("city", val)} />
+            <DetailRow label="State"    value={formData.state} isEditing={isEditing} onChange={(val) => handleChange("state", val)} />
+            <DetailRow label="PIN"      value={formData.postal_code} isEditing={isEditing} onChange={(val) => handleChange("postal_code", val)} />
+            <DetailRow label="Country"  value={formData.country} isEditing={isEditing} onChange={(val) => handleChange("country", val)} />
           </DetailSection>
 
           <DetailSection icon={ShieldCheck} title="Identity">
-            <DetailRow label="ID Type"       value={doc.govt_id_type} />
-            <DetailRow label="Aadhaar #"     value={doc.aadhaar_number} />
+            <DetailRow label="ID Type"       value={formData.govt_id_type} isEditing={isEditing} onChange={(val) => handleChange("govt_id_type", val)} />
+            <DetailRow label="Aadhaar #"     value={formData.aadhaar_number} isEditing={isEditing} onChange={(val) => handleChange("aadhaar_number", val)} />
             <FileLink  label="Government ID" url={doc.govt_id_url} />
           </DetailSection>
 
           <DetailSection icon={GraduationCap} title="Academic">
-            <DetailRow label="Qualification"   value={doc.highest_qualification} />
-            <DetailRow label="Institution"     value={doc.institution_name} />
-            <DetailRow label="Year of Passing" value={doc.graduation_year} />
-            <DetailRow label="Percentage / CGPA" value={doc.percentage_cgpa} />
+            <DetailRow label="Qualification"   value={formData.highest_qualification} isEditing={isEditing} onChange={(val) => handleChange("highest_qualification", val)} />
+            <DetailRow label="Institution"     value={formData.institution_name} isEditing={isEditing} onChange={(val) => handleChange("institution_name", val)} />
+            <DetailRow label="Year of Passing" value={formData.graduation_year} isEditing={isEditing} onChange={(val) => handleChange("graduation_year", val)} />
+            <DetailRow label="Percentage / CGPA" value={formData.percentage_cgpa} isEditing={isEditing} onChange={(val) => handleChange("percentage_cgpa", val)} />
             <FileLink  label="Marksheet / Degree" url={doc.marksheet_url} />
           </DetailSection>
 
           <DetailSection icon={Briefcase} title="Current Status">
-            <DetailRow label="Status"      value={doc.current_status} />
-            <DetailRow label="Company"     value={doc.current_company} />
-            <DetailRow label="Designation" value={doc.designation} />
-            <DetailRow label="Experience"  value={doc.work_experience_years} />
+            <DetailRow label="Status"      value={formData.current_status} isEditing={isEditing} onChange={(val) => handleChange("current_status", val)} />
+            <DetailRow label="Company"     value={formData.current_company} isEditing={isEditing} onChange={(val) => handleChange("current_company", val)} />
+            <DetailRow label="Designation" value={formData.designation} isEditing={isEditing} onChange={(val) => handleChange("designation", val)} />
+            <DetailRow label="Experience"  value={formData.work_experience_years} isEditing={isEditing} onChange={(val) => handleChange("work_experience_years", val)} />
             <FileLink  label="Resume / CV" url={doc.resume_url} />
           </DetailSection>
 
@@ -210,52 +280,60 @@ function DetailDialog({ doc, onClose, onUpdate }) {
           </DetailSection>
 
           {/* Admin Review */}
-          <div className="rounded-2xl border border-border bg-muted/30 p-4 space-y-3">
-            <h4 className="font-semibold text-sm text-foreground">Admin Review</h4>
+          {doc.status !== "missing_docs" || isEditing ? (
+            <div className="rounded-2xl border border-border bg-muted/30 p-4 space-y-3">
+              <h4 className="font-semibold text-sm text-foreground">Admin Review</h4>
 
-            {/* Status selector */}
-            <div className="flex gap-2">
-              {[
-                { val: "pending",  label: "Pending",  v: "warning" },
-                { val: "verified", label: "Verified", v: "success" },
-                { val: "rejected", label: "Rejected", v: "destructive" },
-              ].map(({ val, label, v }) => (
-                <button
-                  key={val}
-                  type="button"
-                  onClick={() => setStatus(val)}
-                  className={cn(
-                    "flex-1 rounded-lg border py-2 text-xs font-semibold transition-all",
-                    status === val
-                      ? val === "verified"
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                        : val === "rejected"
-                        ? "border-destructive/30 bg-destructive/10 text-destructive"
-                        : "border-amber-200 bg-amber-50 text-amber-700"
-                      : "border-border bg-card text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
+              {/* Status selector */}
+              <div className="flex gap-2">
+                {[
+                  { val: "pending",  label: "Pending",  v: "warning" },
+                  { val: "verified", label: "Verified", v: "success" },
+                  { val: "rejected", label: "Rejected", v: "destructive" },
+                ].map(({ val, label, v }) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => setStatus(val)}
+                    className={cn(
+                      "flex-1 rounded-lg border py-2 text-xs font-semibold transition-all",
+                      (status === val || (status === "missing_docs" && val === "pending"))
+                        ? val === "verified"
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                          : val === "rejected"
+                          ? "border-destructive/30 bg-destructive/10 text-destructive"
+                          : "border-amber-200 bg-amber-50 text-amber-700"
+                        : "border-border bg-card text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Internal admin notes (optional)…"
+                rows={3}
+              />
+
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                variant="brand"
+                className="w-full"
+              >
+                {saving ? <><Loader2 className="animate-spin" /> Saving…</> : "Save Review"}
+              </Button>
             </div>
-
-            <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Internal admin notes (optional)…"
-              rows={3}
-            />
-
-            <Button
-              onClick={handleSave}
-              disabled={saving}
-              variant="brand"
-              className="w-full"
-            >
-              {saving ? <><Loader2 className="animate-spin" /> Saving…</> : "Save Review"}
-            </Button>
-          </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-border bg-muted/20 p-6 text-center space-y-2">
+              <AlertCircle className="size-6 text-muted-foreground mx-auto" />
+              <p className="font-semibold text-foreground text-sm">Documentation Pending</p>
+              <p className="text-xs text-muted-foreground">The student has not yet submitted their enrollment documentation. You cannot review or verify it until they do.</p>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
@@ -311,6 +389,7 @@ export default function EnrollmentDocsManager() {
   const pending  = docs.filter((d) => d.status === "pending").length;
   const verified = docs.filter((d) => d.status === "verified").length;
   const rejected = docs.filter((d) => d.status === "rejected").length;
+  const missing  = docs.filter((d) => d.status === "missing_docs").length;
 
   return (
     <div className="space-y-6">
@@ -330,8 +409,9 @@ export default function EnrollmentDocsManager() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard label="Total Submissions" value={pagination.total} />
+        <StatCard label="Missing Docs"      value={missing}          color="text-muted-foreground" />
         <StatCard label="Pending Review"    value={pending}          color="text-amber-600" />
         <StatCard label="Verified"          value={verified}         color="text-emerald-600" />
         <StatCard label="Rejected"          value={rejected}         color="text-destructive" />
@@ -357,6 +437,7 @@ export default function EnrollmentDocsManager() {
             onChange={(e) => setStatusFilter(e.target.value)}
           >
             <option value="">All Status</option>
+            <option value="missing_docs">Missing Docs</option>
             <option value="pending">Pending</option>
             <option value="verified">Verified</option>
             <option value="rejected">Rejected</option>
@@ -400,9 +481,15 @@ export default function EnrollmentDocsManager() {
                   const balance = Number(doc.balance) || 0;
                   return (
                     <tr key={doc.id} className="transition-colors hover:bg-muted/30">
-                      <td className="px-5 py-3.5">
-                        <p className="font-mono font-semibold text-primary">#{doc.id}</p>
-                        <p className="text-[11px] font-mono text-muted-foreground">{doc.order_id}</p>
+                      <td className="px-5 py-3.5 whitespace-nowrap">
+                        {doc.id !== doc.order_id ? (
+                          <>
+                            <p className="font-mono font-semibold text-primary">#{doc.id}</p>
+                            <p className="text-[11px] font-mono text-muted-foreground">{doc.order_id}</p>
+                          </>
+                        ) : (
+                          <p className="font-mono font-semibold text-primary text-[13px]">#{doc.order_id}</p>
+                        )}
                       </td>
                       <td className="px-5 py-3.5">
                         <p className="font-semibold text-foreground">{doc.full_name}</p>

@@ -24,47 +24,72 @@ export async function GET(request) {
     const limit = 20;
     const offset = (page - 1) * limit;
 
-    let whereClauses = [];
+    let whereClauses = ["o.status = 'paid'"];
     let params = [];
 
-    if (status && ["pending", "verified", "rejected"].includes(status)) {
-      whereClauses.push("ed.status = ?");
-      params.push(status);
+    if (status) {
+      if (status === "missing_docs") {
+        whereClauses.push("ed.id IS NULL");
+      } else if (["pending", "verified", "rejected"].includes(status)) {
+        whereClauses.push("ed.status = ?");
+        params.push(status);
+      }
     }
 
     if (search.trim()) {
       whereClauses.push(
-        "(ed.full_name LIKE ? OR ed.email LIKE ? OR ed.mobile LIKE ? OR ed.order_id LIKE ?)"
+        "(ed.full_name LIKE ? OR o.customer_name LIKE ? OR ed.email LIKE ? OR o.customer_email LIKE ? OR ed.mobile LIKE ? OR o.customer_phone LIKE ? OR o.id LIKE ?)"
       );
       const like = `%${search.trim()}%`;
-      params.push(like, like, like, like);
+      params.push(like, like, like, like, like, like, like);
     }
 
     const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
-    const [countResult] = await query(
-      `SELECT COUNT(*) as total FROM enrollment_docs ed ${where}`,
-      params
-    );
+    const countQuery = `
+      SELECT COUNT(DISTINCT o.id) as total 
+      FROM orders o
+      JOIN order_items oi ON o.id = oi.order_id AND oi.item_type = 'course'
+      LEFT JOIN enrollment_docs ed ON o.id = ed.order_id
+      ${where}
+    `;
+
+    const [countResult] = await query(countQuery, params);
     const total = Number(countResult?.total || 0);
 
     const rows = await query(
       `SELECT
-        ed.id, ed.order_id, ed.full_name, ed.father_name, ed.dob,
-        ed.mobile, ed.email, ed.country, ed.address, ed.city, ed.state, ed.postal_code,
+        COALESCE(ed.id, o.id) AS id, 
+        o.id AS order_id, 
+        COALESCE(ed.full_name, o.customer_name) AS full_name, 
+        ed.father_name, ed.dob,
+        COALESCE(ed.mobile, o.customer_phone) AS mobile, 
+        COALESCE(ed.email, o.customer_email) AS email, 
+        ed.country, ed.address, ed.city, ed.state, ed.postal_code,
         ed.govt_id_type, ed.govt_id_url, ed.aadhaar_number,
         ed.highest_qualification, ed.institution_name, ed.graduation_year,
         ed.percentage_cgpa, ed.marksheet_url,
         ed.current_status, ed.work_experience_years, ed.current_company, ed.designation,
         ed.photo_url, ed.resume_url,
-        ed.total_fee, ed.paid_amount, ed.balance, ed.payment_ref_id, ed.receipt_url,
-        ed.selected_course, ed.selected_category,
-        ed.declaration_agreed, ed.digital_signature,
-        ed.status, ed.admin_notes,
-        ed.submitted_at, ed.updated_at
-      FROM enrollment_docs ed
+        COALESCE(ed.total_fee, o.total) AS total_fee, 
+        COALESCE(ed.paid_amount, o.total) AS paid_amount, 
+        COALESCE(ed.balance, 0) AS balance, 
+        COALESCE(ed.payment_ref_id, o.payment_id) AS payment_ref_id, 
+        ed.receipt_url,
+        COALESCE(ed.selected_course, MAX(oi.title)) AS selected_course, 
+        COALESCE(ed.selected_category, MAX(oi.category_slug)) AS selected_category,
+        COALESCE(ed.declaration_agreed, 0) AS declaration_agreed, 
+        ed.digital_signature,
+        COALESCE(ed.status, 'missing_docs') AS status, 
+        ed.admin_notes,
+        COALESCE(ed.submitted_at, o.paid_at) AS submitted_at, 
+        ed.updated_at
+      FROM orders o
+      JOIN order_items oi ON o.id = oi.order_id AND oi.item_type = 'course'
+      LEFT JOIN enrollment_docs ed ON o.id = ed.order_id
       ${where}
-      ORDER BY ed.submitted_at DESC
+      GROUP BY o.id, ed.id
+      ORDER BY submitted_at DESC
       LIMIT ? OFFSET ?`,
       [...params, limit, offset]
     );

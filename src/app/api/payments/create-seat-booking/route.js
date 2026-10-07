@@ -72,8 +72,42 @@ export async function POST(request) {
             "seat_booking",
           ]
         );
+
+        await execute(
+          `INSERT INTO orders (
+            id, user_id, customer_name, customer_email, customer_phone,
+            status, currency, subtotal, list_total, discount, tax, net, total,
+            payment_method, provider
+          ) VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, 'online', 'cashfree')`,
+          [
+            orderId,
+            userId,
+            name,
+            email,
+            phone,
+            BOOKING_CURRENCY,
+            BOOKING_AMOUNT,
+            BOOKING_AMOUNT,
+            0,
+            0,
+            BOOKING_AMOUNT,
+            BOOKING_AMOUNT,
+          ]
+        );
+
+        await execute(
+          `INSERT INTO order_items (
+            order_id, item_type, item_slug, title, price
+          ) VALUES (?, 'course', ?, ?, ?)`,
+          [
+            orderId,
+            course.toLowerCase().replace(/[^a-z0-9]+/g, "-"), // Generate a basic slug
+            course,
+            BOOKING_AMOUNT,
+          ]
+        );
       } catch (dbErr) {
-        console.warn("Could not persist seat booking lead:", dbErr.message);
+        console.warn("Could not persist seat booking to MySQL:", dbErr.message);
       }
     }
 
