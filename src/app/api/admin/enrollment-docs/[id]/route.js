@@ -12,7 +12,18 @@ export async function GET(request, { params }) {
 
   const { id } = await params;
   try {
-    const rows = await query("SELECT * FROM enrollment_docs WHERE id = ? LIMIT 1", [id]);
+    const rows = await query(`
+      SELECT 
+        ed.*,
+        COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) AS total_fee,
+        (COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance,
+        COALESCE(ed.paid_amount, o.total) AS paid_amount
+      FROM enrollment_docs ed
+      JOIN orders o ON o.id = ed.order_id
+      JOIN order_items oi ON o.id = oi.order_id AND oi.item_type = 'course'
+      LEFT JOIN courses c ON c.slug = oi.item_slug
+      WHERE ed.id = ? LIMIT 1
+    `, [id]);
     if (rows.length === 0) {
       return NextResponse.json({ success: false, message: "Record not found." }, { status: 404 });
     }
@@ -181,7 +192,18 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    const rows = await query("SELECT * FROM enrollment_docs WHERE id = ? LIMIT 1", [docId]);
+    const rows = await query(`
+      SELECT 
+        ed.*,
+        COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) AS total_fee,
+        (COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance,
+        COALESCE(ed.paid_amount, o.total) AS paid_amount
+      FROM enrollment_docs ed
+      JOIN orders o ON o.id = ed.order_id
+      JOIN order_items oi ON o.id = oi.order_id AND oi.item_type = 'course'
+      LEFT JOIN courses c ON c.slug = oi.item_slug
+      WHERE ed.id = ? LIMIT 1
+    `, [docId]);
     return NextResponse.json({ success: true, doc: rows[0] });
   } catch (err) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });

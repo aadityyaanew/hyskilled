@@ -20,9 +20,11 @@ async function getOrderDetails(orderId) {
       `SELECT o.id, o.customer_name, o.customer_email, o.customer_phone,
               o.total, o.status,
               oi.item_slug, oi.title as item_title,
+              c.price as course_price,
               (SELECT 1 FROM enrollment_docs ed WHERE ed.order_id = o.id LIMIT 1) as already_submitted
        FROM orders o
        LEFT JOIN order_items oi ON oi.order_id = o.id AND oi.item_type = 'course'
+       LEFT JOIN courses c ON c.slug = oi.item_slug
        WHERE o.id = ? AND o.status = 'paid'
        LIMIT 1`,
       [orderId]
@@ -97,7 +99,7 @@ export default async function EnrollmentDocPage({ params }) {
           <EnrollmentDocForm
             orderId={orderId}
             initialCourse={order?.item_title || ""}
-            totalFee={order?.total || ""}
+            totalFee={order?.course_price || order?.total || ""}
             paidAmount={order?.total || ""}
           />
         </Suspense>

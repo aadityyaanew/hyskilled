@@ -6,7 +6,7 @@ import {
   CheckCircle2, XCircle, Clock, ExternalLink,
   ChevronLeft, ChevronRight, Loader2, X, AlertCircle,
   IndianRupee, User, MapPin, ShieldCheck, GraduationCap,
-  Briefcase, CreditCard, ClipboardCheck, Copy, Check,
+  Briefcase, CreditCard, ClipboardCheck, Copy, Check, Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,8 +42,8 @@ function formatCurrency(v) {
 
 function StatusBadge({ status }) {
   const map = {
-    pending:  { variant: "warning",     label: "Pending",  Icon: Clock },
-    verified: { variant: "success",     label: "Verified", Icon: CheckCircle2 },
+    pending: { variant: "warning", label: "Pending", Icon: Clock },
+    verified: { variant: "success", label: "Verified", Icon: CheckCircle2 },
     rejected: { variant: "destructive", label: "Rejected", Icon: XCircle },
     missing_docs: { variant: "secondary", label: "Missing Docs", Icon: AlertCircle },
   };
@@ -75,10 +75,10 @@ function DetailRow({ label, value, isEditing, onChange }) {
     <div className="flex justify-between gap-3 text-sm items-center">
       <span className="text-muted-foreground shrink-0">{label}</span>
       {isEditing ? (
-        <Input 
-          value={value || ""} 
-          onChange={(e) => onChange && onChange(e.target.value)} 
-          className="h-8 text-right max-w-[200px]" 
+        <Input
+          value={value || ""}
+          onChange={(e) => onChange && onChange(e.target.value)}
+          className="h-8 text-right max-w-[200px]"
         />
       ) : (
         <span className="font-medium text-foreground text-right break-all">{value}</span>
@@ -112,7 +112,45 @@ function DetailDialog({ doc, onClose, onUpdate }) {
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const [newPayment, setNewPayment] = useState({ amount: "", refId: "" });
+
+  async function handleAddPayment() {
+    if (!newPayment.amount || !newPayment.refId) {
+      toast.error("Amount and Reference ID are required.");
+      return;
+    }
+    const updatedPaid = Number(doc.paid_amount || 0) + Number(newPayment.amount);
+    const updatedRef = doc.payment_ref_id ? `${doc.payment_ref_id}, ${newPayment.refId}` : newPayment.refId;
+
+    setSaving(true);
+    try {
+      const payload = {
+        ...formData,
+        paid_amount: updatedPaid,
+        payment_ref_id: updatedRef,
+        order_id: doc.order_id,
+        status: status === "missing_docs" ? "pending" : status,
+      };
+      const res = await fetch(`/api/admin/enrollment-docs/${doc.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || "Failed to add payment.");
+      onUpdate(data.doc);
+      toast.success("Payment recorded successfully.");
+      setFormData((prev) => ({ ...prev, paid_amount: updatedPaid, payment_ref_id: updatedRef }));
+      setShowAddPayment(false);
+      setNewPayment({ amount: "", refId: "" });
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const handleCopyLink = () => {
     const link = `https://hyskilled.com/enrollment/${doc.order_id}`;
     navigator.clipboard.writeText(link);
@@ -120,7 +158,7 @@ function DetailDialog({ doc, onClose, onUpdate }) {
     setTimeout(() => setCopiedLink(false), 2000);
     toast.success("Link copied to clipboard!");
   };
-  
+
   const [formData, setFormData] = useState({
     full_name: doc.full_name || "",
     father_name: doc.father_name || "",
@@ -156,11 +194,11 @@ function DetailDialog({ doc, onClose, onUpdate }) {
   async function handleSave() {
     setSaving(true);
     try {
-      const payload = { 
-        status: status === "missing_docs" ? "pending" : status, 
-        adminNotes: notes, 
+      const payload = {
+        status: status === "missing_docs" ? "pending" : status,
+        adminNotes: notes,
         order_id: doc.order_id,
-        ...formData 
+        ...formData
       };
       const res = await fetch(`/api/admin/enrollment-docs/${doc.id}`, {
         method: "PATCH",
@@ -200,10 +238,10 @@ function DetailDialog({ doc, onClose, onUpdate }) {
               </button>
               <StatusBadge status={doc.status} />
             </div>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="sm:ml-auto w-fit" 
+            <Button
+              size="sm"
+              variant="outline"
+              className="sm:ml-auto w-fit"
               onClick={() => setIsEditing(!isEditing)}
             >
               {isEditing ? "Cancel Edit" : "Edit Details"}
@@ -227,48 +265,60 @@ function DetailDialog({ doc, onClose, onUpdate }) {
           )}
 
           <DetailSection icon={User} title="Personal Details">
-            <DetailRow label="Full Name"    value={formData.full_name} isEditing={isEditing} onChange={(val) => handleChange("full_name", val)} />
+            <DetailRow label="Full Name" value={formData.full_name} isEditing={isEditing} onChange={(val) => handleChange("full_name", val)} />
             <DetailRow label="Father's Name" value={formData.father_name} isEditing={isEditing} onChange={(val) => handleChange("father_name", val)} />
             <DetailRow label="Date of Birth" value={formData.dob} isEditing={isEditing} onChange={(val) => handleChange("dob", val)} />
-            <DetailRow label="Mobile"        value={formData.mobile} isEditing={isEditing} onChange={(val) => handleChange("mobile", val)} />
-            <DetailRow label="Email"         value={formData.email} isEditing={isEditing} onChange={(val) => handleChange("email", val)} />
+            <DetailRow label="Mobile" value={formData.mobile} isEditing={isEditing} onChange={(val) => handleChange("mobile", val)} />
+            <DetailRow label="Email" value={formData.email} isEditing={isEditing} onChange={(val) => handleChange("email", val)} />
           </DetailSection>
 
           <DetailSection icon={MapPin} title="Address">
-            <DetailRow label="Address"  value={formData.address} isEditing={isEditing} onChange={(val) => handleChange("address", val)} />
-            <DetailRow label="City"     value={formData.city} isEditing={isEditing} onChange={(val) => handleChange("city", val)} />
-            <DetailRow label="State"    value={formData.state} isEditing={isEditing} onChange={(val) => handleChange("state", val)} />
-            <DetailRow label="PIN"      value={formData.postal_code} isEditing={isEditing} onChange={(val) => handleChange("postal_code", val)} />
-            <DetailRow label="Country"  value={formData.country} isEditing={isEditing} onChange={(val) => handleChange("country", val)} />
+            <DetailRow label="Address" value={formData.address} isEditing={isEditing} onChange={(val) => handleChange("address", val)} />
+            <DetailRow label="City" value={formData.city} isEditing={isEditing} onChange={(val) => handleChange("city", val)} />
+            <DetailRow label="State" value={formData.state} isEditing={isEditing} onChange={(val) => handleChange("state", val)} />
+            <DetailRow label="PIN" value={formData.postal_code} isEditing={isEditing} onChange={(val) => handleChange("postal_code", val)} />
+            <DetailRow label="Country" value={formData.country} isEditing={isEditing} onChange={(val) => handleChange("country", val)} />
           </DetailSection>
 
           <DetailSection icon={ShieldCheck} title="Identity">
-            <DetailRow label="ID Type"       value={formData.govt_id_type} isEditing={isEditing} onChange={(val) => handleChange("govt_id_type", val)} />
-            <DetailRow label="Aadhaar #"     value={formData.aadhaar_number} isEditing={isEditing} onChange={(val) => handleChange("aadhaar_number", val)} />
-            <FileLink  label="Government ID" url={doc.govt_id_url} />
+            <DetailRow label="ID Type" value={formData.govt_id_type} isEditing={isEditing} onChange={(val) => handleChange("govt_id_type", val)} />
+            <DetailRow label="Aadhaar #" value={formData.aadhaar_number} isEditing={isEditing} onChange={(val) => handleChange("aadhaar_number", val)} />
+            <FileLink label="Government ID" url={doc.govt_id_url} />
           </DetailSection>
 
           <DetailSection icon={GraduationCap} title="Academic">
-            <DetailRow label="Qualification"   value={formData.highest_qualification} isEditing={isEditing} onChange={(val) => handleChange("highest_qualification", val)} />
-            <DetailRow label="Institution"     value={formData.institution_name} isEditing={isEditing} onChange={(val) => handleChange("institution_name", val)} />
+            <DetailRow label="Qualification" value={formData.highest_qualification} isEditing={isEditing} onChange={(val) => handleChange("highest_qualification", val)} />
+            <DetailRow label="Institution" value={formData.institution_name} isEditing={isEditing} onChange={(val) => handleChange("institution_name", val)} />
             <DetailRow label="Year of Passing" value={formData.graduation_year} isEditing={isEditing} onChange={(val) => handleChange("graduation_year", val)} />
             <DetailRow label="Percentage / CGPA" value={formData.percentage_cgpa} isEditing={isEditing} onChange={(val) => handleChange("percentage_cgpa", val)} />
-            <FileLink  label="Marksheet / Degree" url={doc.marksheet_url} />
+            <FileLink label="Marksheet / Degree" url={doc.marksheet_url} />
           </DetailSection>
 
           <DetailSection icon={Briefcase} title="Current Status">
-            <DetailRow label="Status"      value={formData.current_status} isEditing={isEditing} onChange={(val) => handleChange("current_status", val)} />
-            <DetailRow label="Company"     value={formData.current_company} isEditing={isEditing} onChange={(val) => handleChange("current_company", val)} />
+            <DetailRow label="Status" value={formData.current_status} isEditing={isEditing} onChange={(val) => handleChange("current_status", val)} />
+            <DetailRow label="Company" value={formData.current_company} isEditing={isEditing} onChange={(val) => handleChange("current_company", val)} />
             <DetailRow label="Designation" value={formData.designation} isEditing={isEditing} onChange={(val) => handleChange("designation", val)} />
-            <DetailRow label="Experience"  value={formData.work_experience_years} isEditing={isEditing} onChange={(val) => handleChange("work_experience_years", val)} />
-            <FileLink  label="Resume / CV" url={doc.resume_url} />
+            <DetailRow label="Experience" value={formData.work_experience_years} isEditing={isEditing} onChange={(val) => handleChange("work_experience_years", val)} />
+            <FileLink label="Resume / CV" url={doc.resume_url} />
           </DetailSection>
 
           <DetailSection icon={CreditCard} title="Payment">
-            <DetailRow label="Course"      value={isEditing ? formData.selected_course : doc.selected_course} isEditing={isEditing} onChange={(val) => handleChange("selected_course", val)} />
-            <DetailRow label="Category"    value={isEditing ? formData.selected_category : doc.selected_category} isEditing={isEditing} onChange={(val) => handleChange("selected_category", val)} />
-            <DetailRow label="Total Fee"   value={isEditing ? formData.total_fee : formatCurrency(doc.total_fee)} isEditing={isEditing} onChange={(val) => handleChange("total_fee", val)} />
-            <DetailRow label="Paid"        value={isEditing ? formData.paid_amount : formatCurrency(doc.paid_amount)} isEditing={isEditing} onChange={(val) => handleChange("paid_amount", val)} />
+            <DetailRow label="Course" value={isEditing ? formData.selected_course : doc.selected_course} isEditing={isEditing} onChange={(val) => handleChange("selected_course", val)} />
+            <DetailRow label="Category" value={isEditing ? formData.selected_category : doc.selected_category} isEditing={isEditing} onChange={(val) => handleChange("selected_category", val)} />
+            <DetailRow label="Total Fee" value={isEditing ? formData.total_fee : formatCurrency(doc.total_fee)} isEditing={isEditing} onChange={(val) => handleChange("total_fee", val)} />
+            {isEditing ? (
+              <DetailRow label="Paid" value={formData.paid_amount} isEditing={true} onChange={(val) => handleChange("paid_amount", val)} />
+            ) : (
+              <div className="flex justify-between gap-3 text-sm items-center">
+                <span className="text-muted-foreground shrink-0">Paid</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-foreground text-right">{formatCurrency(doc.paid_amount)}</span>
+                  <Button variant="outline" size="sm" className="h-6 w-6 p-0 rounded-full" onClick={() => setShowAddPayment(true)} title="Add Payment Installment">
+                    <Plus className="size-3" />
+                  </Button>
+                </div>
+              </div>
+            )}
             <div className="flex justify-between gap-3 text-sm items-center">
               <span className="text-muted-foreground shrink-0">Balance</span>
               <span className={cn("font-bold", balance === 0 ? "text-emerald-600" : "text-destructive")}>
@@ -277,13 +327,13 @@ function DetailDialog({ doc, onClose, onUpdate }) {
               </span>
             </div>
             <DetailRow label="Reference ID" value={isEditing ? formData.payment_ref_id : doc.payment_ref_id} isEditing={isEditing} onChange={(val) => handleChange("payment_ref_id", val)} />
-            <FileLink  label="Receipt"      url={doc.receipt_url} />
+            <FileLink label="Receipt" url={doc.receipt_url} />
           </DetailSection>
 
           <DetailSection icon={ClipboardCheck} title="Declaration">
-            <DetailRow label="Agreed"            value={doc.declaration_agreed ? "Yes ✓" : "No"} />
+            <DetailRow label="Agreed" value={doc.declaration_agreed ? "Yes ✓" : "No"} />
             <DetailRow label="Digital Signature" value={doc.digital_signature} />
-            <DetailRow label="Submitted At"      value={formatDate(doc.submitted_at)} />
+            <DetailRow label="Submitted At" value={formatDate(doc.submitted_at)} />
           </DetailSection>
 
           {/* Admin Review */}
@@ -294,7 +344,7 @@ function DetailDialog({ doc, onClose, onUpdate }) {
               {/* Status selector */}
               <div className="flex gap-2">
                 {[
-                  { val: "pending",  label: "Pending",  v: "warning" },
+                  { val: "pending", label: "Pending", v: "warning" },
                   { val: "verified", label: "Verified", v: "success" },
                   { val: "rejected", label: "Rejected", v: "destructive" },
                 ].map(({ val, label, v }) => (
@@ -308,8 +358,8 @@ function DetailDialog({ doc, onClose, onUpdate }) {
                         ? val === "verified"
                           ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                           : val === "rejected"
-                          ? "border-destructive/30 bg-destructive/10 text-destructive"
-                          : "border-amber-200 bg-amber-50 text-amber-700"
+                            ? "border-destructive/30 bg-destructive/10 text-destructive"
+                            : "border-amber-200 bg-amber-50 text-amber-700"
                         : "border-border bg-card text-muted-foreground hover:bg-muted"
                     )}
                   >
@@ -343,6 +393,39 @@ function DetailDialog({ doc, onClose, onUpdate }) {
           )}
         </div>
       </DialogContent>
+
+      {showAddPayment && (
+        <Dialog open onOpenChange={() => setShowAddPayment(false)}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Record Payment</DialogTitle>
+              <DialogDescription>Add a new payment installment to update the remaining balance.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Amount (₹)</label>
+                <Input
+                  type="number"
+                  value={newPayment.amount}
+                  onChange={(e) => setNewPayment(p => ({ ...p, amount: e.target.value }))}
+                  placeholder="e.g. 2500"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Reference ID / UTR</label>
+                <Input
+                  value={newPayment.refId}
+                  onChange={(e) => setNewPayment(p => ({ ...p, refId: e.target.value }))}
+                  placeholder="e.g. UTR123456789"
+                />
+              </div>
+              <Button className="w-full" onClick={handleAddPayment} disabled={saving}>
+                {saving ? <Loader2 className="animate-spin size-4 mr-2" /> : null} Record Payment
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </Dialog>
   );
 }
@@ -373,8 +456,8 @@ export default function EnrollmentDocsManager() {
     try {
       const params = new URLSearchParams({ page: String(page) });
       if (search.trim()) params.set("search", search.trim());
-      if (statusFilter)  params.set("status", statusFilter);
-      const res  = await fetch(`/api/admin/enrollment-docs?${params}`);
+      if (statusFilter) params.set("status", statusFilter);
+      const res = await fetch(`/api/admin/enrollment-docs?${params}`);
       const data = await res.json();
       if (data.success) {
         setDocs(data.docs);
@@ -393,10 +476,10 @@ export default function EnrollmentDocsManager() {
     setDocs((prev) => prev.map((d) => (d.id === updatedDoc.id ? { ...d, ...updatedDoc } : d)));
   }
 
-  const pending  = docs.filter((d) => d.status === "pending").length;
+  const pending = docs.filter((d) => d.status === "pending").length;
   const verified = docs.filter((d) => d.status === "verified").length;
   const rejected = docs.filter((d) => d.status === "rejected").length;
-  const missing  = docs.filter((d) => d.status === "missing_docs").length;
+  const missing = docs.filter((d) => d.status === "missing_docs").length;
 
   return (
     <div className="space-y-6">
@@ -418,10 +501,10 @@ export default function EnrollmentDocsManager() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard label="Total Submissions" value={pagination.total} />
-        <StatCard label="Missing Docs"      value={missing}          color="text-muted-foreground" />
-        <StatCard label="Pending Review"    value={pending}          color="text-amber-600" />
-        <StatCard label="Verified"          value={verified}         color="text-emerald-600" />
-        <StatCard label="Rejected"          value={rejected}         color="text-destructive" />
+        <StatCard label="Missing Docs" value={missing} color="text-muted-foreground" />
+        <StatCard label="Pending Review" value={pending} color="text-amber-600" />
+        <StatCard label="Verified" value={verified} color="text-emerald-600" />
+        <StatCard label="Rejected" value={rejected} color="text-destructive" />
       </div>
 
       {/* Filters */}

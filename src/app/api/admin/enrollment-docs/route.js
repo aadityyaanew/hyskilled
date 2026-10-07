@@ -71,9 +71,9 @@ export async function GET(request) {
         ed.percentage_cgpa, ed.marksheet_url,
         ed.current_status, ed.work_experience_years, ed.current_company, ed.designation,
         ed.photo_url, ed.resume_url,
-        COALESCE(ed.total_fee, o.total) AS total_fee, 
+        COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) AS total_fee, 
         COALESCE(ed.paid_amount, o.total) AS paid_amount, 
-        COALESCE(ed.balance, 0) AS balance, 
+        (COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance, 
         COALESCE(ed.payment_ref_id, o.payment_id) AS payment_ref_id, 
         ed.receipt_url,
         COALESCE(ed.selected_course, MAX(oi.title)) AS selected_course, 
@@ -86,9 +86,10 @@ export async function GET(request) {
         ed.updated_at
       FROM orders o
       JOIN order_items oi ON o.id = oi.order_id AND oi.item_type = 'course'
+      LEFT JOIN courses c ON c.slug = oi.item_slug
       LEFT JOIN enrollment_docs ed ON o.id = ed.order_id
       ${where}
-      GROUP BY o.id, ed.id
+      GROUP BY o.id, ed.id, c.price
       ORDER BY submitted_at DESC
       LIMIT ? OFFSET ?`,
       [...params, limit, offset]
