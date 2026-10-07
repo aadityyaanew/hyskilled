@@ -240,6 +240,7 @@ export default function EnrollmentDocForm({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [errors, setErrors] = useState({});
+  const [isMounted, setIsMounted] = useState(false);
 
   const [form, setForm] = useState({
     // 01 · Personal Details
@@ -293,6 +294,34 @@ export default function EnrollmentDocForm({
   });
 
   const set = (key) => (val) => setForm((f) => ({ ...f, [key]: val }));
+
+  useEffect(() => {
+    setIsMounted(true);
+    try {
+      const savedStep = localStorage.getItem(`enrollment_step_${orderId}`);
+      if (savedStep !== null) {
+        setStep(parseInt(savedStep, 10));
+      }
+      const savedForm = localStorage.getItem(`enrollment_form_${orderId}`);
+      if (savedForm) {
+        const parsedForm = JSON.parse(savedForm);
+        setForm(prev => ({ ...prev, ...parsedForm }));
+      }
+    } catch (err) {
+      console.error("Failed to restore form state", err);
+    }
+  }, [orderId]);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        localStorage.setItem(`enrollment_step_${orderId}`, step.toString());
+        localStorage.setItem(`enrollment_form_${orderId}`, JSON.stringify(form));
+      } catch (err) {
+        console.error("Failed to save form state", err);
+      }
+    }
+  }, [step, form, orderId, isMounted]);
 
   // Auto-filled submission date
   const todayFormatted = new Intl.DateTimeFormat("en-IN", {
@@ -397,6 +426,12 @@ export default function EnrollmentDocForm({
       if (!res.ok || !data.success) throw new Error(data.message || "Submission failed.");
       setDocId(data.docId);
       setSubmitted(true);
+      try {
+        localStorage.removeItem(`enrollment_step_${orderId}`);
+        localStorage.removeItem(`enrollment_form_${orderId}`);
+      } catch (e) {
+        console.error("Failed to clear local storage", e);
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setSubmitError(err.message);
@@ -445,6 +480,8 @@ export default function EnrollmentDocForm({
   const balance = Math.max(0, (Number(form.totalFee) || 0) - (Number(form.paidAmount) || 0));
 
   // ── Render Steps ─────────────────────────────────────────────────────────
+
+  if (!isMounted) return null; // Avoid hydration mismatch
 
   return (
     <div className="space-y-6">
@@ -822,6 +859,7 @@ export default function EnrollmentDocForm({
                     onChange={(e) => set("selectedCourse")(e.target.value)}
                     placeholder="Enrolled Course"
                     aria-invalid={!!errors.selectedCourse}
+                    readOnly
                   />
                 </FormField>
 
@@ -832,6 +870,7 @@ export default function EnrollmentDocForm({
                     onChange={(e) => set("selectedCategory")(e.target.value)}
                     placeholder="e.g. Full Stack Development"
                     aria-invalid={!!errors.selectedCategory}
+                    readOnly
                   />
                 </FormField>
 
@@ -844,6 +883,7 @@ export default function EnrollmentDocForm({
                     onChange={(e) => set("totalFee")(e.target.value)}
                     placeholder="0"
                     aria-invalid={!!errors.totalFee}
+                    readOnly
                   />
                 </FormField>
 
@@ -856,6 +896,7 @@ export default function EnrollmentDocForm({
                     onChange={(e) => set("paidAmount")(e.target.value)}
                     placeholder="0"
                     aria-invalid={!!errors.paidAmount}
+                    readOnly
                   />
                 </FormField>
               </div>

@@ -39,9 +39,9 @@ export async function getCourseOptions() {
   if (!isDbConfigured()) return [];
   try {
     const rows = await query(
-      "SELECT slug, title FROM courses WHERE status = 'published' ORDER BY title ASC"
+      "SELECT slug, title, price, original_price FROM courses WHERE status = 'published' ORDER BY title ASC"
     );
-    return rows.map((r) => ({ slug: r.slug, title: r.title }));
+    return rows.map((r) => ({ slug: r.slug, title: r.title, price: r.price, original_price: r.original_price }));
   } catch (err) {
     console.error("getCourseOptions failed:", err);
     return [];

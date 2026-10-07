@@ -201,7 +201,7 @@ export function SeatBookingForm() {
                 {courses.length > 0 ? (
                   courses.map((c) => (
                     <SelectItem key={c.slug} value={c.title}>
-                      {c.title}
+                      {c.title} {c.price ? `- ₹${c.price.toLocaleString("en-IN")}` : ""}
                     </SelectItem>
                   ))
                 ) : (
