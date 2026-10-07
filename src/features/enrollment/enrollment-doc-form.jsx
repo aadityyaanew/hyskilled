@@ -370,7 +370,6 @@ export default function EnrollmentDocForm({
     }
     if (idx === 5) {
       if (!String(form.selectedCourse).trim()) e.selectedCourse = "Course is required.";
-      if (!String(form.selectedCategory).trim()) e.selectedCategory = "Category is required.";
       if (form.totalFee === "" || form.totalFee === null) e.totalFee = "Total fee is required.";
       if (form.paidAmount === "" || form.paidAmount === null) e.paidAmount = "Paid amount is required.";
       if (!form.paymentRefId.trim()) e.paymentRefId = "Payment Reference / Transaction ID is required.";
@@ -859,17 +858,6 @@ export default function EnrollmentDocForm({
                     onChange={(e) => set("selectedCourse")(e.target.value)}
                     placeholder="Enrolled Course"
                     aria-invalid={!!errors.selectedCourse}
-                    readOnly
-                  />
-                </FormField>
-
-                <FormField id="selectedCategory" label="Category / Domain" required error={errors.selectedCategory}>
-                  <Input
-                    id="selectedCategory"
-                    value={form.selectedCategory}
-                    onChange={(e) => set("selectedCategory")(e.target.value)}
-                    placeholder="e.g. Full Stack Development"
-                    aria-invalid={!!errors.selectedCategory}
                     readOnly
                   />
                 </FormField>

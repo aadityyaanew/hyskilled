@@ -27,9 +27,6 @@ export function CategoryCard({ category, className }) {
       </div>
       <h3 className="relative mt-5 text-lg font-bold text-ink">{category.name}</h3>
       <p className="relative mt-1.5 line-clamp-2 text-sm text-muted-foreground">{category.description}</p>
-      <p className="relative mt-4 text-xs font-bold tracking-wide text-primary uppercase">
-        {category.courseCount} {category.courseCount === 1 ? "course" : "courses"}
-      </p>
     </Link>
   );
 }
