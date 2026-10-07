@@ -30,7 +30,7 @@ export async function findCoupon(code) {
     }
   }
 
-  return mockCoupons.find((c) => c.code === normalised) ?? null;
+  return null;
 }
 
 export async function validateCoupon(code, subtotal) {

@@ -5,7 +5,6 @@ import { Check, Loader2, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/features/cart/cart-provider";
-import { coupons } from "@/data/coupons";
 
 export function CouponForm() {
   const { coupon, applyCoupon, removeCoupon, items } = useCart();
@@ -95,7 +94,7 @@ export function CouponForm() {
         role="status"
         className={`mt-1.5 min-h-4 text-xs ${status.type === "error" ? "font-medium text-destructive" : "text-muted-foreground"}`}
       >
-        {status.type === "error" ? status.message : `Try ${coupons[0]?.code} or ${coupons[1]?.code}`}
+        {status.type === "error" ? status.message : ""}
       </p>
     </div>
   );
