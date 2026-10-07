@@ -71,6 +71,7 @@ export async function PATCH(request, { params }) {
     total_fee,
     paid_amount,
     payment_ref_id,
+    payment_history,
   } = body;
 
   const allowed = ["pending", "verified", "rejected"];
@@ -111,6 +112,7 @@ export async function PATCH(request, { params }) {
       total_fee,
       paid_amount,
       payment_ref_id,
+      payment_history,
     };
 
     for (const [key, value] of Object.entries(fieldsMap)) {

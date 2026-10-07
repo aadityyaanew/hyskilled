@@ -71,6 +71,7 @@ export async function GET(request) {
         ed.percentage_cgpa, ed.marksheet_url,
         ed.current_status, ed.work_experience_years, ed.current_company, ed.designation,
         ed.photo_url, ed.resume_url,
+        ed.payment_history,
         COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) AS total_fee, 
         COALESCE(ed.paid_amount, o.total) AS paid_amount, 
         (COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance, 

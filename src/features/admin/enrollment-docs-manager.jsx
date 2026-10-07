@@ -122,6 +122,8 @@ function DetailDialog({ doc, onClose, onUpdate }) {
     }
     const updatedPaid = Number(doc.paid_amount || 0) + Number(newPayment.amount);
     const updatedRef = doc.payment_ref_id ? `${doc.payment_ref_id}, ${newPayment.refId}` : newPayment.refId;
+    const currentHistory = doc.payment_history ? doc.payment_history : (doc.paid_amount ? String(doc.paid_amount) : "");
+    const updatedHistory = currentHistory ? `${currentHistory}, ${newPayment.amount}` : String(newPayment.amount);
 
     setSaving(true);
     try {
@@ -129,6 +131,7 @@ function DetailDialog({ doc, onClose, onUpdate }) {
         ...formData,
         paid_amount: updatedPaid,
         payment_ref_id: updatedRef,
+        payment_history: updatedHistory,
         order_id: doc.order_id,
         status: status === "missing_docs" ? "pending" : status,
       };
@@ -141,7 +144,7 @@ function DetailDialog({ doc, onClose, onUpdate }) {
       if (!res.ok || !data.success) throw new Error(data.message || "Failed to add payment.");
       onUpdate(data.doc);
       toast.success("Payment recorded successfully.");
-      setFormData((prev) => ({ ...prev, paid_amount: updatedPaid, payment_ref_id: updatedRef }));
+      setFormData((prev) => ({ ...prev, paid_amount: updatedPaid, payment_ref_id: updatedRef, payment_history: updatedHistory }));
       setShowAddPayment(false);
       setNewPayment({ amount: "", refId: "" });
     } catch (err) {
@@ -185,6 +188,7 @@ function DetailDialog({ doc, onClose, onUpdate }) {
     total_fee: doc.total_fee || "",
     paid_amount: doc.paid_amount || "",
     payment_ref_id: doc.payment_ref_id || "",
+    payment_history: doc.payment_history || "",
   });
 
   const handleChange = (field, value) => {
@@ -326,6 +330,7 @@ function DetailDialog({ doc, onClose, onUpdate }) {
                 {balance === 0 && <Badge variant="success" className="ml-1.5">Paid</Badge>}
               </span>
             </div>
+            <DetailRow label="Previous Payments" value={isEditing ? formData.payment_history : doc.payment_history} isEditing={isEditing} onChange={(val) => handleChange("payment_history", val)} />
             <DetailRow label="Reference ID" value={isEditing ? formData.payment_ref_id : doc.payment_ref_id} isEditing={isEditing} onChange={(val) => handleChange("payment_ref_id", val)} />
             <FileLink label="Receipt" url={doc.receipt_url} />
           </DetailSection>

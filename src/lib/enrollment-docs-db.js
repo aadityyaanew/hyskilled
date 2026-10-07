@@ -93,6 +93,7 @@ export async function ensureEnrollmentDocsTable() {
       await safeAddColumn("marksheet_url VARCHAR(500) NULL");
       await safeAddColumn("percentage_cgpa VARCHAR(50) NULL");
       await safeAddColumn("designation VARCHAR(255) NULL");
+      await safeAddColumn("payment_history VARCHAR(1000) NULL");
     })().catch((err) => {
       migrationPromise = null;
       console.error("Migration error in ensureEnrollmentDocsTable:", err);
