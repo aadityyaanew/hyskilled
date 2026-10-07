@@ -188,7 +188,7 @@ export function ScheduleSessionDialog({
               )}
 
               <Button type="submit" variant="brand" className="w-full h-12 sm:h-11 mt-1 text-base sm:text-sm" disabled={submitting}>
-                {submitting ? <><Loader2 className="animate-spin size-4 mr-2" /> Submitting…</> : "Request session"}
+                {submitting ? <><Loader2 className="animate-spin size-4 mr-2" /> Submitting…</> : "Submit"}
               </Button>
             </form>
           </>

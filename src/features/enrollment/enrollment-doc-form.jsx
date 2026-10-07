@@ -48,13 +48,13 @@ const ID_TYPES = [
 ];
 
 const STEPS = [
-  { id: "personal", label: "Personal",   icon: User },
-  { id: "address",  label: "Address",    icon: MapPin },
-  { id: "identity", label: "Identity",   icon: ShieldCheck },
-  { id: "academic", label: "Academic",   icon: GraduationCap },
-  { id: "status",   label: "Status",     icon: Briefcase },
-  { id: "payment",  label: "Payment",    icon: CreditCard },
-  { id: "declare",  label: "Declaration", icon: ClipboardCheck },
+  { id: "personal", label: "Personal", icon: User },
+  { id: "address", label: "Address", icon: MapPin },
+  { id: "identity", label: "Identity", icon: ShieldCheck },
+  { id: "academic", label: "Academic", icon: GraduationCap },
+  { id: "status", label: "Status", icon: Briefcase },
+  { id: "payment", label: "Payment", icon: CreditCard },
+  { id: "declare", label: "Declaration", icon: ClipboardCheck },
 ];
 
 // ─── File Upload Field ───────────────────────────────────────────────────────
@@ -107,8 +107,8 @@ function FileUploadField({ label, hint, type, value, onChange, accept, required,
           value
             ? "border-primary/50 bg-primary/5"
             : error || uploadErr
-            ? "border-destructive/60 bg-destructive/5"
-            : "border-border hover:border-primary/50 hover:bg-muted/50"
+              ? "border-destructive/60 bg-destructive/5"
+              : "border-border hover:border-primary/50 hover:bg-muted/50"
         )}
       >
         {uploading ? (
@@ -184,7 +184,7 @@ function StepIndicator({ steps, current }) {
               <span
                 className={cn(
                   "grid size-9 sm:size-10 place-items-center rounded-2xl border-2 transition-all font-semibold",
-                  done   && "border-primary bg-primary text-primary-foreground shadow-sm",
+                  done && "border-primary bg-primary text-primary-foreground shadow-sm",
                   active && "border-primary bg-primary/10 text-primary ring-4 ring-primary/10",
                   !done && !active && "border-border bg-card text-muted-foreground"
                 )}
@@ -306,34 +306,34 @@ export default function EnrollmentDocForm({
   function validateStep(idx) {
     const e = {};
     if (idx === 0) {
-      if (!form.photoUrl)          e.photoUrl   = "Photograph is required.";
-      if (!form.fullName.trim())   e.fullName   = "Full name is required.";
+      if (!form.photoUrl) e.photoUrl = "Photograph is required.";
+      if (!form.fullName.trim()) e.fullName = "Full name is required.";
       if (!form.fatherName.trim()) e.fatherName = "Father's name is required.";
-      if (!form.dob)               e.dob        = "Date of birth is required.";
-      if (!form.mobile.trim())     e.mobile     = "Mobile number is required.";
+      if (!form.dob) e.dob = "Date of birth is required.";
+      if (!form.mobile.trim()) e.mobile = "Mobile number is required.";
       if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email))
-                                   e.email      = "Valid email address is required.";
+        e.email = "Valid email address is required.";
     }
     if (idx === 1) {
-      if (!form.country.trim())    e.country    = "Country is required.";
-      if (!form.address.trim())    e.address    = "Complete address is required.";
-      if (!form.city.trim())       e.city       = "City is required.";
-      if (!form.state.trim())      e.state      = "State / Province is required.";
+      if (!form.country.trim()) e.country = "Country is required.";
+      if (!form.address.trim()) e.address = "Complete address is required.";
+      if (!form.city.trim()) e.city = "City is required.";
+      if (!form.state.trim()) e.state = "State / Province is required.";
       if (!form.postalCode.trim()) e.postalCode = "PIN / Postal code is required.";
     }
     if (idx === 2) {
-      if (!form.govtIdUrl)         e.govtIdUrl  = "Government ID document is required.";
+      if (!form.govtIdUrl) e.govtIdUrl = "Government ID document is required.";
       if (!form.aadhaarNumber.trim()) e.aadhaarNumber = "Aadhaar number is required.";
     }
     if (idx === 3) {
       if (!form.highestQualification) e.highestQualification = "Please select highest qualification.";
-      if (!form.institutionName.trim()) e.institutionName    = "Institution name is required.";
-      if (!form.graduationYear.trim()) e.graduationYear      = "Year of passing is required.";
-      if (!form.percentageCgpa.trim()) e.percentageCgpa      = "Percentage / CGPA is required.";
-      if (!form.marksheetUrl)          e.marksheetUrl        = "Marksheet / Degree certificate is required.";
+      if (!form.institutionName.trim()) e.institutionName = "Institution name is required.";
+      if (!form.graduationYear.trim()) e.graduationYear = "Year of passing is required.";
+      if (!form.percentageCgpa.trim()) e.percentageCgpa = "Percentage / CGPA is required.";
+      if (!form.marksheetUrl) e.marksheetUrl = "Marksheet / Degree certificate is required.";
     }
     if (idx === 4) {
-      if (!form.currentStatus)     e.currentStatus = "Please select current status.";
+      if (!form.currentStatus) e.currentStatus = "Please select current status.";
       if (!form.workExperienceYears) e.workExperienceYears = "Years of experience is required.";
       if (!form.currentCompany.trim()) e.currentCompany = "Company name is required.";
       if (!form.designation.trim()) e.designation = "Designation is required.";
@@ -345,14 +345,14 @@ export default function EnrollmentDocForm({
       if (form.totalFee === "" || form.totalFee === null) e.totalFee = "Total fee is required.";
       if (form.paidAmount === "" || form.paidAmount === null) e.paidAmount = "Paid amount is required.";
       if (!form.paymentRefId.trim()) e.paymentRefId = "Payment Reference / Transaction ID is required.";
-      if (!form.receiptUrl)          e.receiptUrl   = "Fee receipt / Payment screenshot is required.";
+      if (!form.receiptUrl) e.receiptUrl = "Fee receipt / Payment screenshot is required.";
     }
     if (idx === 6) {
-      if (!form.declarationInfoTrue)        e.declarationInfoTrue        = "Required to confirm accuracy.";
+      if (!form.declarationInfoTrue) e.declarationInfoTrue = "Required to confirm accuracy.";
       if (!form.declarationBatchAllocation) e.declarationBatchAllocation = "Required to accept batch allocation terms.";
-      if (!form.declarationCodeOfConduct)   e.declarationCodeOfConduct   = "Required to accept code of conduct.";
-      if (!form.declarationRefundPolicy)    e.declarationRefundPolicy    = "Required to accept refund policy.";
-      if (!form.digitalSignature.trim())    e.digitalSignature           = "Digital signature / Full name is required.";
+      if (!form.declarationCodeOfConduct) e.declarationCodeOfConduct = "Required to accept code of conduct.";
+      if (!form.declarationRefundPolicy) e.declarationRefundPolicy = "Required to accept refund policy.";
+      if (!form.digitalSignature.trim()) e.digitalSignature = "Digital signature / Full name is required.";
     }
     return e;
   }
@@ -925,7 +925,7 @@ export default function EnrollmentDocForm({
                       className="mt-1"
                     />
                     <Label htmlFor="dec1" className="text-sm leading-relaxed cursor-pointer font-normal text-foreground">
-                      I hereby declare that all information provided is true and accurate to the best of my knowledge. <span className="text-destructive font-semibold">*</span>
+                      I confirm that the information provided by me is accurate and belongs to me. I consent to Hyskilled processing my personal data for enrollment, student support, academic administration and related purposes in accordance with the Privacy Policy. <span className="text-destructive font-semibold">*</span>
                     </Label>
                   </div>
                   {errors.declarationInfoTrue && (
