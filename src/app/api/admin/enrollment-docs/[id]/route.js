@@ -15,13 +15,13 @@ export async function GET(request, { params }) {
     const rows = await query(`
       SELECT 
         ed.*,
-        COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) AS total_fee,
-        (COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance,
+        COALESCE(c.price, o.total) AS total_fee,
+        (COALESCE(c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance,
         COALESCE(ed.paid_amount, o.total) AS paid_amount
       FROM enrollment_docs ed
       JOIN orders o ON o.id = ed.order_id
       JOIN order_items oi ON o.id = oi.order_id AND oi.item_type = 'course'
-      LEFT JOIN courses c ON c.slug = oi.item_slug
+      LEFT JOIN courses c ON (c.slug = oi.item_slug OR c.title = oi.title)
       WHERE ed.id = ? LIMIT 1
     `, [id]);
     if (rows.length === 0) {
@@ -197,13 +197,13 @@ export async function PATCH(request, { params }) {
     const rows = await query(`
       SELECT 
         ed.*,
-        COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) AS total_fee,
-        (COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance,
+        COALESCE(c.price, o.total) AS total_fee,
+        (COALESCE(c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance,
         COALESCE(ed.paid_amount, o.total) AS paid_amount
       FROM enrollment_docs ed
       JOIN orders o ON o.id = ed.order_id
       JOIN order_items oi ON o.id = oi.order_id AND oi.item_type = 'course'
-      LEFT JOIN courses c ON c.slug = oi.item_slug
+      LEFT JOIN courses c ON (c.slug = oi.item_slug OR c.title = oi.title)
       WHERE ed.id = ? LIMIT 1
     `, [docId]);
     return NextResponse.json({ success: true, doc: rows[0] });

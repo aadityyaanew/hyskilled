@@ -72,9 +72,9 @@ export async function GET(request) {
         ed.current_status, ed.work_experience_years, ed.current_company, ed.designation,
         ed.photo_url, ed.resume_url,
         ed.payment_history,
-        COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) AS total_fee, 
+        COALESCE(c.price, o.total) AS total_fee, 
         COALESCE(ed.paid_amount, o.total) AS paid_amount, 
-        (COALESCE(IF(ed.total_fee = 2 OR ed.total_fee = 2500, c.price, ed.total_fee), c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance, 
+        (COALESCE(c.price, o.total) - COALESCE(ed.paid_amount, o.total)) AS balance, 
         COALESCE(ed.payment_ref_id, o.payment_id) AS payment_ref_id, 
         ed.receipt_url,
         COALESCE(ed.selected_course, MAX(oi.title)) AS selected_course, 
@@ -87,7 +87,7 @@ export async function GET(request) {
         ed.updated_at
       FROM orders o
       JOIN order_items oi ON o.id = oi.order_id AND oi.item_type = 'course'
-      LEFT JOIN courses c ON c.slug = oi.item_slug
+      LEFT JOIN courses c ON (c.slug = oi.item_slug OR c.title = oi.title)
       LEFT JOIN enrollment_docs ed ON o.id = ed.order_id
       ${where}
       GROUP BY o.id, ed.id, c.price
