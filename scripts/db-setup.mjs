@@ -52,7 +52,7 @@ async function run() {
   const { instructors: mockInstructors } = await import("../src/data/instructors.js");
   const { courses: mockCourses } = await import("../src/data/courses.js");
   const { bundles: mockBundles } = await import("../src/data/bundles.js");
-  const { coupons: mockCoupons } = await import("../src/data/coupons.js");
+
 
   // 1. Categories
   const [catCount] = await connection.query("SELECT COUNT(*) as count FROM categories");
@@ -154,15 +154,6 @@ async function run() {
   }
   console.log(`  ✓ Inserted/checked bundles`);
 
-  // 5. Coupons
-  for (const cp of mockCoupons) {
-    await connection.execute(
-      `INSERT IGNORE INTO coupons (code, description, type, value, max_discount, min_order, is_active)
-       VALUES (?, ?, ?, ?, ?, ?, 1)`,
-      [cp.code, cp.description, cp.type, cp.value, cp.maxDiscount || null, cp.minOrder || null]
-    );
-  }
-  console.log(`  ✓ Inserted/checked coupons`);
 
   await connection.end();
   console.log("🎉 Database setup complete!");

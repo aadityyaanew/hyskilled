@@ -1,4 +1,3 @@
-import { coupons as mockCoupons } from "@/data/coupons";
 import { couponDiscount } from "@/lib/pricing";
 import { formatPrice } from "@/lib/format";
 import { query, isDbConfigured } from "@/lib/db";

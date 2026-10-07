@@ -2,7 +2,6 @@ import { query, execute, isDbConfigured } from "@/lib/db";
 import { ensureCourseOrderColumn } from "@/lib/course-order";
 import { courses as mockCourses } from "@/data/courses";
 import { categories as mockCategories } from "@/data/categories";
-import { coupons as mockCoupons } from "@/data/coupons";
 import { ensureInstructorsTable } from "@/lib/instructors-db";
 
 /**
@@ -333,17 +332,7 @@ export async function getAdminCoupons() {
     }
   }
 
-  return mockCoupons.map((c, i) => ({
-    id: i + 1,
-    code: c.code,
-    description: c.description,
-    type: c.type,
-    value: c.value,
-    max_discount: c.maxDiscount || null,
-    min_order: c.minOrder || null,
-    is_active: true,
-    used_count: 0,
-  }));
+  return [];
 }
 
 export async function getAdminInstructors() {
