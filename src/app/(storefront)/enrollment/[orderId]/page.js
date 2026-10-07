@@ -24,7 +24,7 @@ async function getOrderDetails(orderId) {
               (SELECT 1 FROM enrollment_docs ed WHERE ed.order_id = o.id LIMIT 1) as already_submitted
        FROM orders o
        LEFT JOIN order_items oi ON oi.order_id = o.id AND oi.item_type = 'course'
-       LEFT JOIN courses c ON c.slug = oi.item_slug
+       LEFT JOIN courses c ON (c.slug = oi.item_slug OR c.title = oi.item_title)
        WHERE o.id = ? AND o.status = 'paid'
        LIMIT 1`,
       [orderId]
