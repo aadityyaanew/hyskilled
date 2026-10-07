@@ -7,7 +7,7 @@ import { ROUTES } from "@/config/routes";
 export const metadata = buildMetadata({
   title: "Register Your Seat",
   description:
-    "Secure your seat at Hyskilled with a ₹2,500 booking amount. Fill in your details, choose your course, and pay securely to reserve your place.",
+    "Secure your seat at Hyskilled with a ₹2 booking amount. Fill in your details, choose your course, and pay securely to reserve your place.",
   path: ROUTES.registerSeat,
 });
 
@@ -36,7 +36,7 @@ const benefits = [
 
 const faqs = [
   {
-    q: "Is the ₹2,500 amount refundable?",
+    q: "Is the ₹2 amount refundable?",
     a: "The booking amount is non-refundable, but it will be fully adjusted against your tuition fees when you join the program.",
   },
   {
@@ -59,7 +59,7 @@ export default function RegisterSeatPage() {
       <PageHeader
         eyebrow="Reserve Your Spot"
         title="Register Your Seat Today"
-        description="Secure your place in the next cohort with just ₹2,500. The booking amount is fully adjusted against your tuition fees."
+        description="Secure your place in the next cohort with just ₹2. The booking amount is fully adjusted against your tuition fees."
         breadcrumbs={[{ label: "Register Your Seat", href: ROUTES.registerSeat }]}
       />
 
@@ -83,7 +83,7 @@ export default function RegisterSeatPage() {
                     Booking Amount
                   </p>
                   <div className="mt-3 flex items-end gap-1">
-                    <span className="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold text-white">₹2,500</span>
+                    <span className="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold text-white">₹2</span>
                   </div>
                   <p className="mt-2 text-sm text-white/70">
                     Fully adjusted against tuition fees · Non-refundable
@@ -157,7 +157,7 @@ export default function RegisterSeatPage() {
                   Fill in your details
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Complete the form below and pay ₹2,500 securely to lock in your seat.
+                  Complete the form below and pay ₹2 securely to lock in your seat.
                 </p>
               </div>
               <SeatBookingForm />

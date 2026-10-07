@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buildMetadata } from "@/lib/seo";
@@ -32,7 +32,7 @@ export default async function SeatBookingStatusPage({ searchParams }) {
                 Seat Booked!
               </h1>
               <p className="mx-auto mt-3 max-w-md text-base text-muted-foreground">
-                Your ₹2,500 booking has been received (Order ID:{" "}
+                Your ₹2 booking has been received (Order ID:{" "}
                 <span className="font-mono text-sm font-semibold text-ink">{orderId}</span>).
                 Our team will contact you within 24 hours to confirm your place and share
                 onboarding details.
