@@ -1,5 +1,4 @@
 import { query, execute, isDbConfigured } from "./db.js";
-import { instructors as defaultInstructors } from "../data/instructors.js";
 
 let migrationPromise = null;
 
@@ -70,24 +69,10 @@ export async function ensureInstructorsTable() {
         `);
       }
 
-      // 6. Seed default instructors if table is empty
+      // 6. Check if empty
       const [countResult] = await query("SELECT COUNT(*) as count FROM instructors");
       if (Number(countResult?.count || 0) === 0) {
-        for (const inst of defaultInstructors) {
-          await execute(
-            `INSERT IGNORE INTO instructors (id, name, title, bio, rating, learners, image_url)
-             VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [
-              inst.id,
-              inst.name,
-              inst.title || null,
-              inst.bio || null,
-              Number(inst.rating) || 4.8,
-              Number(inst.learners) || 0,
-              inst.image_url || null,
-            ]
-          );
-        }
+        console.log("Instructors table is empty. Please add via Admin Panel.");
       }
     })().catch((err) => {
       migrationPromise = null;

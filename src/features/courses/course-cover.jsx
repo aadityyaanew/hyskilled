@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { categories } from "@/data/categories";
 import { CategoryIcon } from "@/features/categories/category-icon";
 import { cn } from "@/lib/utils";
 
@@ -10,7 +9,7 @@ import { cn } from "@/lib/utils";
  * procedural brand cover.
  */
 export function CourseCover({ course, category, className, size = "md", label }) {
-  const cat = category ?? categories.find((c) => c.slug === course?.categorySlug) ?? categories[0];
+  const cat = category ?? course?.category ?? { slug: "tech", name: "Tech", hue: 24, keywords: [], icon: "Code2" };
   const customImage = course?.imageUrl || course?.image_url || course?.thumbnail;
 
   // Slight per-course hue variation inside the category family.

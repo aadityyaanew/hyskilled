@@ -1,12 +1,17 @@
 import { testimonials } from "@/data/testimonials";
 import { faqs, faqGroups } from "@/data/faqs";
-import { courses } from "@/data/courses";
+import { getCourseBySlug } from "@/services/courses.service";
 
 export async function getTestimonials(limit) {
-  const list = testimonials.map((t) => ({
-    ...t,
-    courseTitle: courses.find((c) => c.slug === t.courseSlug)?.title ?? null,
-  }));
+  const list = await Promise.all(
+    testimonials.map(async (t) => {
+      const course = t.courseSlug ? await getCourseBySlug(t.courseSlug) : null;
+      return {
+        ...t,
+        courseTitle: course?.title ?? null,
+      };
+    })
+  );
   return limit ? list.slice(0, limit) : list;
 }
 

@@ -1,5 +1,4 @@
-import { categories } from "@/data/categories";
-import { instructors } from "@/data/instructors";
+
 import { PAGE_SIZE, PRICE_RANGES } from "@/lib/catalog-options";
 import { query, isDbConfigured } from "@/lib/db";
 import { ensureCourseOrderColumn } from "@/lib/course-order";
@@ -8,8 +7,7 @@ import { safeJsonParse } from "@/lib/admin-api";
 
 export { PAGE_SIZE, SORT_OPTIONS, LEVELS, PRICE_RANGES } from "@/lib/catalog-options";
 
-const categoryBySlug = new Map(categories.map((c) => [c.slug, c]));
-const instructorById = new Map(instructors.map((i) => [i.id, i]));
+
 
 export function isCourseClosed(course) {
   if (!course) return false;
@@ -37,6 +35,16 @@ export function mapDbCourseRow(r) {
     Boolean(closingTimerEnabled && closingDate && new Date(closingDate).getTime() <= Date.now());
 
   const categorySlug = r.category_slug || r.categorySlug || "generative-ai";
+  const categoryRow = r.category_slug ? {
+    id: r.category_id,
+    slug: r.category_slug,
+    name: r.category_name,
+    short: r.category_short_name || r.category_name,
+    icon: r.category_icon || "Code2",
+    description: r.category_description || "",
+    hue: Number(r.category_hue) || 24,
+    keywords: safeJsonParse(r.category_keywords, []),
+  } : null;
 
   const instructorRow = r.inst_name ? {
     id: r.instructor_id || r.instructorId,
@@ -58,6 +66,7 @@ export function mapDbCourseRow(r) {
     instructorId: r.instructor_id || r.instructorId || "aarav-mehta",
     instructorBioOverride: r.instructor_bio_override || null,
     instructorRow,
+    categoryRow,
     level: r.level || "Beginner",
     language: r.language || "English",
     durationHours: Number(r.duration_hours) || 20,
@@ -93,7 +102,10 @@ async function getSourceCourses() {
     try {
       await ensureCourseOrderColumn();
       const rows = await query(`
-        SELECT c.*, cat.name as category_name, cat.slug as category_slug,
+        SELECT c.*, cat.id as category_id, cat.name as category_name, cat.slug as category_slug,
+               cat.short_name as category_short_name, cat.icon as category_icon, 
+               cat.description as category_description, cat.hue as category_hue, 
+               cat.keywords as category_keywords,
                inst.name as inst_name, inst.title as inst_title, inst.bio as inst_bio,
                inst.rating as inst_rating, inst.learners as inst_learners, inst.image_url as inst_image_url
         FROM courses c
@@ -118,7 +130,15 @@ function withRelations(course) {
 
   let instructor = course.instructorRow;
   if (!instructor) {
-    const fallback = instructorById.get(course.instructorId) ?? instructors[0];
+    const fallback = {
+      id: "aarav-mehta",
+      name: "Aarav Mehta",
+      title: "Lead AI Engineer & Mentor",
+      bio: "Aarav is a former Staff ML Engineer who has built and scaled AI systems for millions of users.",
+      rating: 4.9,
+      learners: 14820,
+      courses: 2,
+    };
     instructor = fallback ? {
       ...fallback,
       bio: course.instructorBioOverride || fallback.bio,
@@ -133,7 +153,7 @@ function withRelations(course) {
   return {
     ...course,
     isClosed,
-    category: categoryBySlug.get(course.categorySlug) ?? {
+    category: course.categoryRow ?? {
       slug: course.categorySlug,
       name: course.categorySlug?.replace(/-/g, " ") || "Tech",
       short: course.categorySlug?.toUpperCase() || "Tech",
@@ -232,7 +252,10 @@ export async function getCourseBySlug(slug) {
     try {
       await ensureInstructorsTable();
       const rows = await query(
-        `SELECT c.*, cat.name as category_name, cat.slug as category_slug,
+        `SELECT c.*, cat.id as category_id, cat.name as category_name, cat.slug as category_slug,
+                cat.short_name as category_short_name, cat.icon as category_icon, 
+                cat.description as category_description, cat.hue as category_hue, 
+                cat.keywords as category_keywords,
                 inst.name as inst_name, inst.title as inst_title, inst.bio as inst_bio,
                 inst.rating as inst_rating, inst.learners as inst_learners, inst.image_url as inst_image_url
          FROM courses c
@@ -363,5 +386,5 @@ export async function getInstructors(limit) {
       console.warn("Could not fetch instructors from DB:", e.message);
     }
   }
-  return limit ? instructors.slice(0, limit) : instructors;
+  return limit ? [] : [];
 }

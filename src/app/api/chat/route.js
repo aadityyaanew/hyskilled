@@ -22,7 +22,7 @@ export async function POST(req) {
     }
 
     // Prepare system instruction and contents for Gemini
-    const systemPrompt = buildChatbotKnowledge();
+    const systemPrompt = await buildChatbotKnowledge();
 
     // Map conversation messages to Gemini format
     const contents = messages.map((m) => ({

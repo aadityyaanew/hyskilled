@@ -1,6 +1,5 @@
 import { query, isDbConfigured } from "@/lib/db";
 import { safeJsonParse } from "@/lib/admin-api";
-import { categories as mockCategories } from "@/data/categories";
 
 export async function getCategories() {
   if (isDbConfigured()) {
@@ -30,10 +29,7 @@ export async function getCategories() {
     }
   }
 
-  return mockCategories.map((c) => ({
-    ...c,
-    courseCount: 0,
-  }));
+  return [];
 }
 
 export async function getCategoryBySlug(slug) {
@@ -69,8 +65,7 @@ export async function getCategoryBySlug(slug) {
     }
   }
 
-  const category = mockCategories.find((c) => c.slug === slug);
-  return category ? { ...category, courseCount: 0 } : null;
+  return null;
 }
 
 export async function getAllCategorySlugs() {
@@ -83,5 +78,5 @@ export async function getAllCategorySlugs() {
       return [];
     }
   }
-  return mockCategories.map((c) => c.slug);
+  return [];
 }

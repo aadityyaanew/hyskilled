@@ -1,34 +1,4 @@
-import { bundles as mockBundles } from "@/data/bundles";
-import { courses as mockCourses } from "@/data/courses";
-import { categories as mockCategories } from "@/data/categories";
 import { query, isDbConfigured } from "@/lib/db";
-
-function enrichMock(bundle) {
-  const included = (bundle.courseSlugs || [])
-    .map((slug) => mockCourses.find((c) => c.slug === slug))
-    .filter(Boolean);
-  const originalPrice = included.reduce((sum, c) => sum + c.price, 0);
-  return {
-    ...bundle,
-    courses: included.map((c) => ({
-      slug: c.slug,
-      title: c.title,
-      price: c.price,
-      durationHours: c.durationHours,
-      level: c.level,
-      categorySlug: c.categorySlug,
-    })),
-    categorySlugs: [...new Set(included.map((c) => c.categorySlug))],
-    categoryNames: [
-      ...new Set(
-        included.map((c) => mockCategories.find((x) => x.slug === c.categorySlug)?.short)
-      ),
-    ],
-    originalPrice,
-    totalHours: included.reduce((sum, c) => sum + (c.durationHours || 0), 0),
-    savings: Math.max(0, originalPrice - bundle.price),
-  };
-}
 
 export async function getBundles() {
   if (isDbConfigured()) {
@@ -77,11 +47,11 @@ export async function getBundles() {
         });
       }
     } catch (err) {
-      console.warn("Could not fetch bundles from MySQL, using mock fallback:", err.message);
+      console.warn("Could not fetch bundles from MySQL:", err.message);
     }
   }
 
-  return mockBundles.map(enrichMock);
+  return [];
 }
 
 export async function getBundleBySlug(slug) {
@@ -133,6 +103,5 @@ export async function getBundleBySlug(slug) {
     }
   }
 
-  const bundle = mockBundles.find((b) => b.slug === slug);
-  return bundle ? enrichMock(bundle) : null;
+  return null;
 }

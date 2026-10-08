@@ -1,24 +1,28 @@
-import { courses } from "@/data/courses";
-import { bundles } from "@/data/bundles";
-import { categories } from "@/data/categories";
 import { faqs } from "@/data/faqs";
 import { siteConfig } from "@/config/site";
+import { getAllCourses } from "@/services/courses.service";
+import { getBundles } from "@/services/bundles.service";
+import { getCategories } from "@/services/categories.service";
 
 /**
  * Builds a structured, compact system knowledge string for the Gemini AI assistant.
  */
-export function buildChatbotKnowledge() {
+export async function buildChatbotKnowledge() {
+  const courses = await getAllCourses();
+  const bundles = await getBundles();
+  const categories = await getCategories();
+
   const coursesText = courses
     .map(
       (c) =>
-        `- **${c.title}** (Slug: ${c.slug}) | Level: ${c.level} | Duration: ${c.durationHours} hrs | Price: ₹${c.price} (Original: ₹${c.originalPrice}) | Category: ${c.categorySlug}\n  Summary: ${c.shortDescription}\n  Key Modules: ${c.modules.map((m) => m.title).join(", ")}\n  Link: /courses/${c.slug}`
+        `- **${c.title}** (Slug: ${c.slug}) | Level: ${c.level} | Duration: ${c.durationHours} hrs | Price: ₹${c.price} (Original: ₹${c.originalPrice}) | Category: ${c.categorySlug}\n  Summary: ${c.shortDescription}\n  Key Modules: ${c.modules?.map((m) => m.title).join(", ")}\n  Link: /courses/${c.slug}`
     )
     .join("\n\n");
 
   const bundlesText = bundles
     .map(
       (b) =>
-        `- **${b.name}** (Slug: ${b.slug}) | Price: ₹${b.price}\n  Tagline: ${b.tagline}\n  Description: ${b.description}\n  Included courses: ${b.courseSlugs.join(", ")}\n  Link: /pricing`
+        `- **${b.name}** (Slug: ${b.slug}) | Price: ₹${b.price}\n  Tagline: ${b.tagline}\n  Description: ${b.description}\n  Included courses: ${b.courseSlugs?.join(", ")}\n  Link: /pricing`
     )
     .join("\n\n");
 

@@ -1,7 +1,5 @@
 import { query, execute, isDbConfigured } from "@/lib/db";
 import { ensureCourseOrderColumn } from "@/lib/course-order";
-import { courses as mockCourses } from "@/data/courses";
-import { categories as mockCategories } from "@/data/categories";
 import { ensureInstructorsTable } from "@/lib/instructors-db";
 
 /**
@@ -49,7 +47,7 @@ export async function getDashboardStats() {
     paidOrders: 28,
     totalOrders: 34,
     students: 12,
-    courses: mockCourses.length,
+    courses: 0,
     recentOrders: [
       {
         id: "HY-SAMPLE01",
@@ -79,14 +77,7 @@ export async function getDashboardStats() {
         payment_method: "netbanking",
       },
     ],
-    topCourses: mockCourses.slice(0, 5).map((c) => ({
-      id: c.slug,
-      slug: c.slug,
-      title: c.title,
-      price: c.price,
-      learners: c.learners,
-      category_name: c.categorySlug,
-    })),
+    topCourses: [],
     isLiveDb: false,
   };
 }
@@ -227,34 +218,7 @@ export async function getAdminBundles() {
     }
   }
 
-  // Fallback to mock bundles
-  const { bundles: mockBundles } = await import("@/data/bundles");
-  return mockBundles.map((b, i) => {
-    const included = (b.courseSlugs || [])
-      .map((slug) => mockCourses.find((c) => c.slug === slug))
-      .filter(Boolean);
-    const originalPrice = included.reduce((sum, c) => sum + c.price, 0);
-    return {
-      id: i + 1,
-      slug: b.slug,
-      name: b.name,
-      tagline: b.tagline,
-      description: b.description,
-      price: b.price,
-      highlight: b.highlight,
-      status: "published",
-      courses: included.map((c) => ({
-        id: c.slug,
-        slug: c.slug,
-        title: c.title,
-        price: c.price,
-      })),
-      courseIds: included.map((c) => c.slug),
-      courseSlugs: included.map((c) => c.slug),
-      originalPrice,
-      savings: Math.max(0, originalPrice - b.price),
-    };
-  });
+  return [];
 }
 
 export async function getAdminOrders() {
@@ -363,10 +327,6 @@ export async function getAdminInstructors() {
     }
   }
 
-  const { instructors: mockInstructors } = await import("@/data/instructors");
-  return mockInstructors.map((i) => ({
-    ...i,
-    imageUrl: null,
-  }));
+  return [];
 }
 
