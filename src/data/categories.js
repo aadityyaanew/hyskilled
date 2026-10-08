@@ -84,4 +84,14 @@ export const categories = [
     hue: 358,
     keywords: ["Pentesting", "Networking", "OWASP", "Linux"],
   },
+  {
+    slug: "digital-marketing-seo-smo-ppc",
+    name: "Digital Marketing SEO SMO PPC",
+    short: "DIGITAL-MARKETING-SEO-SMO-PPC",
+    icon: "Layers",
+    description:
+      "Master SEO, SEM, social media, and content marketing to drive growth.",
+    hue: 24,
+    keywords: ["SEO", "Social Media", "Ads", "Growth"],
+  },
 ];

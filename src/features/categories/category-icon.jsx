@@ -8,6 +8,7 @@ import {
   Cloud,
   ShieldCheck,
   Layers,
+  Megaphone,
 } from "lucide-react";
 
 const icons = {
@@ -19,6 +20,8 @@ const icons = {
   Smartphone,
   Cloud,
   ShieldCheck,
+  Megaphone,
+  Layers,
 };
 
 /** Resolves a category's icon name (stored as data) to a Lucide component. */
